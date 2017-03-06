@@ -10,19 +10,23 @@
 \usepackage{enumitem}
 \usepackage{color}
 \usepackage{tikz}
+\usepackage{booktabs}
+\usepackage{tabulary}
 \setlist{itemsep=0pt}
 \setlist{nolistsep}
 \frenchspacing
-\linespread{1.3}
+\linespread{1.5}
 \addto\captionspolish{%
 \renewcommand*\listtablename{Spis tabel}
 \renewcommand*\tablename{Tabela}
 }
 \usepackage{titlesec}
 \titlelabel{\thetitle.\quad}
-
-\date{2017-03-04}
-\author{Roni Chikhmous}
+\usepackage{etoolbox}
+\makeatletter
+\patchcmd{\ttlh@hang}{\parindent\z@}{\parindent\z@\leavevmode}{}{}
+\patchcmd{\ttlh@hang}{\noindent}{}{}{}
+\makeatother
 
 \begin{document}
 
@@ -50,7 +54,6 @@ Nr albumu: 69684
 
 }
 
-
 \vspace{2cm}
 
 \begin{center}
@@ -58,7 +61,7 @@ Nr albumu: 69684
   Optymalizacja kosztowa procesu konstruowania głębokich sieci neuronowych (ang. deep neural networks) z wykorzystaniem chmury obliczeniowej
 \end{center}
 
-\vspace{2cm}
+\vspace{1cm}
 
 {
 \leftskip=10cm\noindent
@@ -82,5 +85,82 @@ Warszawa, 2017
 
 % druga strona będzie pusta, ponieważ drukujemy dwustronnie
 \clearpage
+
+\tableofcontents
+
+\clearpage
+
+\section{Tytuł pracy}
+
+Optymalizacja kosztowa procesu konstruowania glębokich sieci neuronowych (ang. deep neural networks) z wykorzystaniem chmury obliczeniowej
+
+%\clearpage
+
+\section{Problem badawczy}
+
+Przedmiotem badania są jednostki obliczeniowe dostępne w ramach serwisów oferujących przetwarzanie danych w chmurze (ściślej – ich wydajność i stosunek wydajność/cena).
+
+Celem pracy jest ocena jak duże w sensie oszczędności czasowej są korzyści płynące z wykorzystywania GPU w uczeniu skomplikowanych sieci neuronowych i znalezienie optymalnego kosztowo rozwiązania dla owego problemu. Ponadto, badanie ma na celu odpowiedzieć na pytanie, czy owe oszczędności czasowe potrzebne na uczenie i predykcję kompensują w wystarczającym stopniu wyższą cenę wynajmu tego typu jednostek obliczeniowych?
+
+%\clearpage
+
+\section{Dlaczego problem jest ważny dla ekonomisty?}
+
+Wykorzystywanie GPU do szybszego uczenia modeli sieci neuronowych jest rozwiązaniem zyskującym na popularności. Praca ma na celu odpowiedzenie na pytanie, czy w przypadku pewnych problemów biznesowych, optymalniejsze kosztowo jest wynajmowanie tego typu dedykowanych instancji, czy korzystanie z tańszych jednostek.
+
+Problem był poruszany w literaturze, jednakże porównywane były poszczególne GPU, nie jednostki oferowane przez platformy cloud computingowe.
+
+%\clearpage
+
+\section{Hipotezy badawcze}
+
+Wsparcie procesu budowy modelu deep learningowego architekturą GPU prowadzi do mniejszego czasu potrzebnego na uczenie modelu i czasu na predykcję, jednakże ze względu na swoją popularność oraz wyższą cenę, jednostki zawierające GPU są rozwiązaniami mniej optymalnymi kosztowo.
+
+%\clearpage
+
+\section{Metody badawcze, wykorzystane dane}
+
+Eksperymentalne porównanie wydajności dostępnych jednostek obliczeniowych (czasy uczenia sieci neuronowej uzyskany za pomocą wielokrotnych symulacji) oferowanych przez największych dostawców, w tym:
+\begin{itemize}
+\item AWS P2 (Accelerated Computing, general purpose GPU)
+\item AWS C4 (Computing Optimized)
+\item (?)Microsoft Azure NC/NV Series
+\item (?)Google cloud instance with GPU
+
+\end{itemize}
+
+%\clearpage
+
+\section{Plan pracy}
+
+\begin{table}[h]
+\centering
+\caption{Plan ramowy pracy magisterskiej.}
+\label{tab:planramowy}
+\footnotesize
+\begin{tabulary}{1.0\textwidth}{rLC}
+\toprule
+L.p. & Temat & Przewidywana liczba stron\\
+\hline
+1 & Wstęp. Ogólny zarys problemu i przedmiotu badań & 1 -- 2 \\
+2.1 & Sieci neuronowe i deep learning - podstawy teoretyczne, zastosowania w rozpoznawaniu obrazu. Sposoby na przyspieszenie uczenia. & 9 -- 10 \\
+2.2 & Opis rynku cloud computingu, przedstawienie platform oferujących usługi przetwarzania w chmurze & 11 -- 13 \\
+3 & Przybliżenie porównywanych jednostek obliczeniowych, zbioru danych i oprogramowania.
+Przedstawienie eksperymentu, metodologii przeprowadzania testu oraz wybranego algorytmu & 8 -- 9 \\
+4 & Opis wyników eksperymentu, analiza rezultatów symulacji i przedstawienie wniosków & 12 -- 20 \\
+5 & Podsumowanie pracy & 2 -- 3 \\
+6 & Literatura & 2 -- 3 \\
+7 & Spis tabel & 1 \\
+8 & Spis rysunków & 1 \\
+9 & Załączniki & 10 -- 15 \\
+\hline
+\multicolumn{2}{r}{$\sum$} & 57 -- 77 \\
+
+\hline
+\end{tabulary}
+\end{table}
+
+\clearpage
+
 
 \end{document}
