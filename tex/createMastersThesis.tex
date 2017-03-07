@@ -1,0 +1,139 @@
+\documentclass[12pt,a4paper,twoside]{article}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[polish]{babel}
+\usepackage{graphicx}
+\usepackage{times}
+\usepackage{indentfirst}
+\usepackage[left=3cm,right=2cm,top=2.5cm,bottom=2.5cm]{geometry}
+\usepackage{natbib}
+\usepackage{enumitem}
+\usepackage{color}
+\usepackage{tikz}
+\usepackage{booktabs}
+\usepackage{tabulary}
+\setlist{itemsep=0pt}
+\setlist{nolistsep}
+\frenchspacing
+\linespread{1.5}
+\addto\captionspolish{%
+\renewcommand*\listtablename{Spis tabel}
+\renewcommand*\tablename{Tabela}
+}
+\usepackage{titlesec}
+\titlelabel{\thetitle.\quad}
+\usepackage{etoolbox}
+\makeatletter
+\patchcmd{\ttlh@hang}{\parindent\z@}{\parindent\z@\leavevmode}{}{}
+\patchcmd{\ttlh@hang}{\noindent}{}{}{}
+\makeatother
+
+\begin{document}
+
+\begin{center}
+
+  \includegraphics[scale=0.3]{sgh_full.png}
+
+  \vspace{1cm}
+  Studium magisterskie
+
+\end{center}
+
+\vspace{1cm}
+
+\noindent Kierunek: Analiza danych - big data
+
+\noindent Specjalność: \dots
+
+\vspace{1cm}
+
+{
+\leftskip=10cm\noindent
+Roni Chikhmous\newline
+Nr albumu: 69684
+
+}
+
+\vspace{2cm}
+
+\begin{center}
+  \LARGE
+  Optymalizacja kosztowa procesu konstruowania głębokich sieci neuronowych (ang. deep neural networks) z wykorzystaniem chmury obliczeniowej
+\end{center}
+
+\vspace{1cm}
+
+{
+\leftskip=10cm\noindent
+Praca magisterska napisana\newline
+w Instytucie Ekonometrii\newline
+pod kierunkiem naukowym\newline
+dr. Przemysława Szufla
+
+}
+
+\vfill
+
+\begin{center}
+Warszawa, 2017
+\end{center}
+\thispagestyle{empty}
+
+\clearpage
+\thispagestyle{empty}
+\mbox{}
+
+% druga strona będzie pusta, ponieważ drukujemy dwustronnie
+\clearpage
+
+\tableofcontents
+
+\clearpage
+
+\section{Wprowadzenie}
+
+% Uzasadnienie podjętego tematu
+
+Ze względu na znaczne postępy w technologiach informatycznych zanotowane w ostatnich latach, przetwarzanie danych w chmurze (ang. \textit{cloud computing}) stało się jednym z wiodących paradygmatów w tej dziedzinie wiedzy. Odnosi się on do aplikacji dostarczanych jako usługi za pośrednictwem Internetu (ang. \textit{Software as a Service, SaaS}), jak również oferowania infrastruktury (ang. \textit{Infrastructure as a Service, IaaS}) i systemów informatycznych (ang. \textit{Platform as a Service, PaaS}). Rozwiązanie to pozwala konsumentom natychmiastowo odpowiadać na zapotrzebowanie bez konieczności inwestowania znacznych nakładów finansowych w rozbudowywanie własnych centrów danych. W szczególności, duża ilość dostępnej natychmiast, dostosowanej do konkretnego zadania mocy obliczeniowej niezbędna jest do przeprowadzenia wielkoskalowych symulacji, estymacji skomplikowanych modeli statystycznych lub algorytmów uczenia maszynowego. Niniejsza praca ma na celu zbadanie i porównanie kosztów budowy modeli głębokich sieci neuronowych (ang. \textit{deep neural networks}) z wykorzystaniem podstawowych serwerów oraz droższych, dedykowanych jednostek, wzbogaconych o procesory graficzne (ang. \textit{graphics processing unit, GPU}), oferowanych przez najpopularniejszych dostawców tego typu usług.
+
+% Ogólny opis:
+  %podjętego tematu pracy,
+  %postawionych celów,
+  %struktury treści,
+  %zastosowanej metody analitycznej/badawczej
+
+% Omówienie literatury przedmiotu pracy
+
+\clearpage
+
+\section{Przedstawienie badanych zagadnień}
+
+\subsection{Deep learning - podstawy teoretyczne, zastosowanie}
+
+\clearpage
+
+\subsection{Cloud computing}
+
+\clearpage
+
+\begin{thebibliography}{99}
+\setlength{\itemsep}{0pt}%
+\bibitem[Antonopoulos(2010)]{antonopoulos2010} Antonopoulos, N. i Gillam, L. (2010), Cloud computing, 1st ed. London: Springer, s. xx - xx
+
+
+\bibitem[Dolan(2000)]{dolan2000} Dolan P. (2000), The Measurement of (...), w: A.J. Culyer, J.P. Newhouse (ed.), Handbook of Health Economics, Volume 1B, Elsevier, s. 1723-1760
+\bibitem[Wakker i Zhank (1999)]{wakker1999} Wakker P., H. Zank (1999), A Unified Derivation (...), Journal of  Matematical Economics, 32, s. 1-19
+\bibitem[Drummond et al. (1997)]{drummond1997} Drummond M.F., B.J. O'Brien, G.L. Stoddart, G.W. Torrance (1997),       Methods for Economic Evaluation (...), Oxford University Press
+\end{thebibliography}
+
+\clearpage
+
+\listoffigures
+
+\clearpage
+
+\listoftables
+
+\clearpage
+
+\end{document}
