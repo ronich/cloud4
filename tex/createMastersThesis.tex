@@ -114,18 +114,59 @@ Ze względu na znaczne postępy w technologiach informatycznych zanotowane w ost
 
 \subsection{Cloud computing}
 
+% Wstępny opis cloud computingu. Prezentacja obecnie obowiązującego paradygmat
+
+Przetwarzanie danych w chmurze definiowane jest w pracach \citet{buyya2009} oraz \citet{calheiros2010} jako ,,rodzaj równoległego i rozproszonego systemu, składającego się z licznych, połączonych ze sobą i wirtualizowanych serwerów, która są dynamicznie przydzielane na podstawie ustaleń pomiędzy dostawcą a konsumentami, dokonanych za pośrednictwem dedykowanego serwisu''. Innymi słowy, w tym modelu pamięć, moc obliczeniowa znajdują się ,,w chmurze'', która jest zbiorem centrów danych (ang. \textit{data centers}), posiadanych oraz utrzymywanych przez zewnętrzny podmiot. Konsumenci otrzymują dostęp do owej infrastruktury lub serwisów na niej bazujących przez wystosowanie żądania odwzorowującego ich aktualne potrzeby na tego typu usługi. To podejście, odnoszące się do świadczenia usług w zakresie dostarczania infrastruktury, mocy obliczeniowej lub aplikacji za pośrednictwem Internetu, stało się jednym z głównych paradygmatów w tej dziedzinie nauki i biznesu. Efektem tego optymizmu jest wizja dostarczania mocy obliczeniowej jako kolejnego rodzaju powszechnie dostępnego medium. Ma ono zaspokajać, ze stosunkowo niewielkim opóźnieniem, rosnące w erze digitalizacji zapotrzebowanie na jednostki będące w stanie wykonywać skomplikowane obliczenia. Leonard Kleinrock, naukowiec, który wniósł istotny wkład w budowę Internetu, twierdził w 1969 jako główny inżynier projektu ARPANET, że: ,,W chwili obecnej, sieci komputerowe są wciąż we wczesnym okresie rozwoju, jednakże wraz z ich dojrzewaniem obserwować będziemy rozpowszechnienie narzędzi komputerowych (ang. \textit{computer utilities}), które jak obecnie elektryczność lub sieci telefoniczne, będą służyć gospodarstwom domowym i przedsiębiorstwom w całym kraju''  \citep{kleinrock2005}. Ta wizja skutecznie przewidziała nie tylko mającą nadejść powszechność połączenia internetowego, lecz również możliwość wynajmowania maszyn wirtualnych w sposób zdalny, z natychmiastowym skutkiem, w zależności od aktualnego popytu - tak jak w ma to miejsce przypadku każdego innego rodzaju powszechnie dostępnego medium. Kontynuując tę analogię, opłaty za tego typu usługę naliczane są tylko w wypadku, gdy konsument korzystał z dostępnych mu zasobów. Ponadto, podejście to eliminiuje konieczność utrzymywania własnej infrastruktury informatycznej. Przede wszystkim rewolucja dotyczy sposobu projektowania rozwiązań technologicznych w przedsiębiorstwach, które dotychczas w tej materii opierały się na założeniu pełnej lub częściowej samodzielności centrów danych. Istotność tego typu serwisów podkreśla w swojej pracy również Armburst \citep{armburst2010} na określając je jako długo wyczekiwane marzenie dostarczenia przetwarzania danych jako szeroko dostępnego medium, które będzie napędzać transformację przemysłu technologii informacyjnych, czyniąc jednocześnie udostępnianie oprogramowania coraz atrakcyjniejszym rodzajem świadczonych usług.
+
+Aby wprowadzić pewne terminy i usystematyzować zbiór pojęć wykorzystywany w niniejszej pracy, oparto się na zestawie rekomendacji wydanym jako publikacja Państwowego Instytutu Norm i Technologii Stanów Zjednoczonych \citep{mell2011}. Określa on \textit{cloud computing} jako model stworzony w celu umożliwienia wszechobecnego, wygodnego, dostępnego na żądanie, wspóldzielonego zbioru konfigurowalnych zasobów komputerowych, które mogą zostać natychmiastowo dostarczone przy niewielkim wysiłku zarządzającego i minimalnym stopniu interakcji. Model ten składa się z pięciu kluczowych charakterystyk, trzech modeli świadczonych usług i czterech modeli wdrożeń. Pokrótce zostaną one omówione, przy czym szersze opracowanie znajduje się w dalszej części pracy.
+
+\noindent
+Kluczowe charakterystyki:
+\begin{itemize}
+\item samoobsługowość oraz dostępność na żądanie (ang. \textit{on-demand self-service}) -- klient może jednostronnie wynajmować jednostki obliczeniowe, również w sposób zautomatyzowany;
+\item szerokopasmowy dostęp sieciowy (ang. \textit{broad network access}) -- oferowane usługi dostępne są za pośrednictwem sieci, dostęp do nich można uzyskać przez standardowe mechanizmy, z wykorzystaniem zróżnicowanych platform (takich jak laptopy, komputery osobiste, telefony komórkowe czy tablety);
+\item błyskawiczna elastyczność (ang. \textit{rapid elasticity}) -- zasoby mogą być w sposób elastyczny rezerwowane i zwalniane, również automatycznie. Z perspektywy konsumenta oferowane zasoby wydają się być nieograniczone;
+\item mierzalność usług (ang. \textit{measured service}) -- systemy w sposób automatyczny kontrolują i optymalizują wykorzystanie zasobów dostosowując się do pewnej, uprzednio ustalonej miary (typowo stawki określanej jako płać i korzystaj (ang. \textit{pay-per-use}). Jednocześnie musi być zapewniona pełna transparentność zarówno dla dostawcy usług, jak i konsumenta;
+\end{itemize}
+
+Modele świadczonych usług:
+\begin{itemize}
+\item Oprogramowanie jako usługa (ang. \textit{Software as a Service, SaaS}) -- konsument otrzymuje gotowe oprogramowanie, aplikacje, działające w infrastrukturze chmurowej. Są one dostępne z różnych rodzajów klientów i urządzeń. Konsument nie zarządza leżącą u podstaw aplikacji infrastrukturą (w tym siecią, serwerami, systemami operacyjnymi, pamięcią);
+\item Platforma jako usługa (ang. \textit{Platform as a Service, PaaS}) -- konsument otrzymuje możliwość wdrażania do infrastruktury chmurowej aplikacji stworzonych z wykorzystaniem wspieranych przez dostawcę języków programowania, bibliotek, narzędzi i usług. Również w tym wypadku nie zarządza on infrastrukturą technologiczną;
+\item Infrastruktura jako usługa (ang. \textit{Infrastructure as a Service, IaaS}) -- konsument otrzymuje możliwość zarządzania sieciami, pamięcią, przetwarzaniem i innymi fundamentalnymi zasobami, mogąc jednocześnie wdrażać i uruchamiać dowolne oprogramowanie, w tym rówież systemy operacyjne i aplikacje. Nie ma on wciąż dostępu do fizycznej infrastruktury;
+\end{itemize}
+
+Modele wdrożeń:
+\begin{itemize}
+\item Prywatna chmura (ang. \textit{Private Cloud}) -- infrastruktura zostaje udostępniona na wyłączność dla pojedynczego podmiotu lub organizacji. Może być posiadana i zarządzana przez tę organizację, podmiot trzeci lub dowolną ich kombinację. Może istnieć na terenie dostawcy usług lub poza nim;
+\item Zbiorowa chmura (ang. \textit{Community cloud}) -- infrastruktura udostępniona zostaje na wyłączność dla pewnej zbiorowości podmiotów, która mają wspólne cele. Może być posiadana i zarządzana przez jedną lub wiecej z organizacji należących do owej zbiorowości, podmiotu trzeciego lub dowolnej ich kombinacji. Może istnieć na terenie dostawcy usług lub poza nim;
+\item Publiczna chmura (ang. \textit{Public cloud}) -- infrastruktura udostępniona dla wszystkich użytkowników. Może być posiadana i zarządzana przez dowolne przedsiebiorstwo prywatne lub publiczne, placówkę akademicką lub dowolną ich kombinację. Musi istnieć na terenie dostawcy usług;
+\item Hybrydowa chmura (ang. \textit{Hybrid cloud}) -- infrastruktura jest połączeniem dowolnych dwóch lub więcej infrastruktur chmurowych, które pozostają odrębnymi bytami, lecz są związane rozwiazaniami technologicznymi;
+\end{itemize}
+
+
+
 \clearpage
 
 \begin{thebibliography}{99}
 \setlength{\itemsep}{0pt}%
-\bibitem[Antonopoulos(2010)]{antonopoulos2010} Antonopoulos, N. i Gillam, L. (2010), Cloud computing, 1st ed. London: Springer, s. xx - xx
+\bibitem[Antonopoulos i Gilliam (2010)]{antonopoulos2010} Antonopoulos, N. i Gillam, L. (2010). Cloud computing, 1st ed. London: Springer, s. xx - xx
+\bibitem[Armburst et al. (2010)]{armburst2010} Armbrust, M., Stoica, I., Zaharia, M., Fox, A., Griffith, R., Joseph, A., Katz, R., Konwinski, A., Lee, G., Patterson, D. i Rabkin, A. (2010). A view of cloud computing. Communications of the ACM, 53(4), s. 50
+\bibitem[Baun i Kunze (2011)]{baun2011} Baun, C. i Kunze, M. (2011). Cloud computing. 1st ed. Heidelberg [etc.]: Springer, s. xx -xx
+\bibitem[Buyya et al. (2009)]{buyya2009} Buyya, R., Yeo, C., Venugopal, S., Broberg, J. i Brandic, I. (2009). Cloud computing and emerging IT platforms: Vision, hype, and reality for delivering computing as the 5th utility. Future Generation Computer Systems, 25(6), s. 599-616
+\bibitem[Calheiros et al. (2010)]{calheiros2010} Calheiros, R., Ranjan, R., Beloglazov, A., De Rose, C. i Buyya, R. (2010). CloudSim: a toolkit for modeling and simulation of cloud computing environments and evaluation of resource provisioning algorithms. Software: Practice and Experience, 41(1), s. 23-50
+\bibitem[Kleinrock (2005)]{kleinrock2005} Kleinrock, L., A Vision for the Internet. ST Journal for Research, tom 2, nr 1, s. 4–5
+\bibitem[Lin et al. (2017)]{lin2017} Lin, W., Xu, S., He, L. i Li, J. (2017). Multi-resource scheduling and power simulation for cloud computing. Information Sciences, 397-398, s.168-186.
+\bibitem[Mahmood (2013)]{mahmood2013} Mahmood, Z. (2013). Cloud computing. 1st ed. London: Springer, s. xx - xx
+\bibitem[Mell i Grance (2011)]{mell2011} Mell, P. i Grance T. (2011). The NIST definition of cloud computing
+\bibitem[Mustafa et al. (2015)]{mustafa2015} Mustafa, S., Nazir, B., Hayat, A., Khan, A. i Madani, S. (2015). Resource management in cloud computing: Taxonomy, prospects, and challenges. Computers and Electrical Engineering, 47, s. 186-203
+\bibitem[OECD (2014)]{oecd2014} OECD (2014). Cloud Computing: The Concept, Impacts and the Role of Government Policy. OECD Digital Economy Papers, No. 240, OECD Publishing, Paris
+\bibitem[Shroff (2010)]{shroff2010} Shroff, G. (2010). Enterprise cloud computing. 1st ed. Cambridge: Cambridge University Press, s. xx - xx
+\bibitem[Ward i Baker (2013)]{ward2013} Ward, J.S. i Barker, A. (2013). A Cloud Computing Survey: Developments and Future Trends in Infrastructure as a Service Computing
+\bibitem[Trovati (2015)]{trovati2015} Trovati, M. (2015). Big-data analytics and cloud computing. 1st ed. London: Springer, s. xx - xx
+\bibitem[Zhang et al. (2010)]{zhang2010} Zhang, Q., Cheng, L. i Boutaba, R. (2010). Cloud computing: state-of-the-art and research challenges. Journal of Internet Services and Applications, 1(1), s. 7-18.
 
-
-\bibitem[Dolan(2000)]{dolan2000} Dolan P. (2000), The Measurement of (...), w: A.J. Culyer, J.P. Newhouse (ed.), Handbook of Health Economics, Volume 1B, Elsevier, s. 1723-1760
-\bibitem[Wakker i Zhank (1999)]{wakker1999} Wakker P., H. Zank (1999), A Unified Derivation (...), Journal of  Matematical Economics, 32, s. 1-19
-\bibitem[Drummond et al. (1997)]{drummond1997} Drummond M.F., B.J. O'Brien, G.L. Stoddart, G.W. Torrance (1997),       Methods for Economic Evaluation (...), Oxford University Press
 \end{thebibliography}
-
 \clearpage
 
 \listoffigures
