@@ -12,6 +12,8 @@
 \usepackage{tikz}
 \usepackage{booktabs}
 \usepackage{tabulary}
+\usepackage{url}
+\urlstyle{same}
 \setlist{itemsep=0pt}
 \setlist{nolistsep}
 \frenchspacing
@@ -27,12 +29,13 @@
 \patchcmd{\ttlh@hang}{\parindent\z@}{\parindent\z@\leavevmode}{}{}
 \patchcmd{\ttlh@hang}{\noindent}{}{}{}
 \makeatother
+\setlist[itemize]{leftmargin=*}
 
 \begin{document}
 
 \begin{center}
 
-  \includegraphics[scale=0.3]{sgh_full.png}
+  \includegraphics[scale=0.3]{../obrazy/sgh_full.png}
 
   \vspace{1cm}
   Studium magisterskie
@@ -58,7 +61,7 @@ Nr albumu: 69684
 
 \begin{center}
   \LARGE
-  Optymalizacja kosztowa procesu konstruowania głębokich sieci neuronowych (ang. deep neural networks) z wykorzystaniem chmury obliczeniowej
+  Optymalizacja kosztowa procesu generacji głębokich sieci neuronowych  w chmurze obliczeniowej
 \end{center}
 
 \vspace{1cm}
@@ -92,44 +95,64 @@ Warszawa, 2017
 
 \section{Tytuł pracy}
 
-Optymalizacja kosztowa procesu konstruowania glębokich sieci neuronowych (ang. deep neural networks) z wykorzystaniem chmury obliczeniowej
+Optymalizacja kosztowa procesu generacji głębokich sieci neuronowych  w chmurze obliczeniowej
 
 %\clearpage
 
 \section{Problem badawczy}
 
-Przedmiotem badania są jednostki obliczeniowe dostępne w ramach serwisów oferujących przetwarzanie danych w chmurze (ściślej – ich wydajność i stosunek wydajność/cena).
-
-Celem pracy jest ocena jak duże w sensie oszczędności czasowej są korzyści płynące z wykorzystywania GPU w uczeniu skomplikowanych sieci neuronowych i znalezienie optymalnego kosztowo rozwiązania dla owego problemu. Ponadto, badanie ma na celu odpowiedzieć na pytanie, czy owe oszczędności czasowe potrzebne na uczenie i predykcję kompensują w wystarczającym stopniu wyższą cenę wynajmu tego typu jednostek obliczeniowych?
+\noindent
+Celem pracy jest zaproponowanie metody wyznaczania optymalnego kosztowo sposobu generacji struktur głębokich sieci neuronowych (ang. \textit{deep neural networks}). Uczenie tego typu modeli wymaga znacznej mocy obliczeniowej, dostępnej na żądanie i na krótki czas. To sprawia, że tradycyjne rozwiązania (takie jak architektura \textit{on premises}) nie są optymalne kosztowo, por. \citet{armburst2010}, \citet{oecd2014}. Rozwiązaniem, które odpowiada na wymienione potrzeby jest model \textit{pay-as-you-go} wykorzystywany w usługach przetwarzania w chmurze (ang. \textit{cloud computing}), co zostanie udowodnione obliczeniowo w dalszej części pracy.
 
 %\clearpage
 
 \section{Dlaczego problem jest ważny dla ekonomisty?}
 
-Wykorzystywanie GPU do szybszego uczenia modeli sieci neuronowych jest rozwiązaniem zyskującym na popularności. Praca ma na celu odpowiedzenie na pytanie, czy w przypadku pewnych problemów biznesowych, optymalniejsze kosztowo jest wynajmowanie tego typu dedykowanych instancji, czy korzystanie z tańszych jednostek.
+\noindent
+Odkrycia naukowe ostatnich lat w dziedzinach uczenia maszynowego i sztucznej inteligencji wpłynęły pozytywnie na ich popularność i liczbę potencjalnych zastosowań \citep{lecun2015}. Szczególna uwaga poświęcana jest sieciom neuronowym, które, choć pozwalają na rozwiązywanie dotychczas problematycznych zagadnień \citep{lecun2015}, są algorytmami wymagającymi znacznej ilości danych i mocy obliczeniowej, por. \citet{krizhevsky2012} i \citet{srivastava2014}. Zarówno największe firmy technologiczne, jak Google czy Microsoft, jak również licznie powstające \textit{start-upy} wykorzystują owe modele \citep{goodfellow2016} do rozwiązywania szeregu problemów takich jak klasyfikacja obrazów (\citet{krizhevsky2012};
+\citet{shetty2016}; \citet{szegedy2014}; \citet{chen2016}) i przetwarzanie języka naturalnego \citep{hinton2012}. Kluczowa zaleta głębokich sieci neuronowych polega na możliwości budowania modelu z wykorzystaniem surowych danych. W przypadku klasycznych algorytmów \textit{machine learningowych}, konieczna jest inżynieria cech i ręczna ich ekstrakcja, podczas gdy wielowarstwowe sieci neuronowe są metodą, która w sposób automatyczny wykrywa występujące w surowych danych schematy, zależności, por. \citet{girschick2014}, \citet{gysel2016} i \citet{mnih2013}. Przykładowo, w przypadku klasyfikacji obrazów, pierwsza warstwa sieci neuronowej odpowiada za detekcję ogólnych jego cech, takich jak umiejscowienie krawędzi w kluczowych miejscach. Kolejna odpowiada za analizowanie ich położenia wzgledem siebie i wykrywanie pewnych motywów. Co do zasady, pierwsze warstwy odpowiadają za ogólne cechy przetwarzanych danych, podczas gdy każda kolejna ma za zadanie przechodzić na wyższy poziom szczegółowości.
+Na popularności zyskało wykorzystywanie procesorów graficznych (ang. \textit{Graphics Processing Unit, GPU}) oferowanych przez Nvidia do poprawy wydajności procesu generacji tego typu struktur (\citet{jermain2015}; \citet{litvinenko2014}; \citet{strom2015}; \citet{vanhoucke2011}). Ponadto, giganci technologiczni inwestują w poszukiwanie potencjalnych sposobów na dalsze usprawnienie tego procesu, takich jak wykorzystanie bezpośrednio programowalnych macierzy bramek (ang. \textit{Field-Programmable Gate Array}) czy rozwiązania opracowanego przez Wave Computing - \textit{Dataflow Processing Unit (DPU)}, por. \citet{gysel2016}; \citet{chen2016}; \citet{han2016}.
 
-Problem był poruszany w literaturze, jednakże porównywane były poszczególne GPU, nie jednostki oferowane przez platformy cloud computingowe.
-
+Zarówno przeprowadzanie symulacji w chmurze, wykorzystywanie procesorów graficznych w celu poprawy wydajności generacji głębokich sieci neuronowych, jak i porównania poszczególnych jednostek były przedmiotem badań, por. \citet{calheiros2010}, \citet{github2017}, \citet{medium2017b}, \citet{hackernoon2017}. Nie przeprowadzono jednak analizy oszczędności czasowych wynikających ze stosowania \textit{GPU} w chmurze i brak jest odpowiedzi na pytanie, czy rekompensują one ich wyższą cenę w porównaniu do klasycznych jednostek.
 %\clearpage
 
 \section{Hipotezy badawcze}
 
-Wsparcie procesu budowy modelu deep learningowego architekturą GPU prowadzi do mniejszego czasu potrzebnego na uczenie modelu i czasu na predykcję, jednakże ze względu na swoją popularność oraz wyższą cenę, jednostki zawierające GPU są rozwiązaniami mniej optymalnymi kosztowo.
+\noindent
+Postawione w pracy hipotezy badawcze:
+\begin{itemize}
+\item stosowanie jednostek wykorzystujących GPU jest rozwiązaniem efektywnym kosztowo  w porównaniu do jednostek wyposażonych wyłącznie w CPU,
+\item wynajem jednostek AWS P2 jest efektywniejsze kosztowo od jednostek oferowanych przez Microsoft Azure oraz Google Cloud,
+\item wykorzystywanie opracowanego narzędzia do wyboru rodzaju jednostki obliczeniowej pozwala na optymalizację kosztową procesu generacji głębokich sieci neuronowych.
+\end{itemize}
+
+Pierwsza hipoteza porusza kwestię efektywności kosztowej jednostek GPU oferowanych w chmurze. Literatura dostarcza dowodów, że stosowanie tego typu jednostek prowadzi do
+krótszego czasu konstruowania sieci neuronowych, por. \citet{jermain2015} i \citet{litvinenko2014}. Nie jest jednak wiadomo, czy efektywniejszym kosztowo rozwiązaniem w przypadku architektury chmurowej są jednostki GPU czy CPU. Pomimo niższego czasu potrzebnego na estymację modelu, cena jednostek wyposażonych w GPU może być
+na tyle wysoka, że ich wynajem nie jest optymalny w sensie kosztowym.
+
+Następnie chcemy skupić się na porównaniu ofert różnych dostawców usług przetwarzania w chmurze. Dokonamy porównania efektywności kosztowej jednostek wyposażonych w procesory graficzne, dostarczanych przez Amazon, Microsoft oraz Google.
+
+Finalnie, celem będzie dostarczenie narzędzia przeprowadzającego eksperymenty i pozwalającego na wybór najefektywniejszej kosztowo jednostki obliczeniowej. To narzędzie ma na
+celu przeprowadzenie optymalizacji kosztowej w zależności od rozważanych jednostek obliczeniowych i przedstawionego problemu.
 
 %\clearpage
 
 \section{Metody badawcze, wykorzystane dane}
 
-Eksperymentalne porównanie wydajności dostępnych jednostek obliczeniowych (czasy uczenia sieci neuronowej uzyskany za pomocą wielokrotnych symulacji) oferowanych przez największych dostawców, w tym:
+\noindent
+Celem badania jest dokonanie eksperymentalnego porównania czasu potrzebnego na proces generacji sieci neuronowej i cen wynajmu jednostek obliczeniowych oferowanych w różnych serwisach. Na jego podstawie wybrany zostanie zbiór decyzji niezdominowanych (optymalnych w sensie Pareto) dla rozważanego problemu wielokryterialnego.
+
+Eksperyment przeprowadzany będzie poprzez dokonywanie wielokrotnych, empirycznych pomiarów dla każdej rozważanej jednostki obliczeniowej. Wynikiem każdego pomiaru będzie koszt wynajmu serwera oraz czas potrzebny na skonstruowanie modelu. Wybranym do przeprowadzania eksperymentu problemem jest przetwarzanie obrazu (stworzenie klasyfikatora). Następnie przeprowadzimy agregację otrzymanych wyników oraz analizy zbioru dostępnych decyzji, by ostatecznie przedstawić zbiór decyzji optymalnych w sensie Pareto.
+
+W ramach porównania symulacje przeprowadzane będą na następujących jednostkach:
 \begin{itemize}
 \item AWS P2 (Accelerated Computing, general purpose GPU)
 \item AWS C4 (Computing Optimized)
-\item (?)Microsoft Azure NC/NV Series
-\item (?)Google cloud instance with GPU
-
+\item Microsoft Azure NC/NV Series
+\item Google Cloud GPU-accelerated instance
 \end{itemize}
 
-%\clearpage
+\clearpage
 
 \section{Plan pracy}
 
@@ -142,12 +165,12 @@ Eksperymentalne porównanie wydajności dostępnych jednostek obliczeniowych (cz
 \toprule
 L.p. & Temat & Przewidywana liczba stron\\
 \hline
-1 & Wstęp. Ogólny zarys problemu i przedmiotu badań & 1 -- 2 \\
-2.1 & Sieci neuronowe i deep learning - podstawy teoretyczne, zastosowania w rozpoznawaniu obrazu. Sposoby na przyspieszenie uczenia. & 9 -- 10 \\
-2.2 & Opis rynku cloud computingu, przedstawienie platform oferujących usługi przetwarzania w chmurze & 11 -- 13 \\
-3 & Przybliżenie porównywanych jednostek obliczeniowych, zbioru danych i oprogramowania.
-Przedstawienie eksperymentu, metodologii przeprowadzania testu oraz wybranego algorytmu & 8 -- 9 \\
-4 & Opis wyników eksperymentu, analiza rezultatów symulacji i przedstawienie wniosków & 12 -- 20 \\
+1 & Wprowadzenie & 1 -- 2 \\
+2 & Deep learning w chmurze &  \\
+2.1 & Sieci neuronowe i deep learning & 9 -- 10 \\
+2.2 & Cloud computing & 11 -- 13 \\
+3 & Eksperymentalne pomiary efektywności kosztowej deep learning & 8 -- 9 \\
+4 & Efektywność kosztowa głębokich sieci neuronowych w chmurze & 12 -- 20 \\
 5 & Podsumowanie pracy & 2 -- 3 \\
 6 & Literatura & 2 -- 3 \\
 7 & Spis tabel & 1 \\
@@ -162,5 +185,58 @@ Przedstawienie eksperymentu, metodologii przeprowadzania testu oraz wybranego al
 
 \clearpage
 
+\begin{thebibliography}{99}
+\setlength{\itemsep}{0pt}%
+\bibitem[Anderson i Warrilow (2016)]{anderson2016} Anderson, E. i Warrilow, M. (2016). Market Insight: Cloud Shift — The Transition of IT Spending From Traditional Systems to Cloud. Baza danych Gartner
+\bibitem[Andrychowicz et al. (2016)]{andrychowicz2016} Andrychowicz, M., Denil, M., Gomez, S., Hoffman, M. W., Pfau, D., Schaul, T. i de Freitas, N. (2016). Learning to learn by gradient descent by gradient descent. In Advances in Neural Information Processing Systems, s. 3981-3989
+\bibitem[Antonopoulos i Gilliam (2010)]{antonopoulos2010} Antonopoulos, N. i Gillam, L. (2010). Cloud computing, 1st ed. London: Springer, s. xx - xx
+\bibitem[Armburst et al. (2010)]{armburst2010} Armbrust, M., Stoica, I., Zaharia, M., Fox, A., Griffith, R., Joseph, A., Katz, R., Konwinski, A., Lee, G., Patterson, D. i Rabkin, A. (2010). A view of cloud computing. Communications of the ACM, 53(4), s. 50
+\bibitem[Baun i Kunze (2011)]{baun2011} Baun, C. i Kunze, M. (2011). Cloud computing. 1st ed. Heidelberg [etc.]: Springer, s. xx -xx
+\bibitem[Buyya et al. (2009)]{buyya2009} Buyya, R., Yeo, C., Venugopal, S., Broberg, J. i Brandic, I. (2009). Cloud computing and emerging IT platforms: Vision, hype, and reality for delivering computing as the 5th utility. Future Generation Computer Systems, 25(6), s. 599-616
+\bibitem[Carr (2008)]{carr2008} Carr, N. G. (2008). The big switch: Rewiring the world, from Edison to Google. WW Norton and Company, s xx - xx
+\bibitem[Calheiros et al. (2010)]{calheiros2010} Calheiros, R., Ranjan, R., Beloglazov, A., De Rose, C. i Buyya, R. (2010). CloudSim: a toolkit for modeling and simulation of cloud computing environments and evaluation of resource provisioning algorithms. Software: Practice and Experience, 41(1), s. 23-50
+\bibitem[Chen et al. (2016)]{chen2016} Chen, L. C., Papandreou, G., Kokkinos, I., Murphy, K. i Yuille, A. L. (2016). Deeplab: Semantic image segmentation with deep convolutional nets, atrous convolution, and fully connected crfs. arXiv preprint arXiv:1606.00915
+\bibitem[Forbes.com (2017)]{forbes2017} Forbes.com. (2017). Amazon Continues To Gain Share In Cloud Infrastructure Services Market. Dostępne pod adresem: \url{https://www.forbes.com/sites/greatspeculations/2016/08/17/amazon-continues-to-gain-share-in-cloud-infrastructure-services-market/#2277485215b8} (dostęp 11 marca 2017)
+\bibitem[Girshick et al. (2014)]{girschick2014} Girshick, R., Donahue, J., Darrell, T. i Malik, J. (2014). Rich feature hierarchies for accurate object detection and semantic segmentation. In Proceedings of the IEEE conference on computer vision and pattern recognition, s. 580-587
+\bibitem[Github (2017)]{github2017} GitHub. (2017). Benchmarks for popular convolutional neural network models on CPU and different GPUs, with and without cuDNN. Dostępne pod adresem: \url{https://github.com/jcjohnson/cnn-benchmarks} (dostęp 14 marca 2017)
+\bibitem[Goldberg (1974)]{goldberg1974} Goldberg, R. P. (1974). Survey of virtual machine research. IEEE Comput Mag 7(6):34–45
+\bibitem[Goodfellow et al. (2016)]{goodfellow2016} Goodfellow, I., Bengio, Y. i Courville, A. (2016). Deep Learning. MIT Press, s. xx - xx
+\bibitem[Gysel (2016)]{gysel2016} Gysel P. M. (2016). Ristretto: Hardware-Oriented Approximation of Convolutional Neural Networks. arXiv preprint arXiv:1605.06402
+\bibitem[Hacker Noon (2017)]{hackernoon2017} Hacker Noon. (2017). GPUs and Kubernetes for Deep Learning. Dostępne pod adresem: \url{https://hackernoon.com/gpus-kubernetes-for-deep-learning-part-1-3-d8eebe0dd6fe#.jn1xjvpd2} (dostęp 14 marca 2017)
+\bibitem[Han et al. (2015)]{han2015} Han, S., Mao, H. i Dally, W. J. (2015). Deep compression: Compressing deep neural networks with pruning, trained quantization and huffman coding. arXiv preprint arXiv:1510.00149
+\bibitem[Han et al. (2016)]{han2016} Han, S., Liu, X., Mao, H., Pu, J., Pedram, A., Horowitz, M. A. i Dally, W. J. (2016) EIE: Efficient Inference Engine on Compressed Deep Neural Network. arXiv preprint arXiv:1602.01528, 2016a
+\bibitem[Hebb (1949)]{hebb1949} Hebb, D.O. (1949). The Organization of Behavior. New York: Wiley and Sons
+\bibitem[Hecht-Nielsen (1988)]{hecht1988} Hecht-Nielsen, R. (1988). Theory of the backpropagation neural network. Neural Networks, 1, s. 445
+\bibitem[Hinton (2006)]{hinton2006} Hinton, G. (2006). Reducing the Dimensionality of Data with Neural Networks. Science, 313(5786), s. 504-507
+\bibitem[Hinton et al. (2006)]{hintonetal2006} Hinton, G., Osindero, S. i Teh, Y. (2006). A Fast Learning Algorithm for Deep Belief Nets. Neural Computation, 18(7), s. 1527-1554
+\bibitem[Hinton et al. (2012)]{hinton2012} Hinton, G., Deng, L., Yu, D., Dahl, G., Mohamed, A., Jaitly, N., Senior, A., Vanhoucke, V., Nguyen, P., Sainath, T. i Kingsbury, B. (2012). Deep Neural Networks for Acoustic Modeling in Speech Recognition: The Shared Views of Four Research Groups. IEEE Signal Processing Magazine, 29(6), s. 82-97
+\bibitem[Jermain et al. (2015)]{jermain2015} Jermain, C. L., Rowlands, G. E., Buhrman, R. A., i Ralph, D. C. (2015). GPU-accelerated micromagnetic simulations using cloud computing. arXiv preprint arXiv:1505.01207
+\bibitem[Kleinrock (2005)]{kleinrock2005} Kleinrock, L., A Vision for the Internet. ST Journal for Research, tom 2, nr 1, s. 4–5
+\bibitem[Krizhevsky et al. (2012)]{krizhevsky2012} Krizhevsky, A., Sutskever, I. i Hinton, G. (2012). Imagenet classification with deep convolutional neural networks. In Advances in neural information processing systemsk, s. 1097-1105
+\bibitem[LeCun, Bengio i Hinton (2015)]{lecun2015} LeCun, Y., Bengio, Y. i Hinton, G. (2015). Deep learning. Nature, 521(7553), s.436-444
+\bibitem[Leong et al. (2017)]{leong2017} Leong, L., Petri, G., Gill, B. i Dorosh, M. (2017). Magic Quadrant for Cloud Infrastructure as a Service. Gartner.com. Dostępne pod adresem: \url{https://www.gartner.com/doc/reprints?id=1-2G2O5FC&ct=150519} (dostęp 11 marca 2017)
+\bibitem[Litvinenko (2014)]{litvinenko2014} Litvinenko, N. (2014). Using of GPUs for cluster analysis of large data by K-means method arXiv preprint arXiv:1402.3788
+\bibitem[McCulloch i Pitts (1943)]{mcculloch1943} McCulloch, W. S. i Pitts, W. (1943). A logical calculus of the ideas immanent in nervous activity. The bulletin of mathematical biophysics, 5(4), s. 115-133
+\bibitem[Medium (2017a)]{medium2017a} Medium (2017). TensorFlow 1.0 is here. Let’s do some Deep Learning on the Amazon Cloud! – Sigmoidal. Dostępne pod adresem: \url{https://medium.com/sigmoidal/tensorflow-1-0-is-here-lets-do-some-deep-learning-on-the-amazon-cloud-9234eab31fa5#.vyxzk4bwk} (dostęp 14 marca 2017)
+\bibitem[Medium (2017b)]{medium2017b} Medium (2017). Keras with GPU on Amazon EC2 – a step-by-step instruction. Dostępne pod adresem: \url{https://medium.com/@mateuszsieniawski/keras-with-gpu-on-amazon-ec2-a-step-by-step-instruction-4f90364e49ac#.i2rxriv4g} (dostęp 14 marca 2017)
+\bibitem[Mell i Grance (2011)]{mell2011} Mell, P. i Grance T. (2011). The NIST definition of cloud computing
+\bibitem[Menon et al. (2005)]{menon2005} Menon, A., Santos, J., Turner, Y., Janakiraman, G. i Zwaenepoel, W. (2005). Diagnosing performance overheads in the xen virtual machine environment. Proceedings of the 1st ACM/USENIX international conference on Virtual execution environments - VEE '05
+\bibitem[Minsky i Papert (1969)]{minsky1969} Minsky, M. i Papert, S. (1969). Perceptrons
+\bibitem[Mnih et al. (2013)]{mnih2013} Mnih, V., Kavukcuoglu, K., Silver, D., Graves, A., Antonoglou, I., Wierstra, D. i Riedmiller, M. (2013). Playing atari with deep reinforcement learning. arXiv preprint arXiv:1312.5602
+\bibitem[Mustafa et al. (2015)]{mustafa2015} Mustafa, S., Nazir, B., Hayat, A., Khan, A. i Madani, S. (2015). Resource management in cloud computing: Taxonomy, prospects, and challenges. Computers and Electrical Engineering, 47, s. 186-203
+\bibitem[OECD (2014)]{oecd2014} OECD (2014). Cloud Computing: The Concept, Impacts and the Role of Government Policy. OECD Digital Economy Papers, No. 240, OECD Publishing, Paris
+\bibitem[Rosenblatt (1957)]{rosenblatt1957} Rosenblatt, F. (1957). The Perceptron--a perceiving and recognizing automaton. Report 85-460-1, Cornell Aeronautical Laboratory
+\bibitem[Shetty (2016)]{shetty2016} Shetty, S. (2016).  Application of Convolutional Neural Network for Image Classification on Pascal VOC Challenge 2012 dataset. arXiv preprint arXiv:1607.03785
+\bibitem[Shroff (2010)]{shroff2010} Shroff, G. (2010). Enterprise cloud computing. 1st ed. Cambridge: Cambridge University Press, s. xx - xx
+\bibitem[Smith et al. (2009)]{smith2009} Smith D. M. et al. (2009). Hype Cycle for Cloud Computing (ID: G00168780). Baza danych Gartner
+\bibitem[Srivastava et al. (2014)]{srivastava2014} Srivastava, N., Hinton, G. E., Krizhevsky, A., Sutskever, I. i Salakhutdinov, R. (2014). Dropout: a simple way to prevent neural networks from overfitting. Journal of Machine Learning Research, 15(1), s. 1929-1958
+\bibitem[Strom (2015)]{strom2015} Strom, N. (2015). Scalable distributed DNN training using commodity GPU cloud computing. INTERSPEECH (tom 7, s. 10)
+\bibitem[Szegedy (2014)]{szegedy2014} Szegedy, C. et al. (2014). Going deeper with convolutions. arXiv preprint arXiv:1409.4842
+\bibitem[Vanhoucke et al. (2011)]{vanhoucke2011} Vanhoucke, V., Senior, A. i Mao, M. Z. (2011). Improving the speed of neural networks on CPUs. In Proc. Deep Learning and Unsupervised Feature Learning NIPS Workshop (tom 1, s. 4)
+\bibitem[Ward i Baker (2013)]{ward2013} Ward, J.S. i Barker, A. (2013). A Cloud Computing Survey: Developments and Future Trends in Infrastructure as a Service Computing
+\bibitem[Zhang et al. (2010)]{zhang2010} Zhang, Q., Cheng, L. i Boutaba, R. (2010). Cloud computing: state-of-the-art and research challenges. Journal of Internet Services and Applications, 1(1), s. 7-18
+
+\end{thebibliography}
+\clearpage
 
 \end{document}

@@ -3,6 +3,7 @@
 \usepackage[utf8]{inputenc}
 \usepackage[polish]{babel}
 \usepackage{graphicx}
+\usepackage{amsmath}
 \usepackage{times}
 \usepackage{indentfirst}
 \usepackage[left=3cm,right=2cm,top=2.5cm,bottom=2.5cm]{geometry}
@@ -109,15 +110,89 @@ Ze względu na znaczne postępy w technologiach informatycznych zanotowane w ost
 
 \clearpage
 
-\section{Przedstawienie badanych zagadnień}
 
-\subsection{Deep learning - podstawy teoretyczne, zastosowanie}
+\section{Przedstawienie badanych zagadnień}
+\subsection{Sieci neuronowe i deep learning}
+
+Stosowanie algorytmów uczenia maszynowego w celu odnajdywania wartości w danych, automatyzacji zadań i usprawniania procesów biznesowych staje się coraz bardziej powszechne. Do przykładów użycia metod \textit{machine learningowych} zaliczyć można dostosowywanie wyników wyszukiwań internetowych, filtrowanie i personalizacja powiadomień w mediach społecznościowych, rekomendacje produktów i reklama internetowa, ale również rozpoznawanie dźwięku, identyfikowanie obiektów na obrazach i tłumaczenie tekstu. W tym rozdziale opisane zostaną techniki stosowane do ostatnich z wymienionych przypadków - głębokie sieci neuronowe (ang. \textit{deep neural networks}).
+
+\subsubsection{Sieci neuronowe}
+
+% o historii
+Wraz z nadejściem elektroniki i komputerów, badacze rozpoczęli podejmować próby replikacji ludzkich procesów myślowych na systemy logiczne. Choć pierwsze kroki w tej dziedzinie zostały podjęte przez \citet{mcculloch1943} oraz \citet{hebb1949}, istotny z punktu widzenia uczenia maszynowego przełom został dokonany w pracy \citet{rosenblatt1957}, gdzie po raz pierwszy wprowadzono koncept perceptronu - algorytmu, który miał pozwolić na poprawne rozpoznawanie obrazów. Perceptron jest jednym z najbardziej podstawowych przykładów sieci neuronowych, jego schemat został przedstawiony na rysunku \ref{fig:perceptron}.
+
+\begin{figure}[h]
+  \centering
+\includegraphics[scale=0.8]{../obrazy/fig:perceptron.png}
+\caption{Pereceptron przedstawiony na przykładzie składa się z dwóch warstw – warstwy wejściowej z trzema wartościami wejściowymi (\(x_1, x_2, x_3 \)) oraz warstwy wyjściowej. \label{fig:perceptron}}
+\end{figure}
+
+Przyjmuje on wektor \(\mathbf{x}\) binarnych wartości wejściowych \(x_1, \ldots, x_n \). Każda z tych wartości wejściowych jest przyjmowana z wagą \(w_1, \ldots, w_n \), będącą liczbą rzeczywistą. Owe parametry można w intuicyjny sposób przedstawić jako wpływ (mający wartość i kierunek) każdego z sygnałów wejściowych na sygnał wyjściowy. Ostatecznie ważona suma wartości wejściowych porównywana jest z wartoscią progową (ang. \textit{threshold}), będącą kolejnym parametrem perceptronu. W przypadku, gdy ważona suma jest większa od wartości progowej, funkcja aktywacji zwraca wartość wyjściową 1, w przeciwnym wypadku zwraca 0. Przyjmując formalną reprezentację:
+\begin{align}
+  output=\begin{cases}
+    0& \text{jeśli $\sum_j$ $w_j$ $x_j$ $<$ threshold},\\
+    1& \text{jeśli $\sum_j$ $w_j$ $x_j$ $\geq$ threshold}.
+  \end{cases}
+\end{align}
+
+Pomimo obiecujących początków i optymizmu towarzyszącemu nowemu odkryciu, badania nad perceptronami zostały w dużej części porzucone za sprawą publikacji \citet{minsky1969}. Nakreślili oni granice możliwości perceptronów jako systemu uczącego się. W szczególności udowodnili, że z jego użyciem można
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 \clearpage
 
 \subsection{Cloud computing}
 
-% Wstępny opis cloud computingu. Prezentacja obecnie obowiązującego paradygmat
+\noindent
 W tym rozdziale omówiony zostanie paradygmat przetwarzania danych w chmurze. Przedstawione zostaną jego kluczowe cechy, wymagania stawiane dostawcom i definicje często spotykanych pojęć. Następnie opiszemy najpopularniejsze modele świadczonych usług, modele implementacji i rozwiązania technologiczne leżące u podstaw opisywanego paradygmatu, by finalnie przejść do aspektów ekonomicznych i przybliżenia rynku \textit{cloud computingu} wraz z opisem największych dostawców.
 
 \subsubsection{Definicje, kluczowe charakterystyki}
@@ -186,10 +261,9 @@ Wirtualizacja po raz pierwszy została wykorzystana na wielką skalę przez IBM 
 
 Technologia wirtualizacji musi jednak zmierzyć się z pewnymi wyzwaniami. Architektura x86 nie była pierwotnie tworzona jako platforma dedykowana tym rozwiązaniom. Mechanizmy, które pozwalają na tworzenie maszyn wirtualnych na tego typu architekturze wymagają zmodyfikowanego systemu operacyjnego lub używają dodatkowego zestawu instrukcji, dostarczonego przez nowoczesne procesory. Z tego powodu wykorzystywanie wirtualizacji wiąże się z pewnym spadkiem wydajności. Choć według \citet{menon2005} został on w ostatnich latach zminimalizowany, wirtualne maszyny wciąż dostarczają tylko ułamek wydajności równoważnej fizycznej maszyny. Niektóre rodzaje hipernadzorców pozwalają na dostarczenie niemal natywnej wydajności procesora, jednak sedno problemu leży w wydajności procesów wejścia/wyjścia (ang. \textit{input/output (I/O)}), którego spowolnienie może osiągać nawet 88\% w porównaniu do maszyny fizycznej. Ponadto, należy skupić się także na minimalizowaniu strat w przypadku uruchamianie wielu maszyn wirtualnych na jednym rdzeniu procesora. Ponieważ w danym momencie na jednym procesorze może być aktywna tylko jedna maszyna wirtualna, pozostałe z nich pozostają bezczynne i nie mogą odpowiadać na aktywność \textit{I/O}.
 
-% wincyj
-
 \subsubsection{Aspekty ekonomiczne}
 
+\noindent
 Przetwarzanie w chmurze stało się jedną z najszybciej rozwijających się gałęzi technologii informacyjnych. W 2009 r. sprzedaż w usługach chmurowych osiągnęła 56 miliardów dolarów \citep{smith2009}, podczas gdy Merryl Lynch przewidywał wzrost wartości rynku do 160 miliardów w 2011. Raport Gartner z 2016 roku \citep{anderson2016} wskazuje, że rynek platform BPaaS, SaaS, Paas oraz Iaas osiągnął w sumie wartość 734 miliardów dolarów, przy czym kolejne 111 miliardów zostanie w niego zainwestowana do 2020 r. Ponieważ uważa się, że technologia ta ma wszelkie argumenty, by fundamentalnie i na stałe zmienić sposób zarządzania zasobami informatycznymi przedsiębiorstwa, dyrektorzy i menedżerowie IT powinni nieustannie śledzić rozwój tej innowacji i dostosowywać do niej swoje długofalowe strategie.
 
 Sukces \textit{cloud computingu} ściśle związany jest z korzyściami ekonomicznymi, które za sobą niesie. Rozwiązanie to pozwala na obniżenie kosztów obsługi, szybszą implementację i większą elastyczność w wykorzystywaniu różnych zestawów narzędzi. Wykorzystanie modeli \textit{pay-as-you-go} skutkuje także minimalizowaniem ryzyka nadmiernego gromadzenia zasobów (ang. \textit{overprovisioning}), jak i ich niewystarczającej ilości (ang. \textit{underprovisioning}). Według \citet{armburst2010} średnie wykorzystanie serwerów w centrach danych wynosi od 5\% do 20\%, co jest spójne z obliczeniami, według których największe obciążenie serwerów przekracza nawet dziesięciokrotnie średnią.  W tym modelu dodatkowe maszyny mogą zostać usunięte lub dodane w ciągu kilku minut (w przeciwieństwie do tygodni-miesięcy w przypadku klasycznego modelu). Efektem tego jest zbilansowana proporcja zapotrzebowania na sprzęt i faktycznego stanu posiadania, co minimalizuje koszty i pozwala uniknąć przeciążania serwerów (zjawisko \textit{overprovisioningu} i \textit{underprovisioningu} zostało zilustrowane na Rysunku \ref{fig:overp}.). Największe korzyści z tego rozwiązania mogą uzyskać te przedsiebiorstwa, które z wykorzystaniem analiz ekonometrycznych potrafią przewidzieć zapotrzebowanie na swoje usługi (tym bardziej jeśli zapotrzebowanie dynamicznie zmienia się na przykład w zależności od pory dnia lub online-owych kampanii reklamowych, jak ma to miejsce w przypadku e-commerce). Ponadto, ta cecha \textit{cloud computingu} ma silny wpływ na jego popularność wśród małych i średnich przedsiębiorstw, które są we wczesnym etapie rozwoju. Promuje ona innowacyjne rozwiązania i pozwala na łatwe znalezienie zasobów koniecznych do ich realizacji. Dlatego też nawet jeśli nabywanie serwerów w modelu \textit{pay-as-you-go} okazuje się droższe niż metoda tradycyjna, może to być atrakcyjniejszą alternatywą ze względu na możliwość szybkiego zwolnienia maszyn bez dodatkowych kosztów.
@@ -237,34 +311,58 @@ Google operuje na rynku PaaS pod 2008 roku (oferując swój App Engine), jednak�
 
 %podsumowanko
 
-
-
 \clearpage
 
 \begin{thebibliography}{99}
 \setlength{\itemsep}{0pt}%
 \bibitem[Anderson i Warrilow (2016)]{anderson2016} Anderson, E. i Warrilow, M. (2016). Market Insight: Cloud Shift — The Transition of IT Spending From Traditional Systems to Cloud. Baza danych Gartner
+\bibitem[Andrychowicz et al. (2016)]{andrychowicz2016} Andrychowicz, M., Denil, M., Gomez, S., Hoffman, M. W., Pfau, D., Schaul, T. i de Freitas, N. (2016). Learning to learn by gradient descent by gradient descent. In Advances in Neural Information Processing Systems, s. 3981-3989
 \bibitem[Antonopoulos i Gilliam (2010)]{antonopoulos2010} Antonopoulos, N. i Gillam, L. (2010). Cloud computing, 1st ed. London: Springer, s. xx - xx
 \bibitem[Armburst et al. (2010)]{armburst2010} Armbrust, M., Stoica, I., Zaharia, M., Fox, A., Griffith, R., Joseph, A., Katz, R., Konwinski, A., Lee, G., Patterson, D. i Rabkin, A. (2010). A view of cloud computing. Communications of the ACM, 53(4), s. 50
 \bibitem[Baun i Kunze (2011)]{baun2011} Baun, C. i Kunze, M. (2011). Cloud computing. 1st ed. Heidelberg [etc.]: Springer, s. xx -xx
 \bibitem[Buyya et al. (2009)]{buyya2009} Buyya, R., Yeo, C., Venugopal, S., Broberg, J. i Brandic, I. (2009). Cloud computing and emerging IT platforms: Vision, hype, and reality for delivering computing as the 5th utility. Future Generation Computer Systems, 25(6), s. 599-616
 \bibitem[Carr (2008)]{carr2008} Carr, N. G. (2008). The big switch: Rewiring the world, from Edison to Google. WW Norton and Company, s xx - xx
 \bibitem[Calheiros et al. (2010)]{calheiros2010} Calheiros, R., Ranjan, R., Beloglazov, A., De Rose, C. i Buyya, R. (2010). CloudSim: a toolkit for modeling and simulation of cloud computing environments and evaluation of resource provisioning algorithms. Software: Practice and Experience, 41(1), s. 23-50
+\bibitem[Chen et al. (2016)]{chen2016} Chen, L. C., Papandreou, G., Kokkinos, I., Murphy, K. i Yuille, A. L. (2016). Deeplab: Semantic image segmentation with deep convolutional nets, atrous convolution, and fully connected crfs. arXiv preprint arXiv:1606.00915
 \bibitem[Forbes.com (2017)]{forbes2017} Forbes.com. (2017). Amazon Continues To Gain Share In Cloud Infrastructure Services Market. Dostępne pod adresem: \url{https://www.forbes.com/sites/greatspeculations/2016/08/17/amazon-continues-to-gain-share-in-cloud-infrastructure-services-market/#2277485215b8} (dostęp 11 marca 2017)
-\bibitem[Goldberg (1974)]{goldberg1974} Goldberg, R. P. (1974), Survey of virtual machine research. IEEE Comput Mag 7(6):34–45
+\bibitem[Girshick et al. (2014)]{girschick2014} Girshick, R., Donahue, J., Darrell, T. i Malik, J. (2014). Rich feature hierarchies for accurate object detection and semantic segmentation. In Proceedings of the IEEE conference on computer vision and pattern recognition, s. 580-587
+\bibitem[Github (2017)]{github2017} GitHub. (2017). Benchmarks for popular convolutional neural network models on CPU and different GPUs, with and without cuDNN. Dostępne pod adresem: \url{https://github.com/jcjohnson/cnn-benchmarks} (dostęp 14 marca 2017)
+\bibitem[Goldberg (1974)]{goldberg1974} Goldberg, R. P. (1974). Survey of virtual machine research. IEEE Comput Mag 7(6):34–45
+\bibitem[Goodfellow et al. (2016)]{goodfellow2016} Goodfellow, I., Bengio, Y. i Courville, A. (2016). Deep Learning. MIT Press, s. xx - xx
+\bibitem[Gysel (2016)]{gysel2016} Gysel P. M. (2016). Ristretto: Hardware-Oriented Approximation of Convolutional Neural Networks. arXiv preprint arXiv:1605.06402
+\bibitem[Hacker Noon (2017)]{hackernoon2017} Hacker Noon. (2017). GPUs and Kubernetes for Deep Learning. Dostępne pod adresem: \url{https://hackernoon.com/gpus-kubernetes-for-deep-learning-part-1-3-d8eebe0dd6fe#.jn1xjvpd2} (dostęp 14 marca 2017)
+\bibitem[Han et al. (2015)]{han2015} Han, S., Mao, H. i Dally, W. J. (2015). Deep compression: Compressing deep neural networks with pruning, trained quantization and huffman coding. arXiv preprint arXiv:1510.00149
+\bibitem[Han et al. (2016)]{han2016} Han, S., Liu, X., Mao, H., Pu, J., Pedram, A., Horowitz, M. A. i Dally, W. J. (2016) EIE: Efficient Inference Engine on Compressed Deep Neural Network. arXiv preprint arXiv:1602.01528, 2016a
+\bibitem[Hebb (1949)]{hebb1949} Hebb, D.O. (1949). The Organization of Behavior. New York: Wiley and Sons
+\bibitem[Hecht-Nielsen (1988)]{hecht1988} Hecht-Nielsen, R. (1988). Theory of the backpropagation neural network. Neural Networks, 1, s. 445
+\bibitem[Hinton (2006)]{hinton2006} Hinton, G. (2006). Reducing the Dimensionality of Data with Neural Networks. Science, 313(5786), s. 504-507
+\bibitem[Hinton et al. (2006)]{hintonetal2006} Hinton, G., Osindero, S. i Teh, Y. (2006). A Fast Learning Algorithm for Deep Belief Nets. Neural Computation, 18(7), s. 1527-1554
+\bibitem[Hinton et al. (2012)]{hinton2012} Hinton, G., Deng, L., Yu, D., Dahl, G., Mohamed, A., Jaitly, N., Senior, A., Vanhoucke, V., Nguyen, P., Sainath, T. i Kingsbury, B. (2012). Deep Neural Networks for Acoustic Modeling in Speech Recognition: The Shared Views of Four Research Groups. IEEE Signal Processing Magazine, 29(6), s. 82-97
+\bibitem[Jermain et al. (2015)]{jermain2015} Jermain, C. L., Rowlands, G. E., Buhrman, R. A., i Ralph, D. C. (2015). GPU-accelerated micromagnetic simulations using cloud computing. arXiv preprint arXiv:1505.01207
 \bibitem[Kleinrock (2005)]{kleinrock2005} Kleinrock, L., A Vision for the Internet. ST Journal for Research, tom 2, nr 1, s. 4–5
+\bibitem[Krizhevsky et al. (2012)]{krizhevsky2012} Krizhevsky, A., Sutskever, I. i Hinton, G. (2012). Imagenet classification with deep convolutional neural networks. In Advances in neural information processing systemsk, s. 1097-1105
+\bibitem[LeCun, Bengio i Hinton (2015)]{lecun2015} LeCun, Y., Bengio, Y. i Hinton, G. (2015). Deep learning. Nature, 521(7553), s.436-444
 \bibitem[Leong et al. (2017)]{leong2017} Leong, L., Petri, G., Gill, B. i Dorosh, M. (2017). Magic Quadrant for Cloud Infrastructure as a Service. Gartner.com. Dostępne pod adresem: \url{https://www.gartner.com/doc/reprints?id=1-2G2O5FC&ct=150519} (dostęp 11 marca 2017)
-%\bibitem[Lin et al. (2017)]{lin2017} Lin, W., Xu, S., He, L. i Li, J. (2017). Multi-resource scheduling and power simulation for cloud computing. Information Sciences, 397-398, s.168-186.
-%\bibitem[Mahmood (2013)]{mahmood2013} Mahmood, Z. (2013). Cloud computing. 1st ed. London: Springer, s. xx - xx
+\bibitem[Litvinenko (2014)]{litvinenko2014} Litvinenko, N. (2014). Using of GPUs for cluster analysis of large data by K-means method arXiv preprint arXiv:1402.3788
+\bibitem[McCulloch i Pitts (1943)]{mcculloch1943} McCulloch, W. S. i Pitts, W. (1943). A logical calculus of the ideas immanent in nervous activity. The bulletin of mathematical biophysics, 5(4), s. 115-133
+\bibitem[Medium (2017a)]{medium2017a} Medium (2017). TensorFlow 1.0 is here. Let’s do some Deep Learning on the Amazon Cloud! – Sigmoidal. Dostępne pod adresem: \url{https://medium.com/sigmoidal/tensorflow-1-0-is-here-lets-do-some-deep-learning-on-the-amazon-cloud-9234eab31fa5#.vyxzk4bwk} (dostęp 14 marca 2017)
+\bibitem[Medium (2017b)]{medium2017b} Medium (2017). Keras with GPU on Amazon EC2 – a step-by-step instruction. Dostępne pod adresem: \url{https://medium.com/@mateuszsieniawski/keras-with-gpu-on-amazon-ec2-a-step-by-step-instruction-4f90364e49ac#.i2rxriv4g} (dostęp 14 marca 2017)
 \bibitem[Mell i Grance (2011)]{mell2011} Mell, P. i Grance T. (2011). The NIST definition of cloud computing
-\bibitem[Menon et al. (2005)]{menon2005} Menon, A., Santos, J., Turner, Y., Janakiraman, G. i Zwaenepoel, W. (2005). Diagnosing performance overheads in the xen virtual machine environment. Proceedings of the 1st ACM/USENIX international conference on Virtual execution environments - VEE '05.
+\bibitem[Menon et al. (2005)]{menon2005} Menon, A., Santos, J., Turner, Y., Janakiraman, G. i Zwaenepoel, W. (2005). Diagnosing performance overheads in the xen virtual machine environment. Proceedings of the 1st ACM/USENIX international conference on Virtual execution environments - VEE '05
+\bibitem[Minsky i Papert (1969)]{minsky1969} Minsky, M. i Papert, S. (1969). Perceptrons
+\bibitem[Mnih et al. (2013)]{mnih2013} Mnih, V., Kavukcuoglu, K., Silver, D., Graves, A., Antonoglou, I., Wierstra, D. i Riedmiller, M. (2013). Playing atari with deep reinforcement learning. arXiv preprint arXiv:1312.5602
 \bibitem[Mustafa et al. (2015)]{mustafa2015} Mustafa, S., Nazir, B., Hayat, A., Khan, A. i Madani, S. (2015). Resource management in cloud computing: Taxonomy, prospects, and challenges. Computers and Electrical Engineering, 47, s. 186-203
 \bibitem[OECD (2014)]{oecd2014} OECD (2014). Cloud Computing: The Concept, Impacts and the Role of Government Policy. OECD Digital Economy Papers, No. 240, OECD Publishing, Paris
+\bibitem[Rosenblatt (1957)]{rosenblatt1957} Rosenblatt, F. (1957). The Perceptron--a perceiving and recognizing automaton. Report 85-460-1, Cornell Aeronautical Laboratory
+\bibitem[Shetty (2016)]{shetty2016} Shetty, S. (2016).  Application of Convolutional Neural Network for Image Classification on Pascal VOC Challenge 2012 dataset. arXiv preprint arXiv:1607.03785
 \bibitem[Shroff (2010)]{shroff2010} Shroff, G. (2010). Enterprise cloud computing. 1st ed. Cambridge: Cambridge University Press, s. xx - xx
 \bibitem[Smith et al. (2009)]{smith2009} Smith D. M. et al. (2009). Hype Cycle for Cloud Computing (ID: G00168780). Baza danych Gartner
+\bibitem[Srivastava et al. (2014)]{srivastava2014} Srivastava, N., Hinton, G. E., Krizhevsky, A., Sutskever, I. i Salakhutdinov, R. (2014). Dropout: a simple way to prevent neural networks from overfitting. Journal of Machine Learning Research, 15(1), s. 1929-1958
+\bibitem[Strom (2015)]{strom2015} Strom, N. (2015). Scalable distributed DNN training using commodity GPU cloud computing. INTERSPEECH (tom 7, s. 10)
+\bibitem[Szegedy (2014)]{szegedy2014} Szegedy, C. et al. (2014). Going deeper with convolutions. arXiv preprint arXiv:1409.4842
+\bibitem[Vanhoucke et al. (2011)]{vanhoucke2011} Vanhoucke, V., Senior, A. i Mao, M. Z. (2011). Improving the speed of neural networks on CPUs. In Proc. Deep Learning and Unsupervised Feature Learning NIPS Workshop (tom 1, s. 4)
 \bibitem[Ward i Baker (2013)]{ward2013} Ward, J.S. i Barker, A. (2013). A Cloud Computing Survey: Developments and Future Trends in Infrastructure as a Service Computing
-%\bibitem[Trovati (2015)]{trovati2015} Trovati, M. (2015). Big-data analytics and cloud computing. 1st ed. London: Springer, s. xx - xx
-\bibitem[Zhang et al. (2010)]{zhang2010} Zhang, Q., Cheng, L. i Boutaba, R. (2010). Cloud computing: state-of-the-art and research challenges. Journal of Internet Services and Applications, 1(1), s. 7-18.
+\bibitem[Zhang et al. (2010)]{zhang2010} Zhang, Q., Cheng, L. i Boutaba, R. (2010). Cloud computing: state-of-the-art and research challenges. Journal of Internet Services and Applications, 1(1), s. 7-18
 
 \end{thebibliography}
 \clearpage
