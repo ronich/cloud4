@@ -95,31 +95,45 @@ Warszawa, 2017
 \clearpage
 
 \section{Wprowadzenie}
+\noindent
+Celem niniejszej pracy jest zaproponowanie metody wyznaczania optymalnego kosztowo sposobu generacji struktur głębokich sieci neuronowych (ang. \textit{deep neural networks}). Uczenie tego typu modeli wymaga znacznej mocy obliczeniowej, dostępnej na żądanie i na krótki czas. To sprawia, że tradycyjne rozwiązania (takie jak architektura \textit{on premises}) nie są optymalne kosztowo, por. \citet{armburst2010}, \citet{oecd2014}. Rozwiązaniem, które odpowiada na wymienione potrzeby jest model \textit{pay-as-you-go} wykorzystywany w usługach przetwarzania w chmurze (ang. \textit{cloud computing}).
 
-% Uzasadnienie podjętego tematu
+Odkrycia naukowe ostatnich lat w dziedzinach uczenia maszynowego i sztucznej inteligencji wpłynęły pozytywnie na ich popularność i liczbę potencjalnych zastosowań \citep{lecun2015}. Szczególna uwaga poświęcana jest sieciom neuronowym, które, choć pozwalają na rozwiązywanie dotychczas problematycznych zagadnień \citep{lecun2015}, są algorytmami wymagającymi znacznej ilości danych i mocy obliczeniowej, por. \citet{krizhevsky2012} i \citet{srivastava2014}. Ośrodki naukowe we współpracy z największymi firmami technologicznymi, jak Google czy Microsoft wykorzystują owe modele \citep{goodfellow2016} do rozwiązywania szeregu problemów takich jak klasyfikacja obrazów (\citet{krizhevsky2012}; \citet{shetty2016}; \citet{szegedy2014}; \citet{chen2016}) i przetwarzanie języka naturalnego \citep{hinton2012}. Kluczowa zaleta głębokich sieci neuronowych polega na możliwości budowania modelu z wykorzystaniem nieprzetworzonych danych. W przypadku klasycznych algorytmów \textit{machine learningowych}, konieczna jest inżynieria cech i ręczna ich ekstrakcja, podczas gdy wielowarstwowe sieci neuronowe są metodą, która w sposób automatyczny wykrywa występujące w zbiorach danych schematy, zależności, por. \citet{girschick2014}, \citet{gysel2016} i \citet{mnih2013}. Przykładowo, w przypadku klasyfikacji obrazów, pierwsza warstwa sieci neuronowej odpowiada za detekcję ogólnych jego cech, takich jak umiejscowienie krawędzi w kluczowych miejscach. Kolejna odpowiada za analizowanie ich położenia wzgledem siebie i wykrywanie pewnych motywów. Co do zasady, pierwsze warstwy odpowiadają za ogólne cechy przetwarzanych danych, podczas gdy każda kolejna ma za zadanie przechodzić na wyższy poziom szczegółowości.
 
-Ze względu na znaczne postępy w technologiach informatycznych zanotowane w ostatnich latach, przetwarzanie danych w chmurze (ang. \textit{cloud computing}) stało się jednym z wiodących paradygmatów w tej dziedzinie wiedzy. Odnosi się on do aplikacji dostarczanych jako usługi za pośrednictwem Internetu (ang. \textit{Software as a Service, SaaS}), jak również oferowania infrastruktury (ang. \textit{Infrastructure as a Service, IaaS}) i systemów informatycznych (ang. \textit{Platform as a Service, PaaS}). Rozwiązanie to pozwala konsumentom natychmiastowo odpowiadać na zapotrzebowanie bez konieczności inwestowania znacznych nakładów finansowych w rozbudowywanie własnych centrów danych. W szczególności, duża ilość dostępnej natychmiast, dostosowanej do konkretnego zadania mocy obliczeniowej niezbędna jest do przeprowadzenia wielkoskalowych symulacji, estymacji skomplikowanych modeli statystycznych lub algorytmów uczenia maszynowego. Niniejsza praca ma na celu zbadanie i porównanie kosztów budowy modeli głębokich sieci neuronowych (ang. \textit{deep neural networks}) z wykorzystaniem podstawowych serwerów oraz droższych, dedykowanych jednostek, wzbogaconych o procesory graficzne (ang. \textit{graphics processing unit, GPU}), oferowanych przez najpopularniejszych dostawców tego typu usług.
 
-% Ogólny opis:
-  %podjętego tematu pracy,
-  %postawionych celów,
-  %struktury treści,
-  %zastosowanej metody analitycznej/badawczej
+Na popularności zyskało wykorzystywanie procesorów graficznych (ang. \textit{Graphics Processing Unit, GPU}) oferowanych przez Nvidia do poprawy wydajności procesu generacji tego typu struktur (\citet{jermain2015}; \citet{litvinenko2014}; \citet{strom2015}; \citet{vanhoucke2011}). Ponadto, giganci technologiczni inwestują w poszukiwanie potencjalnych sposobów na dalsze usprawnienie tego procesu, takich jak wykorzystanie bezpośrednio programowalnych macierzy bramek (ang. \textit{Field-Programmable Gate Array}) czy rozwiązania opracowanego przez Wave Computing - \textit{Dataflow Processing Unit (DPU)}, por. \citet{gysel2016}; \citet{chen2016}; \citet{han2016}.
 
-% Omówienie literatury przedmiotu pracy
+Zarówno przeprowadzanie symulacji w chmurze, wykorzystywanie procesorów graficznych w celu poprawy wydajności generacji głębokich sieci neuronowych, jak i porównania poszczególnych jednostek były przedmiotem badań, por. \citet{calheiros2010}, \citet{github2017}, \citet{medium2017b}, \citet{hackernoon2017}. Nie przeprowadzono jednak analizy oszczędności czasowych wynikających ze stosowania \textit{GPU} w chmurze i brak jest odpowiedzi na pytanie, czy rekompensują one ich wyższą cenę w porównaniu do klasycznych jednostek.
+
+Zatem, w pracy badane będą następujące hipotezy:
+\begin{itemize}
+\item stosowanie jednostek wykorzystujących GPU jest rozwiązaniem efektywnym kosztowo  w porównaniu do jednostek wyposażonych wyłącznie w CPU,
+\item wynajem jednostek AWS P2 jest efektywniejsze kosztowo od jednostek oferowanych przez Microsoft Azure oraz Google Cloud,
+\item wykorzystywanie opracowanego narzędzia do wyboru rodzaju jednostki obliczeniowej pozwala na optymalizację kosztową procesu generacji głębokich sieci neuronowych.
+\end{itemize}
+
+Pierwsza hipoteza porusza kwestię efektywności kosztowej jednostek GPU oferowanych w chmurze. Literatura dostarcza dowodów, że stosowanie tego typu jednostek prowadzi do
+krótszego czasu konstruowania sieci neuronowych, por. \citet{jermain2015} i \citet{litvinenko2014}. Nie jest jednak oczywistym, czy efektywniejszym kosztowo rozwiązaniem w przypadku architektury chmurowej są jednostki GPU czy CPU. Pomimo niższego czasu potrzebnego na estymację modelu, cena jednostek wyposażonych w GPU może być
+na tyle wysoka, że ich wynajem nie jest optymalny w sensie kosztowym.
+
+Następnie chcemy skupić się na porównaniu ofert różnych dostawców usług przetwarzania w chmurze. Dokonamy porównania efektywności kosztowej jednostek wyposażonych w procesory graficzne, dostarczanych przez Amazon, Microsoft oraz Google.
+
+Efektem pracy będzie dostarczenie narzędzia przeprowadzającego eksperymenty i pozwalającego na wybór najefektywniejszej kosztowo jednostki obliczeniowej. To narzędzie ma na
+celu przeprowadzenie optymalizacji kosztowej w zależności od rozważanych jednostek obliczeniowych i przedstawionego problemu.
+
+Na podstawie prezentowanego badania zostanie wybrany zbiór decyzji niezdominowanych (optymalnych w sensie Pareto) dla rozważanego problemu wielokryterialnego. Eksperyment przeprowadzany będzie poprzez dokonywanie wielokrotnych, empirycznych pomiarów dla każdej rozważanej jednostki obliczeniowej. Wynikiem każdego pomiaru będzie koszt wynajmu serwera oraz czas potrzebny na skonstruowanie modelu. Wybranym do przeprowadzania eksperymentu problemem jest przetwarzanie obrazu (stworzenie klasyfikatora). Następnie przeprowadzimy agregację otrzymanych wyników oraz analizy zbioru dostępnych decyzji, by ostatecznie przedstawić zbiór decyzji optymalnych w sensie Pareto.
 
 \clearpage
 
 
-\section{Przedstawienie badanych zagadnień}
+\section{Deep learning w chmurze}
 \subsection{Sieci neuronowe i deep learning}
 
-Stosowanie algorytmów uczenia maszynowego w celu odnajdywania wartości w danych, automatyzacji zadań i usprawniania procesów biznesowych staje się coraz bardziej powszechne. Do przykładów użycia metod \textit{machine learningowych} zaliczyć można dostosowywanie wyników wyszukiwań internetowych, filtrowanie i personalizacja powiadomień w mediach społecznościowych, rekomendacje produktów i reklama internetowa, ale również rozpoznawanie dźwięku, identyfikowanie obiektów na obrazach i tłumaczenie tekstu. W tym rozdziale opisane zostaną techniki stosowane do ostatnich z wymienionych przypadków - głębokie sieci neuronowe (ang. \textit{deep neural networks}).
+Do najpopularniejszych przykładów użycia metod \textit{machine learningowych} zaliczyć można dostosowywanie wyników wyszukiwań internetowych, filtrowanie i personalizacja powiadomień w mediach społecznościowych, rekomendacje produktów i reklama internetowa, ale również rozpoznawanie dźwięku, identyfikowanie obiektów na obrazach i tłumaczenie tekstu. W tym rozdziale opisane zostaną algorytmy stosowane do ostatnich z wymienionych przypadków - głębokie sieci neuronowe (ang. \textit{deep neural networks}).
 
-\subsubsection{Sieci neuronowe}
+\subsubsection{Historia sieci neuronowych}
 
-% o historii
-Wraz z nadejściem elektroniki i komputerów, badacze rozpoczęli podejmować próby replikacji ludzkich procesów myślowych na systemy logiczne. Choć pierwsze kroki w tej dziedzinie zostały podjęte przez \citet{mcculloch1943} oraz \citet{hebb1949}, istotny z punktu widzenia uczenia maszynowego przełom został dokonany w pracy \citet{rosenblatt1957}, gdzie po raz pierwszy wprowadzono koncept perceptronu - algorytmu, który miał pozwolić na poprawne rozpoznawanie obrazów. Perceptron jest jednym z najbardziej podstawowych przykładów sieci neuronowych, jego schemat został przedstawiony na rysunku \ref{fig:perceptron}.
+Wraz z nadejściem elektroniki i komputerów, badacze rozpoczęli podejmować próby replikacji ludzkich procesów myślowych na systemy logiczne. Choć pierwsze kroki w tej dziedzinie zostały podjęte przez \citet{mcculloch1943} oraz \citet{hebb1949}, istotny z punktu widzenia uczenia maszynowego przełom w sztucznych sieciach neuronowych został dokonany w pracy \citet{rosenblatt1957}, gdzie po raz pierwszy wprowadzono koncept perceptronu - algorytmu, który miał pozwolić na poprawne rozpoznawanie obrazów. Perceptron jest jednym z najbardziej podstawowych przykładów sieci neuronowych, jego schemat został przedstawiony na rysunku \ref{fig:perceptron}.
 
 \begin{figure}[h]
   \centering
@@ -135,7 +149,31 @@ Przyjmuje on wektor \(\mathbf{x}\) binarnych wartości wejściowych \(x_1, \ldot
   \end{cases}
 \end{align}
 
-Pomimo obiecujących początków i optymizmu towarzyszącemu nowemu odkryciu, badania nad perceptronami zostały w dużej części porzucone za sprawą publikacji \citet{minsky1969}. Nakreślili oni granice możliwości perceptronów jako systemu uczącego się. W szczególności udowodnili, że z jego użyciem można
+\citet{widrow1960} przedstawili ADALINE - jednowarstwową sztuczną sieć neuronową, która uczona była za pomocą szczególnego przypadku wciąż wykorzystywanej metody optymalizacji opartej na gradiencie - \textit{stochastic gradient descent}.
+
+Pomimo obiecujących początków i optymizmu towarzyszącemu nowemu odkryciu, badania nad sztucznymi sieciami neuronowymi zostały w dużej części porzucone za sprawą publikacji \citet{minsky1969}. Nakreślili oni granice możliwości modeli liniowych (w tym perceptronu i jednowarstwowych sieci neuronowych) jako systemu uczącego się. W szczególności udowodnili, że z wykorzystaniem tego typu algorytmów nie da się odwzorować funkcji logicznej XOR. Ich odkrycie zakończyło pierwszy okres popularności sieci neuronowych, zwany \textit{cybernetyką}.
+
+Kolejna fala popularności została zapoczątkowana przez interdyscyplinarny ruch - koneksjonizm (ang. \textit{connectionism}), określany również jako modele PDP (równoległego rozproszonego przetwarzania informacji). Wiele idei wywodzących się z cybernetyki zostało w tym okresie zaadaptowanych do badań nad charakterem poznania, por. \citet{touretzky1985}. Jedną z nich jest pomysł rozproszonej reprezentacji \citep{hinton1986}. Przedstawia on założenie, że każdy sygnał wejściowy powinien być reprezentowany przez wiele cech systemu, a każda cecha powinna być włączona w tworzenie reprezentacji możliwie wielu sygnałów wejściowych. Koncept rozproszonej reprezentacji pozostaje kluczowym komponentem konstruowanych obecnie sieci neuronowych, por. \citet{goodfellow2016}. Oprócz przełomu na polu nauk poznawczych, do metod optymalizacyjnych również zostały wprowadzone nowe idee. Praca \citet{rumelhart1986} dowiodła empirycznie skuteczność wciąż stosowanego algorytmu propagacji wstecznej
+(ang. \textit{backpropagation}) w przyspieszaniu procesu uczenia sieci neuronowych, co pozwoliło na wykorzystywanie ich do szerszego zakresu problemów. Jednakże, ruch koneksjonizmu utrzymywał zainteresowanie środowisk naukowych i biznesowych tylko do połowy lat 90. Nieproporcjonalne oczekiwania co do możliwości sztucznych sieci neuronowych oraz pojawienie się innych metod sprawiły, że inwestorzy wycofali swoje wsparcie.
+
+Aktualne zainteresowanie sieciami neuronowymi zostało zapoczątkowane jako skutek badań nad modelami o skomplikowanej architekturze (\citet{hintonetal2006}; \citet{bengio2007a}). Wtedy też tego typu architektury sieci neuronowych otrzymały określenie \textit{głębokich}. Miało na celu podkreślenie faktu wykorzystywania wielu ukrytych warstw, co dotychczas nie było możliwe z powodu niedostatecznej mocy obliczeniowej. Istotność tej cechy w sieciach neuronowych jest podkreślana w pracach \citet{bengio2007b} i \citet{bengio2011}.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -320,6 +358,9 @@ Google operuje na rynku PaaS pod 2008 roku (oferując swój App Engine), jednak�
 \bibitem[Antonopoulos i Gilliam (2010)]{antonopoulos2010} Antonopoulos, N. i Gillam, L. (2010). Cloud computing, 1st ed. London: Springer, s. xx - xx
 \bibitem[Armburst et al. (2010)]{armburst2010} Armbrust, M., Stoica, I., Zaharia, M., Fox, A., Griffith, R., Joseph, A., Katz, R., Konwinski, A., Lee, G., Patterson, D. i Rabkin, A. (2010). A view of cloud computing. Communications of the ACM, 53(4), s. 50
 \bibitem[Baun i Kunze (2011)]{baun2011} Baun, C. i Kunze, M. (2011). Cloud computing. 1st ed. Heidelberg [etc.]: Springer, s. xx -xx
+\bibitem[Bengio i Delalleau (2011)]{bengio2011} Bengio, Y. i Delalleau, O. (2011, October). On the expressive power of deep architectures. In International Conference on Algorithmic Learning Theory (s. 18-36). Springer Berlin Heidelberg
+\bibitem[Bengio et al. (2007)]{bengio2007a} Bengio, Y., Lamblin, P., Popovici, D. i Larochelle, H. (2007). Greedy layer-wise training of deep networks. Advances in neural information processing systems, 19, 153
+\bibitem[Bengio i LeCun (2007)]{bengio2007b} Bengio, Y. i LeCun, Y. (2007). Scaling learning algorithms towards AI. Large-scale kernel machines, 34(5), 1-41
 \bibitem[Buyya et al. (2009)]{buyya2009} Buyya, R., Yeo, C., Venugopal, S., Broberg, J. i Brandic, I. (2009). Cloud computing and emerging IT platforms: Vision, hype, and reality for delivering computing as the 5th utility. Future Generation Computer Systems, 25(6), s. 599-616
 \bibitem[Carr (2008)]{carr2008} Carr, N. G. (2008). The big switch: Rewiring the world, from Edison to Google. WW Norton and Company, s xx - xx
 \bibitem[Calheiros et al. (2010)]{calheiros2010} Calheiros, R., Ranjan, R., Beloglazov, A., De Rose, C. i Buyya, R. (2010). CloudSim: a toolkit for modeling and simulation of cloud computing environments and evaluation of resource provisioning algorithms. Software: Practice and Experience, 41(1), s. 23-50
@@ -336,6 +377,7 @@ Google operuje na rynku PaaS pod 2008 roku (oferując swój App Engine), jednak�
 \bibitem[Hebb (1949)]{hebb1949} Hebb, D.O. (1949). The Organization of Behavior. New York: Wiley and Sons
 \bibitem[Hecht-Nielsen (1988)]{hecht1988} Hecht-Nielsen, R. (1988). Theory of the backpropagation neural network. Neural Networks, 1, s. 445
 \bibitem[Hinton (2006)]{hinton2006} Hinton, G. (2006). Reducing the Dimensionality of Data with Neural Networks. Science, 313(5786), s. 504-507
+\bibitem[Hinton i Sejnowski (1986)]{hinton1986} Hinton, G. E. i Sejnowski, T. J. (1986). Learning and relearning in Boltzmann Machines. Parallel Distributed Processing, Rumelhart et al, Eds
 \bibitem[Hinton et al. (2006)]{hintonetal2006} Hinton, G., Osindero, S. i Teh, Y. (2006). A Fast Learning Algorithm for Deep Belief Nets. Neural Computation, 18(7), s. 1527-1554
 \bibitem[Hinton et al. (2012)]{hinton2012} Hinton, G., Deng, L., Yu, D., Dahl, G., Mohamed, A., Jaitly, N., Senior, A., Vanhoucke, V., Nguyen, P., Sainath, T. i Kingsbury, B. (2012). Deep Neural Networks for Acoustic Modeling in Speech Recognition: The Shared Views of Four Research Groups. IEEE Signal Processing Magazine, 29(6), s. 82-97
 \bibitem[Jermain et al. (2015)]{jermain2015} Jermain, C. L., Rowlands, G. E., Buhrman, R. A., i Ralph, D. C. (2015). GPU-accelerated micromagnetic simulations using cloud computing. arXiv preprint arXiv:1505.01207
@@ -354,14 +396,18 @@ Google operuje na rynku PaaS pod 2008 roku (oferując swój App Engine), jednak�
 \bibitem[Mustafa et al. (2015)]{mustafa2015} Mustafa, S., Nazir, B., Hayat, A., Khan, A. i Madani, S. (2015). Resource management in cloud computing: Taxonomy, prospects, and challenges. Computers and Electrical Engineering, 47, s. 186-203
 \bibitem[OECD (2014)]{oecd2014} OECD (2014). Cloud Computing: The Concept, Impacts and the Role of Government Policy. OECD Digital Economy Papers, No. 240, OECD Publishing, Paris
 \bibitem[Rosenblatt (1957)]{rosenblatt1957} Rosenblatt, F. (1957). The Perceptron--a perceiving and recognizing automaton. Report 85-460-1, Cornell Aeronautical Laboratory
+\bibitem[Rumelhart et al. (1986)]{rumelhart1986} Rumelhart, D. E., Hinton, G. E. i Williams, R. J. (1986). Learning representations by back-propagating errors. Nature, 323, 533-536.
 \bibitem[Shetty (2016)]{shetty2016} Shetty, S. (2016).  Application of Convolutional Neural Network for Image Classification on Pascal VOC Challenge 2012 dataset. arXiv preprint arXiv:1607.03785
 \bibitem[Shroff (2010)]{shroff2010} Shroff, G. (2010). Enterprise cloud computing. 1st ed. Cambridge: Cambridge University Press, s. xx - xx
 \bibitem[Smith et al. (2009)]{smith2009} Smith D. M. et al. (2009). Hype Cycle for Cloud Computing (ID: G00168780). Baza danych Gartner
 \bibitem[Srivastava et al. (2014)]{srivastava2014} Srivastava, N., Hinton, G. E., Krizhevsky, A., Sutskever, I. i Salakhutdinov, R. (2014). Dropout: a simple way to prevent neural networks from overfitting. Journal of Machine Learning Research, 15(1), s. 1929-1958
 \bibitem[Strom (2015)]{strom2015} Strom, N. (2015). Scalable distributed DNN training using commodity GPU cloud computing. INTERSPEECH (tom 7, s. 10)
 \bibitem[Szegedy (2014)]{szegedy2014} Szegedy, C. et al. (2014). Going deeper with convolutions. arXiv preprint arXiv:1409.4842
+\bibitem[Touretzky i Hinton (1985)]{touretzky1985} Touretzky, D. S. i Hinton, G. E. (1985, August). Symbols among the neurons: Details of a connectionist inference architecture. In IJCAI (tom 85, s. 238-243)
 \bibitem[Vanhoucke et al. (2011)]{vanhoucke2011} Vanhoucke, V., Senior, A. i Mao, M. Z. (2011). Improving the speed of neural networks on CPUs. In Proc. Deep Learning and Unsupervised Feature Learning NIPS Workshop (tom 1, s. 4)
+\bibitem[Von Melchner et al. (2000)]{vonmelchner2000} Von Melchner, L., Pallas, S. L. i Sur, M. (2000). Visual behaviour mediated by retinal projections directed to the auditory pathway. Nature, 404(6780), 871-876
 \bibitem[Ward i Baker (2013)]{ward2013} Ward, J.S. i Barker, A. (2013). A Cloud Computing Survey: Developments and Future Trends in Infrastructure as a Service Computing
+\bibitem[Widrow i Hoff (1960)]{widrow1960} Widrow, B. i Hoff, M. E. (1960, August). Adaptive switching circuits. In IRE WESCON convention record (tom 4, nr 1, s. 96-104)
 \bibitem[Zhang et al. (2010)]{zhang2010} Zhang, Q., Cheng, L. i Boutaba, R. (2010). Cloud computing: state-of-the-art and research challenges. Journal of Internet Services and Applications, 1(1), s. 7-18
 
 \end{thebibliography}
