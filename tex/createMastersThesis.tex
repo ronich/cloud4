@@ -129,7 +129,17 @@ Na podstawie prezentowanego badania zostanie wybrany zbiór decyzji niezdominowa
 \section{Deep learning w chmurze}
 \subsection{Sieci neuronowe i deep learning}
 
-Do najpopularniejszych przykładów użycia metod \textit{machine learningowych} zaliczyć można dostosowywanie wyników wyszukiwań internetowych, filtrowanie i personalizacja powiadomień w mediach społecznościowych, rekomendacje produktów i reklama internetowa, ale również rozpoznawanie dźwięku, identyfikowanie obiektów na obrazach i tłumaczenie tekstu. W tym rozdziale opisane zostaną algorytmy stosowane do ostatnich z wymienionych przypadków - głębokie sieci neuronowe (ang. \textit{deep neural networks}).
+Do najpopularniejszych przykładów użycia metod \textit{machine learningowych} zaliczyć można dostosowywanie wyników wyszukiwań internetowych, filtrowanie i personalizacja powiadomień w mediach społecznościowych, rekomendacje produktów i reklama internetowa, jednak sztuczne sieci neuronowe okazały się szczególnie użyteczne w rozpoznawaniu dźwięku, identyfikowaniu obiektów na obrazach i tłumaczeniu tekstu.
+
+Standardowa architektura sztucznej sieci neuronowej składa się z wielu elementarnych, połączonych jednostek nazywanych neuronami, które przyjmując pewien sygnał wejściowy, zwracają przetworzony sygnał wyjściowy. Neurony pierwszej, wejściowej warstwy przyjmują sygnał z danych uczących, podczas gdy neurony kolejnych warstw aktywowane są poprzez sygnały i wagi pochodzące z warstw je poprzedzających. Neurony ostatniej, wyjściowej warstwy, zwracają rezultat obliczeń, który następnie może prowadzić do wywołania pewnej akcji. Uczenie sieci neuronowej sprowadza się do znalezienia architektury i wchodzącej w jej skład wag, które sprawią, że będzie ona zachowywała się w sposób pożądany, na przykład poprzez możliwość wykrywania pewnych cech sygnału wejściowego. W zależności od stopnia skomplikowania problemu, przyjętej architektury, hiperparametrów, odnalezienie optymalnego rozwiązania może wymagać długich, skomplikowanych obliczeń wykonywanych na przestrzeni wielu warstw sieci, gdzie każda z nich przekształca i agreguje otrzymywany sygnał wejściowy. W tym rozdziale opisane zostaną modele głębokich sieci neuronowych (ang. \textit{deep neural networks}) - historia ich powstania, sposób działania, wiązane z nimi oczekiwania i obecnie stosowane praktyki.
+
+\begin{figure}[h]
+  \centering
+\includegraphics[scale=0.5]{../obrazy/fig:NN.png}
+\caption{Standardowa architektura sieci neuronowej - składa się z warstwy wejściowej (\textit{input layer}), warstw ukrytych (\textit{hidden layers}) oraz warstwy wyjściowej  (\textit{output layer}).
+\label{fig:NN}}
+\end{figure}
+
 
 \subsubsection{Historia sieci neuronowych}
 
@@ -137,8 +147,8 @@ Wraz z nadejściem elektroniki i komputerów, badacze rozpoczęli podejmować p
 
 \begin{figure}[h]
   \centering
-\includegraphics[scale=0.8]{../obrazy/fig:perceptron.png}
-\caption{Pereceptron przedstawiony na przykładzie składa się z dwóch warstw – warstwy wejściowej z trzema wartościami wejściowymi (\(x_1, x_2, x_3 \)) oraz warstwy wyjściowej. \label{fig:perceptron}}
+\includegraphics[scale=0.6]{../obrazy/fig:perceptron.png}
+\caption{Perceptron przedstawiony na przykładzie składa się z dwóch warstw – warstwy wejściowej z trzema wartościami wejściowymi (\(x_1, x_2, x_3 \)) oraz warstwy wyjściowej. \label{fig:perceptron}}
 \end{figure}
 
 Przyjmuje on wektor \(\mathbf{x}\) binarnych wartości wejściowych \(x_1, \ldots, x_n \). Każda z tych wartości wejściowych jest przyjmowana z wagą \(w_1, \ldots, w_n \), będącą liczbą rzeczywistą. Owe parametry można w intuicyjny sposób przedstawić jako wpływ (mający wartość i kierunek) każdego z sygnałów wejściowych na sygnał wyjściowy. Ostatecznie ważona suma wartości wejściowych porównywana jest z wartoscią progową (ang. \textit{threshold}), będącą kolejnym parametrem perceptronu. W przypadku, gdy ważona suma jest większa od wartości progowej, funkcja aktywacji zwraca wartość wyjściową 1, w przeciwnym wypadku zwraca 0. Przyjmując formalną reprezentację:
@@ -149,12 +159,48 @@ Przyjmuje on wektor \(\mathbf{x}\) binarnych wartości wejściowych \(x_1, \ldot
   \end{cases}
 \end{align}
 
-\citet{widrow1960} przedstawili ADALINE - jednowarstwową sztuczną sieć neuronową, która uczona była za pomocą szczególnego przypadku wciąż wykorzystywanej metody optymalizacji opartej na gradiencie - \textit{stochastic gradient descent}.
+\citet{widrow1960} przedstawili ADALINE - fizyczne urządzenie i jednowarstwową sztuczną sieć neuronową (Rysunek \ref{fig:ADALINE}), która uczona była za pomocą szczególnego przypadku do dzisiaj wykorzystywanej metody optymalizacji opartej na gradiencie - \textit{stochastic gradient descent}.
+
+\begin{figure}[h]
+  \centering
+\includegraphics[scale=0.5]{../obrazy/fig:ADALINE.png}
+\caption{Architektura ADALINE (ang. \textit{Adaptive Linear Neuron}), która bazowała na projekcie sieci zaprezentowanym przez \citet{mcculloch1943}. Istotna różnica polega na dobraniu algorytmu optymalizacji wag. \label{fig:ADALINE}}
+\end{figure}
+
+Jednym z pierwszych przykładów architektury, którą można uznać za wielowarstwową sieć neuronową jest zaprojektowany w pracach \citet{ivakhnenko1965} oraz \citet{ivakhnenko1967} system będący reprezentantem rodziny metod GMDH (ang. \textit{Group Method of Data Handling}). Jego charakterystycznymi cechami było wykorzystanie wielomianów Kolmogorova-Gabora jako funkcji aktywacji i użycie zbioru treningowego do uczenia i rozbudowywania kolejnych warstw sieci, by następnie przycinać je z wykorzystaniem zbioru walidacyjnego.
 
 Pomimo obiecujących początków i optymizmu towarzyszącemu nowemu odkryciu, badania nad sztucznymi sieciami neuronowymi zostały w dużej części porzucone za sprawą publikacji \citet{minsky1969}. Nakreślili oni granice możliwości modeli liniowych (w tym perceptronu i jednowarstwowych sieci neuronowych) jako systemu uczącego się. W szczególności udowodnili, że z wykorzystaniem tego typu algorytmów nie da się odwzorować funkcji logicznej XOR. Ich odkrycie zakończyło pierwszy okres popularności sieci neuronowych, zwany \textit{cybernetyką}.
 
-Kolejna fala popularności została zapoczątkowana przez interdyscyplinarny ruch - koneksjonizm (ang. \textit{connectionism}), określany również jako modele PDP (równoległego rozproszonego przetwarzania informacji). Wiele idei wywodzących się z cybernetyki zostało w tym okresie zaadaptowanych do badań nad charakterem poznania, por. \citet{touretzky1985}. Jedną z nich jest pomysł rozproszonej reprezentacji \citep{hinton1986}. Przedstawia on założenie, że każdy sygnał wejściowy powinien być reprezentowany przez wiele cech systemu, a każda cecha powinna być włączona w tworzenie reprezentacji możliwie wielu sygnałów wejściowych. Koncept rozproszonej reprezentacji pozostaje kluczowym komponentem konstruowanych obecnie sieci neuronowych, por. \citet{goodfellow2016}. Oprócz przełomu na polu nauk poznawczych, do metod optymalizacyjnych również zostały wprowadzone nowe idee. Praca \citet{rumelhart1986} dowiodła empirycznie skuteczność wciąż stosowanego algorytmu propagacji wstecznej
-(ang. \textit{backpropagation}) w przyspieszaniu procesu uczenia sieci neuronowych, co pozwoliło na wykorzystywanie ich do szerszego zakresu problemów. Jednakże, ruch koneksjonizmu utrzymywał zainteresowanie środowisk naukowych i biznesowych tylko do połowy lat 90. Nieproporcjonalne oczekiwania co do możliwości sztucznych sieci neuronowych oraz pojawienie się innych metod sprawiły, że inwestorzy wycofali swoje wsparcie.
+Celem pracy \citet{fukushima1980} było zaproponowanie sztucznej sieci neuronowej, która mogłaby być wiernym modelem procesu rozpoznawania wzorów i kszałtów geometrycznych przez człowieka. Przedstawiono w niej model uczenia bez nadzoru, nazwany wówczas Neocognitron (będącą rozszerzeniem modelu Cognitron, zaproponowanego wcześniej przez Autora, por. \citet{fukushima1975}) i zastosowano architekturę, która jest protoplastą szeroko stosowanych sieci konwolucyjnych (używanych jednak obecnie do rozwiązywania problemów ,,z nauczycielem''). Fukushima wprowadzał do modelu jako sygnał dwuwymiarową macierz, po której następujował szereg struktur składających się z pary warstw ukrytych odpowiadających komórkom niższego i wyższego rzędu (\textit{S-layer} oraz \textit{C-layer}). Schemat opisywanej architektury zaprezentowany został na Rysunku \ref{fig:neocognitron}. Istotnym z punktu widzenia \textit{deep learningu} i \textit{pattern recognition} było zastosowanie w niej warstw złożonych z jednostek konwolucyjnych, których pole receptywne było dwuwymiarową macierzą skokowo przesuwaną przez macierz wartości wejściowych (Rysunek \ref{fig:convolution}). Zwracane przez warstwy konwolucyjne macierze stanowiły wartości wejściowe dla warstw konwolucyjnych wyższego rzędu, operujących na wyższym poziomie abstrakcji. Każdy z elementów ostatniej warstwy tak skonstruowanej sieci neuronowej odpowiadał tylko na jeden rodzaj sygnału wejściowego. Owe zabiegi pozwoliły na skonstruowanie modelu, który byłby niewrażliwy na małe zmiany w kształcie, obrót lub translację sygnału wejściowego (Rysunek \ref{fig:distortion}).
+
+%bez backprop!, bez poolingu
+
+\begin{figure}[h]
+  \centering
+\includegraphics[scale=0.7]{../obrazy/fig:neocognitron.png}
+\caption{Architektura modelu Neocognitron. W jej skład wchodzi warstwa wejściowa \(U_0\), po której następują trzy pary warstw ukrytych \(U_{Si} \) i \(U_{Ci} \) - odpowiednio niższego i wyższego rzędu. \label{fig:neocognitron}}
+\end{figure}
+
+\begin{figure}[h]
+  \centering
+\includegraphics[scale=0.5]{../obrazy/fig:convolution.png}
+\caption{Ilustracja połączeń dla przykładowych jednostek konwolucyjnych, zaproponowanych przez Fukushima. \label{fig:convolution}}
+\end{figure}
+
+\begin{figure}[h]
+  \centering
+\includegraphics[scale=0.5]{../obrazy/fig:distortion.png}
+\caption{Przykłady wartości wejściowych (b - g) będących pewną modyfikacją pierwotnego obrazu (a), dla których Neocognitron zwraca ten sam rezultat (h). \label{fig:distortion}}
+\end{figure}
+
+Kolejna fala popularności sieci neuronowych została zapoczątkowana przez interdyscyplinarny ruch - koneksjonizm (ang. \textit{connectionism}), określany również jako modele PDP (równoległego rozproszonego przetwarzania informacji). Wiele idei wywodzących się z cybernetyki zostało w tym okresie zaadaptowanych do badań nad charakterem poznania, por. \citet{touretzky1985}. Jedną z nich jest pomysł rozproszonej reprezentacji \citep{hinton1986}, opisywany także w pracy \citet{touretzky1985} jako inspirowany naturą i z niej się wywodzący. Przedstawia on założenie, że każdy sygnał wejściowy powinien być reprezentowany przez wiele cech systemu, a każda cecha powinna być włączona w tworzenie reprezentacji możliwie wielu sygnałów wejściowych. Wprowadzenie tej architektury było również odpowiedzią na krytykę koneksjonizmu, a jej wykorzystanie dowodem na to, że teorie wchodzące w skład tego paradygmatu pozwalają na stworzenie systemu zdolnego do rozwiązywania skomplikowanych problemów. Koncept rozproszonej reprezentacji pozostaje kluczowym komponentem konstruowanych obecnie sieci neuronowych, por. \citet{goodfellow2016}.
+
+W tym okresie, oprócz przełomu na polu nauk poznawczych, nastąpił również rozwój metod optymalizacyjnych. Praca \citet{rumelhart1986} dowiodła empirycznie skuteczność algorytmu propagacji wstecznej (ang. \textit{backpropagation}) w przyspieszaniu procesu uczenia sieci neuronowych, co przyczyniło się do wzrostu popularności owej metody i pozwoliło na wykorzystywanie sieci neuronowych do szerszego zakresu problemów. Ta procedura optymalizacji, przedstawiona po raz pierwszy w pracy \citet{linnainmaa1970}, polegała na iteracyjnym korygowaniu wartości wag w sieciach neuronowych w celu minimalizacji wybranego kryterium błędu. W wyniku tego procesu, neurony warstw ukrytych, których stan lub zadanie nie zostało zawczasu ustalone, mogły reprezentować istotne cechy sygnału wejściowego. Możliwość wykrywania cech sygnału wejściowego bez ich wskazywania w sposób jawny, miała w znaczny sposób odróżniać tę metodę od sposobów uczenia skonstruowanych w erze cybernetyki. Potwierdzeniem tej tezy był fakt wygrania międzynarodowego konkursu predykcyjnego poprzez wykorzystanie modelu sieci neuronowych uczonego za pomocą algorytmu propagacji wstecznej \citep{wan1993}. W publikacji \citet{rumelhart1986} zaproponowano również pewną modyfikację do metody SGD - metodę pędu (ang. \textit{momentum method}), która, inspirowana zjawiskiem fizycznym, miała zapobiec zbyt długiemu oscylowaniu wokół ekstremów funkcji celu w optymalizacji gradientowej.
+
+%opis propagacji wstecznej może?
+%+wzorki na backprop
+
+Jednakże, ruch koneksjonizmu utrzymywał zainteresowanie środowisk naukowych i biznesowych tylko do połowy lat 90. Nieproporcjonalne oczekiwania co do możliwości sztucznych sieci neuronowych oraz pojawienie się innych, bardziej obiecujących metod sprawiły, że inwestorzy wycofali swoje wsparcie.
 
 Aktualne zainteresowanie sieciami neuronowymi zostało zapoczątkowane jako skutek badań nad modelami o skomplikowanej architekturze (\citet{hintonetal2006}; \citet{bengio2007a}). Wtedy też tego typu architektury sieci neuronowych otrzymały określenie \textit{głębokich}. Miało na celu podkreślenie faktu wykorzystywania wielu ukrytych warstw, co dotychczas nie było możliwe z powodu niedostatecznej mocy obliczeniowej. Istotność tej cechy w sieciach neuronowych jest podkreślana w pracach \citet{bengio2007b} i \citet{bengio2011}.
 
@@ -366,6 +412,9 @@ Google operuje na rynku PaaS pod 2008 roku (oferując swój App Engine), jednak�
 \bibitem[Calheiros et al. (2010)]{calheiros2010} Calheiros, R., Ranjan, R., Beloglazov, A., De Rose, C. i Buyya, R. (2010). CloudSim: a toolkit for modeling and simulation of cloud computing environments and evaluation of resource provisioning algorithms. Software: Practice and Experience, 41(1), s. 23-50
 \bibitem[Chen et al. (2016)]{chen2016} Chen, L. C., Papandreou, G., Kokkinos, I., Murphy, K. i Yuille, A. L. (2016). Deeplab: Semantic image segmentation with deep convolutional nets, atrous convolution, and fully connected crfs. arXiv preprint arXiv:1606.00915
 \bibitem[Forbes.com (2017)]{forbes2017} Forbes.com. (2017). Amazon Continues To Gain Share In Cloud Infrastructure Services Market. Dostępne pod adresem: \url{https://www.forbes.com/sites/greatspeculations/2016/08/17/amazon-continues-to-gain-share-in-cloud-infrastructure-services-market/#2277485215b8} (dostęp 11 marca 2017)
+\bibitem[Fukushima (1975)]{fukushima1975} Fukushima, K. (1975). Cognitron: A self-organizing multilayered neural network. Biological cybernetics, 20(3-4), 121-136
+\bibitem[Fukushima (1980)]{fukushima1980} Fukushima, K. (1980). Neocognitron: A self-organizing neural network for a mechanism of pattern
+recognition unaffected by shift in position. Biological Cybernetics, 36(4):193–202
 \bibitem[Girshick et al. (2014)]{girschick2014} Girshick, R., Donahue, J., Darrell, T. i Malik, J. (2014). Rich feature hierarchies for accurate object detection and semantic segmentation. In Proceedings of the IEEE conference on computer vision and pattern recognition, s. 580-587
 \bibitem[Github (2017)]{github2017} GitHub. (2017). Benchmarks for popular convolutional neural network models on CPU and different GPUs, with and without cuDNN. Dostępne pod adresem: \url{https://github.com/jcjohnson/cnn-benchmarks} (dostęp 14 marca 2017)
 \bibitem[Goldberg (1974)]{goldberg1974} Goldberg, R. P. (1974). Survey of virtual machine research. IEEE Comput Mag 7(6):34–45
@@ -380,11 +429,15 @@ Google operuje na rynku PaaS pod 2008 roku (oferując swój App Engine), jednak�
 \bibitem[Hinton i Sejnowski (1986)]{hinton1986} Hinton, G. E. i Sejnowski, T. J. (1986). Learning and relearning in Boltzmann Machines. Parallel Distributed Processing, Rumelhart et al, Eds
 \bibitem[Hinton et al. (2006)]{hintonetal2006} Hinton, G., Osindero, S. i Teh, Y. (2006). A Fast Learning Algorithm for Deep Belief Nets. Neural Computation, 18(7), s. 1527-1554
 \bibitem[Hinton et al. (2012)]{hinton2012} Hinton, G., Deng, L., Yu, D., Dahl, G., Mohamed, A., Jaitly, N., Senior, A., Vanhoucke, V., Nguyen, P., Sainath, T. i Kingsbury, B. (2012). Deep Neural Networks for Acoustic Modeling in Speech Recognition: The Shared Views of Four Research Groups. IEEE Signal Processing Magazine, 29(6), s. 82-97
+\bibitem[Ivakhnenko i Lapa (1965)]{ivakhnenko1965} Ivakhnenko, A. G. i Lapa, V. G. (1965). Cybernetic Predicting Devices. CCM Information Corporation.
+\bibitem[Ivakhnenko i Lapa (1967)]{ivakhnenko1967} Ivakhnenko, A. G., Lapa, V. G., and McDonough, R. N. (1967). Cybernetics and forecasting techniques. American Elsevier, NY.
 \bibitem[Jermain et al. (2015)]{jermain2015} Jermain, C. L., Rowlands, G. E., Buhrman, R. A., i Ralph, D. C. (2015). GPU-accelerated micromagnetic simulations using cloud computing. arXiv preprint arXiv:1505.01207
 \bibitem[Kleinrock (2005)]{kleinrock2005} Kleinrock, L., A Vision for the Internet. ST Journal for Research, tom 2, nr 1, s. 4–5
 \bibitem[Krizhevsky et al. (2012)]{krizhevsky2012} Krizhevsky, A., Sutskever, I. i Hinton, G. (2012). Imagenet classification with deep convolutional neural networks. In Advances in neural information processing systemsk, s. 1097-1105
 \bibitem[LeCun, Bengio i Hinton (2015)]{lecun2015} LeCun, Y., Bengio, Y. i Hinton, G. (2015). Deep learning. Nature, 521(7553), s.436-444
 \bibitem[Leong et al. (2017)]{leong2017} Leong, L., Petri, G., Gill, B. i Dorosh, M. (2017). Magic Quadrant for Cloud Infrastructure as a Service. Gartner.com. Dostępne pod adresem: \url{https://www.gartner.com/doc/reprints?id=1-2G2O5FC&ct=150519} (dostęp 11 marca 2017)
+\bibitem[Linnainmaa (1970)]{linnainmaa1970} Linnainmaa, S. (1970). The representation of the cumulative rounding error of an algorithm as a
+Taylor expansion of the local rounding errors. Praca magisterska, Uniwersytet w Helsinkach
 \bibitem[Litvinenko (2014)]{litvinenko2014} Litvinenko, N. (2014). Using of GPUs for cluster analysis of large data by K-means method arXiv preprint arXiv:1402.3788
 \bibitem[McCulloch i Pitts (1943)]{mcculloch1943} McCulloch, W. S. i Pitts, W. (1943). A logical calculus of the ideas immanent in nervous activity. The bulletin of mathematical biophysics, 5(4), s. 115-133
 \bibitem[Medium (2017a)]{medium2017a} Medium (2017). TensorFlow 1.0 is here. Let’s do some Deep Learning on the Amazon Cloud! – Sigmoidal. Dostępne pod adresem: \url{https://medium.com/sigmoidal/tensorflow-1-0-is-here-lets-do-some-deep-learning-on-the-amazon-cloud-9234eab31fa5#.vyxzk4bwk} (dostęp 14 marca 2017)
@@ -406,6 +459,7 @@ Google operuje na rynku PaaS pod 2008 roku (oferując swój App Engine), jednak�
 \bibitem[Touretzky i Hinton (1985)]{touretzky1985} Touretzky, D. S. i Hinton, G. E. (1985, August). Symbols among the neurons: Details of a connectionist inference architecture. In IJCAI (tom 85, s. 238-243)
 \bibitem[Vanhoucke et al. (2011)]{vanhoucke2011} Vanhoucke, V., Senior, A. i Mao, M. Z. (2011). Improving the speed of neural networks on CPUs. In Proc. Deep Learning and Unsupervised Feature Learning NIPS Workshop (tom 1, s. 4)
 \bibitem[Von Melchner et al. (2000)]{vonmelchner2000} Von Melchner, L., Pallas, S. L. i Sur, M. (2000). Visual behaviour mediated by retinal projections directed to the auditory pathway. Nature, 404(6780), 871-876
+\bibitem[Wan (1993)]{wan1993} Wan, E.A., 1993. Time series prediction by using a connectionist network with internal delay lines. In SANTA FE INSTITUTE STUDIES IN THE SCIENCES OF COMPLEXITY-PROCEEDINGS VOLUME- (tom 15, s. 195-195). Addison-Wesley publishing co.
 \bibitem[Ward i Baker (2013)]{ward2013} Ward, J.S. i Barker, A. (2013). A Cloud Computing Survey: Developments and Future Trends in Infrastructure as a Service Computing
 \bibitem[Widrow i Hoff (1960)]{widrow1960} Widrow, B. i Hoff, M. E. (1960, August). Adaptive switching circuits. In IRE WESCON convention record (tom 4, nr 1, s. 96-104)
 \bibitem[Zhang et al. (2010)]{zhang2010} Zhang, Q., Cheng, L. i Boutaba, R. (2010). Cloud computing: state-of-the-art and research challenges. Journal of Internet Services and Applications, 1(1), s. 7-18
