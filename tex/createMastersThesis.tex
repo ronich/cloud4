@@ -14,6 +14,10 @@
 \usepackage{booktabs}
 \usepackage{tabulary}
 \usepackage{url}
+\usepackage{algorithm}
+\usepackage[noend]{algpseudocode}
+\usepackage{etoolbox}
+\usepackage{titlesec}
 \urlstyle{same}
 \setlist{itemsep=0pt}
 \setlist{nolistsep}
@@ -23,9 +27,12 @@
 \renewcommand*\listtablename{Spis tabel}
 \renewcommand*\tablename{Tabela}
 }
-\usepackage{titlesec}
+\makeatletter
+\renewcommand{\ALG@name}{Algorytm}
+\makeatother
 \titlelabel{\thetitle.\quad}
-\usepackage{etoolbox}
+\makeatletter
+\def\BState{\State\hskip-\ALG@thistlm}
 \makeatletter
 \patchcmd{\ttlh@hang}{\parindent\z@}{\parindent\z@\leavevmode}{}{}
 \patchcmd{\ttlh@hang}{\noindent}{}{}{}
@@ -151,15 +158,33 @@ Wraz z nadejściem elektroniki i komputerów, badacze rozpoczęli podejmować p
 \caption{Perceptron przedstawiony na przykładzie składa się z dwóch warstw – warstwy wejściowej z trzema wartościami wejściowymi (\(x_1, x_2, x_3 \)) oraz warstwy wyjściowej. \label{fig:perceptron}}
 \end{figure}
 
-Przyjmuje on wektor \(\mathbf{x}\) binarnych wartości wejściowych \(x_1, \ldots, x_n \). Każda z tych wartości wejściowych jest przyjmowana z wagą \(w_1, \ldots, w_n \), będącą liczbą rzeczywistą. Owe parametry można w intuicyjny sposób przedstawić jako wpływ (mający wartość i kierunek) każdego z sygnałów wejściowych na sygnał wyjściowy. Ostatecznie ważona suma wartości wejściowych porównywana jest z wartoscią progową (ang. \textit{threshold}), będącą kolejnym parametrem perceptronu. W przypadku, gdy ważona suma jest większa od wartości progowej, funkcja aktywacji zwraca wartość wyjściową 1, w przeciwnym wypadku zwraca 0. Przyjmując formalną reprezentację:
-\begin{align}
+Przyjmuje on wektor \(\mathbf{x}\) binarnych wartości wejściowych \(x_1, \ldots, x_n \). Każda z tych wartości wejściowych jest przyjmowana z wagą \(w_1, \ldots, w_n \), będącą liczbą rzeczywistą. Owe parametry można w intuicyjny sposób przedstawić jako wpływ (mający wartość i kierunek) każdego z sygnałów wejściowych na sygnał wyjściowy. Ostatecznie ważona suma wartości wejściowych porównywana jest z wartoscią progową (ang. \textit{threshold}), będącą kolejnym parametrem perceptronu. W przypadku, gdy ważona suma jest większa od wartości progowej, funkcja aktywacji zwraca wartość wyjściową 1, w przeciwnym wypadku zwraca 0. Równanie \ref{eq:perc_activation} zawiera formalną reprezentację funkcji wyjścia.
+
+\begin{equation} \label{eq:perc_activation}
   output=\begin{cases}
     0& \text{jeśli $\sum_j$ $w_j$ $x_j$ $<$ threshold},\\
     1& \text{jeśli $\sum_j$ $w_j$ $x_j$ $\geq$ threshold}.
   \end{cases}
-\end{align}
+\end{equation}
 
-\citet{widrow1960} przedstawili ADALINE - fizyczne urządzenie i jednowarstwową sztuczną sieć neuronową (Rysunek \ref{fig:ADALINE}), która uczona była za pomocą szczególnego przypadku do dzisiaj wykorzystywanej metody optymalizacji opartej na gradiencie - \textit{stochastic gradient descent}.
+Algorytm uczenia perceptronu w $T$ iteracjach dla $N$ obserwacji uczących i $M$ wag przedstawiony został w Algorytm \ref{alg:perceptron}.
+
+\begin{algorithm}
+\caption{Algorytm uczenia perceptronu}\label{alg:perceptron}
+  \begin{algorithmic}[1]
+    \State Inicjalizacja losowych wag $W$
+    \For{$t \in \{1,\dots,T\}$}
+      \For{$i \in \{1,\dots,N\}$}
+        \State {$E = y - \sigma(W_{t-1} \cdot \mathbf{x_i})$}
+        \For{$j \in \{1,\dots,M\}$}
+          \State {$W_j = W_j + \alpha \cdot E \cdot \sigma^\prime(W_j \cdot x) \cdot x_j$}
+        \EndFor
+      \EndFor
+    \EndFor
+  \end{algorithmic}
+\end{algorithm}
+
+\citet{widrow1960} przedstawili ADALINE - jednowarstwową sztuczną sieć neuronową (Rysunek \ref{fig:ADALINE}), która uczona była za pomocą szczególnego przypadku do dzisiaj wykorzystywanej metody optymalizacji opartej na gradiencie - \textit{stochastic gradient descent}.
 
 \begin{figure}[h]
   \centering
@@ -171,9 +196,7 @@ Jednym z pierwszych przykładów architektury, którą można uznać za wielowar
 
 Pomimo obiecujących początków i optymizmu towarzyszącemu nowemu odkryciu, badania nad sztucznymi sieciami neuronowymi zostały w dużej części porzucone za sprawą publikacji \citet{minsky1969}. Nakreślili oni granice możliwości modeli liniowych (w tym perceptronu i jednowarstwowych sieci neuronowych) jako systemu uczącego się. W szczególności udowodnili, że z wykorzystaniem tego typu algorytmów nie da się odwzorować funkcji logicznej XOR. Ich odkrycie zakończyło pierwszy okres popularności sieci neuronowych, zwany \textit{cybernetyką}.
 
-Celem pracy \citet{fukushima1980} było zaproponowanie sztucznej sieci neuronowej, która mogłaby być wiernym modelem procesu rozpoznawania wzorów i kszałtów geometrycznych przez człowieka. Przedstawiono w niej model uczenia bez nadzoru, nazwany wówczas Neocognitron (będącą rozszerzeniem modelu Cognitron, zaproponowanego wcześniej przez Autora, por. \citet{fukushima1975}) i zastosowano architekturę, która jest protoplastą szeroko stosowanych sieci konwolucyjnych (używanych jednak obecnie do rozwiązywania problemów ,,z nauczycielem''). Fukushima wprowadzał do modelu jako sygnał dwuwymiarową macierz, po której następujował szereg struktur składających się z pary warstw ukrytych odpowiadających komórkom niższego i wyższego rzędu (\textit{S-layer} oraz \textit{C-layer}). Schemat opisywanej architektury zaprezentowany został na Rysunku \ref{fig:neocognitron}. Istotnym z punktu widzenia \textit{deep learningu} i \textit{pattern recognition} było zastosowanie w niej warstw złożonych z jednostek konwolucyjnych, których pole receptywne było dwuwymiarową macierzą skokowo przesuwaną przez macierz wartości wejściowych (Rysunek \ref{fig:convolution}). Zwracane przez warstwy konwolucyjne macierze stanowiły wartości wejściowe dla warstw konwolucyjnych wyższego rzędu, operujących na wyższym poziomie abstrakcji. Każdy z elementów ostatniej warstwy tak skonstruowanej sieci neuronowej odpowiadał tylko na jeden rodzaj sygnału wejściowego. Owe zabiegi pozwoliły na skonstruowanie modelu, który byłby niewrażliwy na małe zmiany w kształcie, obrót lub translację sygnału wejściowego (Rysunek \ref{fig:distortion}).
-
-%bez backprop!, bez poolingu
+Celem pracy \citet{fukushima1980} było zaproponowanie sztucznej sieci neuronowej, która mogłaby być wiernym modelem procesu rozpoznawania wzorów i kszałtów geometrycznych przez człowieka. Przedstawiono w niej model uczenia bez nadzoru, nazwany wówczas Neocognitron (będącą rozszerzeniem modelu Cognitron, zaproponowanego wcześniej przez Autora, por. \citet{fukushima1975}) i zastosowano architekturę, która jest protoplastą szeroko stosowanych sieci konwolucyjnych (używanych jednak obecnie do rozwiązywania problemów ,,z nauczycielem''). Fukushima wprowadzał do modelu jako sygnał dwuwymiarową macierz, po której następujował szereg struktur składających się z pary warstw ukrytych odpowiadających komórkom niższego i wyższego rzędu (\textit{S-layer} oraz \textit{C-layer}). Schemat opisywanej architektury zaprezentowany został na Rysunku \ref{fig:neocognitron}. Istotnym z punktu widzenia \textit{deep learningu} i \textit{pattern recognition} było zastosowanie w niej warstw złożonych z jednostek konwolucyjnych, których pole receptywne było dwuwymiarową macierzą skokowo przesuwaną przez macierz wartości wejściowych (Rysunek \ref{fig:convolution}). Zwracane przez warstwy konwolucyjne macierze stanowiły wartości wejściowe dla warstw konwolucyjnych wyższego rzędu, operujących na wyższym poziomie abstrakcji. Każdy z elementów ostatniej warstwy tak skonstruowanej sieci neuronowej odpowiadał tylko na jeden rodzaj sygnału wejściowego. Owe zabiegi pozwoliły na skonstruowanie modelu, który byłby niewrażliwy na małe zmiany w kształcie, obrót lub translację sygnału wejściowego (Rysunek \ref{fig:distortion}). Należy jednak zwrócić uwagę na fakt, że ,,niewrażliwość'' na tego typu przekształcenia nie sprowadza się do takiego samego traktowania sygnału wejściowego przez pierwszą warstwę sieci. Sygnał wejściowy poddany na przykład translacji interpretowany jest przez inny zestaw neuronów niż pierwotny sygnał. Te same cechy tych sygnałów są jednak, ze względu na wykorzystanie jednostek konwolucyjnych, wykrywane niezależnie od ich położenia - mowa zatem raczej o równoważności, a nie niezmienności w zależności od tego typu zmian w sygnale wejściowym.
 
 \begin{figure}[h]
   \centering
@@ -195,14 +218,56 @@ Celem pracy \citet{fukushima1980} było zaproponowanie sztucznej sieci neuronowe
 
 Kolejna fala popularności sieci neuronowych została zapoczątkowana przez interdyscyplinarny ruch - koneksjonizm (ang. \textit{connectionism}), określany również jako modele PDP (równoległego rozproszonego przetwarzania informacji). Wiele idei wywodzących się z cybernetyki zostało w tym okresie zaadaptowanych do badań nad charakterem poznania, por. \citet{touretzky1985}. Jedną z nich jest pomysł rozproszonej reprezentacji \citep{hinton1986}, opisywany także w pracy \citet{touretzky1985} jako inspirowany naturą i z niej się wywodzący. Przedstawia on założenie, że każdy sygnał wejściowy powinien być reprezentowany przez wiele cech systemu, a każda cecha powinna być włączona w tworzenie reprezentacji możliwie wielu sygnałów wejściowych. Wprowadzenie tej architektury było również odpowiedzią na krytykę koneksjonizmu, a jej wykorzystanie dowodem na to, że teorie wchodzące w skład tego paradygmatu pozwalają na stworzenie systemu zdolnego do rozwiązywania skomplikowanych problemów. Koncept rozproszonej reprezentacji pozostaje kluczowym komponentem konstruowanych obecnie sieci neuronowych, por. \citet{goodfellow2016}.
 
-W tym okresie, oprócz przełomu na polu nauk poznawczych, nastąpił również rozwój metod optymalizacyjnych. Praca \citet{rumelhart1986} dowiodła empirycznie skuteczność algorytmu propagacji wstecznej (ang. \textit{backpropagation}) w przyspieszaniu procesu uczenia sieci neuronowych, co przyczyniło się do wzrostu popularności owej metody i pozwoliło na wykorzystywanie sieci neuronowych do szerszego zakresu problemów. Ta procedura optymalizacji, przedstawiona po raz pierwszy w pracy \citet{linnainmaa1970}, polegała na iteracyjnym korygowaniu wartości wag w sieciach neuronowych w celu minimalizacji wybranego kryterium błędu. W wyniku tego procesu, neurony warstw ukrytych, których stan lub zadanie nie zostało zawczasu ustalone, mogły reprezentować istotne cechy sygnału wejściowego. Możliwość wykrywania cech sygnału wejściowego bez ich wskazywania w sposób jawny, miała w znaczny sposób odróżniać tę metodę od sposobów uczenia skonstruowanych w erze cybernetyki. Potwierdzeniem tej tezy był fakt wygrania międzynarodowego konkursu predykcyjnego poprzez wykorzystanie modelu sieci neuronowych uczonego za pomocą algorytmu propagacji wstecznej \citep{wan1993}. W publikacji \citet{rumelhart1986} zaproponowano również pewną modyfikację do metody SGD - metodę pędu (ang. \textit{momentum method}), która, inspirowana zjawiskiem fizycznym, miała zapobiec zbyt długiemu oscylowaniu wokół ekstremów funkcji celu w optymalizacji gradientowej.
+W tym okresie, oprócz przełomu na polu nauk poznawczych, nastąpił również rozwój metod optymalizacyjnych. Praca \citet{rumelhart1986} dowiodła empirycznie skuteczność algorytmu propagacji wstecznej (ang. \textit{backpropagation}) w przyspieszaniu procesu uczenia sieci neuronowych, co przyczyniło się do wzrostu popularności owej metody i pozwoliło na wykorzystywanie sieci neuronowych do szerszego zakresu problemów. Ta procedura optymalizacji, przedstawiona po raz pierwszy w pracy \citet{linnainmaa1970}, polegała na iteracyjnym korygowaniu wartości wag w sieciach neuronowych w celu minimalizacji wybranego kryterium błędu (Algorytm \ref{alg:backpropagation}). W pracy \citet{rumelhart1986} neurony warstw ukrytych, których stan lub zadanie nie zostało zawczasu ustalone, mogły reprezentować istotne cechy sygnału wejściowego. Możliwość wykrywania cech sygnału wejściowego bez ich wskazywania w sposób jawny, miała w znaczny sposób odróżniać przedstawiony system od sposobów uczenia skonstruowanych w erze cybernetyki. Potwierdzeniem tej tezy był fakt wygrania międzynarodowego konkursu predykcyjnego poprzez wykorzystanie modelu sieci neuronowych uczonego z użyciem algorytmu propagacji wstecznej \citep{wan1993}. W publikacji \citet{rumelhart1986} zaproponowano również pewną modyfikację do metody SGD - metodę pędu (ang. \textit{momentum method}), która, inspirowana zjawiskiem fizycznym, miała zapobiec zbyt długiemu oscylowaniu wokół ekstremów funkcji celu w optymalizacji gradientowej.
 
-%opis propagacji wstecznej może?
-%+wzorki na backprop
+\begin{algorithm}
+\caption{Algorytm propagacji wstecznej}\label{alg:backpropagation}
+  \begin{algorithmic}[1]
+    \State Inicjalizacja losowych wag $W$
+    \For{$t \in \{1,\dots,T\}$}
+      \For{$e \in \{1,\dots,N\}$}
+        \State Oblicz wartości wejściowe $in_i$ i wyjściowe $out_i$ każdego neuronu dla $x_i$
+        \For{$(j,i)$ (wszystkich wag idąc wstecz)}
+          \If{i jest neuronem warstwy wyjściowej}
+            \State $ \Delta_i = (y_i-out_i) \cdot \sigma^\prime(in_i) $
+          \Else
+            \State $ \Delta_i = \sigma^\prime(in_i)\sum_{k}w_{i,k}\Delta_k $
+          \EndIf
+          \State $ W_{j,i} = W_{j,i}+\alpha \cdot {out_j} \cdot \Delta_i $
+        \EndFor
+      \EndFor
+    \EndFor
+  \end{algorithmic}
+\end{algorithm}
 
-Jednakże, ruch koneksjonizmu utrzymywał zainteresowanie środowisk naukowych i biznesowych tylko do połowy lat 90. Nieproporcjonalne oczekiwania co do możliwości sztucznych sieci neuronowych oraz pojawienie się innych, bardziej obiecujących metod sprawiły, że inwestorzy wycofali swoje wsparcie.
+Algorytm propagacji wstecznej, choć będący bardzo użytecznym narzędziem, nie spełnił pokładanych w nim nadziei i nie był rozwiazaniem wszystkich problemów tego typu modeli. Pomimo faktu, że pozwalał na uczenie głebokich sieci, wydawało się, że spektrum jego zastosowań mieści się tylko w zakresie płytkich architektur. Większość sieci, które były projektowane ograniczały się do kilku warstw ukrytych, jako że dodawanie kolejnych warstw nie przynosiło oczekiwanych rezultatów. W kolejnych latach zaproponowano wiele usprawnień w zakresie algorytmów optymalizujących proces uczenia. Oprócz uprzednio wspomnianej metody pędu, przedstawiono również metody polegające na ustaleniu osobnych szybkości uczenia (ang. \textit{learning rate}) dla różnych sieci, por. \citet{jacobs1989}, a także \citet{almeida1990}. Uzasadnieniem tego zabiegu jest różnica w szybkości uczenia pomiędzy różnymi warstwami sieci, ale także pozwala on na dynamiczne zmniejszanie \textit{learning rate} w przypadku wag, w których następują częste zmiany kierunku gradientu. \citet{jacobs1989} zaproponował również połączenie tej metody z metodą pędu.
+Osobnym wariantem propagacji wstecznej jest Rprop - metoda zaproponowana przez \citet{riedmiller1993}, jak również metody od niej pochodzące: iRprop+ \citet{igel2003} oraz RMSProp \citet{tieleman2012}. Istotą Rprop jest wykorzystywanie wyłącznie znaku gradientu przy estymowaniu modelu z wykorzystaniem całego zbioru danych (ang. \textit{full-batch learning}) w celu zminimalizowania trudności z wyborem globalnej \textit{learning rate}. Krok uczenia jest zwiększany w przypadku, gdy znak gradientu pozostaje niezmienny, w przeciwnym wypadku zostaje zmniejszany. Optymalizacja z wykorzystaniem części zbioru danych (ang. \textit{mini-batch learning}) opiera się na założeniu o uśrednieniu kierunku gradientu dla wielu partii zbioru danych. Założenie to nie jest spełnione w przypadku wykorzystania algorytmu Rprop i z tego powodu nie jest wskazane stosowanie tej metody w połączeniu z \textit{mini-batch learning}. Ulepszenie algorytmu Rprop - iRProp+ polega na sprawdzeniu dodatkowych warunków dotyczących zmiany funkcji błędu poza sprawdzeniem zmiany kierunku gradientu. W przypadku zmiany kierunku gradientu i poprawy funkcji celu (zmniejszenia błędu), nie następuje korekta wag. Z kolei rozwiązaniem problemu braku możliwości uczenia modelu z wykorzystaniem wielu partii zbioru danych jest wspomniana metoda RMSProp. Metodę Rprop można alternatywnie przedstawić jako wykorzystanie klasycznej metody gradientowej przy dodatkowym dzieleniu przez wartość gradientu w każdym kolejnym kroku.
+Istotą RMSProp jest wprowadzenie ruchomej średniej kwadratu gradientu dla każdej z wag, tak, by w każdej kolejnej partii zbioru danych dzielić przez jej pierwiastek kwadratowy, zamiast dzielenia przez wartość gradientu (Równanie \ref{}).
 
-Aktualne zainteresowanie sieciami neuronowymi zostało zapoczątkowane jako skutek badań nad modelami o skomplikowanej architekturze (\citet{hintonetal2006}; \citet{bengio2007a}). Wtedy też tego typu architektury sieci neuronowych otrzymały określenie \textit{głębokich}. Miało na celu podkreślenie faktu wykorzystywania wielu ukrytych warstw, co dotychczas nie było możliwe z powodu niedostatecznej mocy obliczeniowej. Istotność tej cechy w sieciach neuronowych jest podkreślana w pracach \citet{bengio2007b} i \citet{bengio2011}.
+\begin{equation} \label{eq:rmsprop_ma}
+  rzeczy tutaj będą
+\end{equation}
+
+
+
+
+%rmsprop
+
+Ruch koneksjonizmu utrzymywał zainteresowanie środowisk naukowych i biznesowych tylko do połowy lat 90. Nieproporcjonalne oczekiwania co do możliwości sztucznych sieci neuronowych oraz pojawienie się innych, bardziej obiecujących metod sprawiły, że inwestorzy wycofali swoje wsparcie.
+
+%+generalizowanie(weight decay, weight sharing, early stopping, model averaging(ensemble), bayesian fitting on neural nets, dropout, pre-training
+
+%convnets - handwritten digits lecun 1980s (LeNet), pooling (problem w poolingu: tracisz dokładną informację o położeniu/względnym położeniu elementów)
+% But it still prejudices the network towards a particular way of solving the problem that we had in mind. We have an idea about how to do object recognition by gradually making bigger and bigger features. And by replicating these features across space. And we force the network to do it that way. T
+% daleko do wykrywania obrazu sądzono, bo więcej klas, reprezentacja 2d rzeczywistości 3d, więcej pikseli,
+
+%creating training data hofman&tresp, 1993
+
+%rectified linear units
+
+%labelling bias by humans
+
+Aktualne zainteresowanie sieciami neuronowymi zostało zapoczątkowane jako skutek badań nad modelami o skomplikowanej architekturze (\citet{hintonetal2006}; \citet{bengio2007a}). Wtedy też tego typu architektury sieci neuronowych otrzymały określenie \textit{głębokich}. Miało na celu podkreślenie faktu wykorzystywania wielu ukrytych warstw, co dotychczas nie było często eksplorowanym kierunkiem badań z powodu niedostatecznej mocy obliczeniowej. Istotność tej cechy w sieciach neuronowych jest podkreślana w pracach \citet{bengio2007b} i \citet{bengio2011}.
 
 
 
@@ -399,6 +464,7 @@ Google operuje na rynku PaaS pod 2008 roku (oferując swój App Engine), jednak�
 
 \begin{thebibliography}{99}
 \setlength{\itemsep}{0pt}%
+\bibitem[Almeida i Silva (1990)]{almeida1990} Almeida, L. i Silva, F. (1990). Speeding up backpropagation. Adv Neural Comput, 151-158
 \bibitem[Anderson i Warrilow (2016)]{anderson2016} Anderson, E. i Warrilow, M. (2016). Market Insight: Cloud Shift — The Transition of IT Spending From Traditional Systems to Cloud. Baza danych Gartner
 \bibitem[Andrychowicz et al. (2016)]{andrychowicz2016} Andrychowicz, M., Denil, M., Gomez, S., Hoffman, M. W., Pfau, D., Schaul, T. i de Freitas, N. (2016). Learning to learn by gradient descent by gradient descent. In Advances in Neural Information Processing Systems, s. 3981-3989
 \bibitem[Antonopoulos i Gilliam (2010)]{antonopoulos2010} Antonopoulos, N. i Gillam, L. (2010). Cloud computing, 1st ed. London: Springer, s. xx - xx
@@ -429,8 +495,10 @@ recognition unaffected by shift in position. Biological Cybernetics, 36(4):193�
 \bibitem[Hinton i Sejnowski (1986)]{hinton1986} Hinton, G. E. i Sejnowski, T. J. (1986). Learning and relearning in Boltzmann Machines. Parallel Distributed Processing, Rumelhart et al, Eds
 \bibitem[Hinton et al. (2006)]{hintonetal2006} Hinton, G., Osindero, S. i Teh, Y. (2006). A Fast Learning Algorithm for Deep Belief Nets. Neural Computation, 18(7), s. 1527-1554
 \bibitem[Hinton et al. (2012)]{hinton2012} Hinton, G., Deng, L., Yu, D., Dahl, G., Mohamed, A., Jaitly, N., Senior, A., Vanhoucke, V., Nguyen, P., Sainath, T. i Kingsbury, B. (2012). Deep Neural Networks for Acoustic Modeling in Speech Recognition: The Shared Views of Four Research Groups. IEEE Signal Processing Magazine, 29(6), s. 82-97
-\bibitem[Ivakhnenko i Lapa (1965)]{ivakhnenko1965} Ivakhnenko, A. G. i Lapa, V. G. (1965). Cybernetic Predicting Devices. CCM Information Corporation.
-\bibitem[Ivakhnenko i Lapa (1967)]{ivakhnenko1967} Ivakhnenko, A. G., Lapa, V. G., and McDonough, R. N. (1967). Cybernetics and forecasting techniques. American Elsevier, NY.
+\bibitem[Igel i Husken (2003)]{igel2003} Igel, C. i Hüsken, M. (2003). Empirical evaluation of the improved Rprop learning algorithms. Neurocomputing, 50, 105-123
+\bibitem[Ivakhnenko i Lapa (1965)]{ivakhnenko1965} Ivakhnenko, A. G. i Lapa, V. G. (1965). Cybernetic Predicting Devices. CCM Information Corporation
+\bibitem[Ivakhnenko i Lapa (1967)]{ivakhnenko1967} Ivakhnenko, A. G., Lapa, V. G., and McDonough, R. N. (1967). Cybernetics and forecasting techniques. American Elsevier, NY
+\bibitem[Jacobs (1989)]{jacobs1989} Jacobs, R. A. (1988). Increased rates of convergence through learning rate adaptation. Neural networks, 1(4), 295-307
 \bibitem[Jermain et al. (2015)]{jermain2015} Jermain, C. L., Rowlands, G. E., Buhrman, R. A., i Ralph, D. C. (2015). GPU-accelerated micromagnetic simulations using cloud computing. arXiv preprint arXiv:1505.01207
 \bibitem[Kleinrock (2005)]{kleinrock2005} Kleinrock, L., A Vision for the Internet. ST Journal for Research, tom 2, nr 1, s. 4–5
 \bibitem[Krizhevsky et al. (2012)]{krizhevsky2012} Krizhevsky, A., Sutskever, I. i Hinton, G. (2012). Imagenet classification with deep convolutional neural networks. In Advances in neural information processing systemsk, s. 1097-1105
@@ -448,6 +516,7 @@ Taylor expansion of the local rounding errors. Praca magisterska, Uniwersytet w 
 \bibitem[Mnih et al. (2013)]{mnih2013} Mnih, V., Kavukcuoglu, K., Silver, D., Graves, A., Antonoglou, I., Wierstra, D. i Riedmiller, M. (2013). Playing atari with deep reinforcement learning. arXiv preprint arXiv:1312.5602
 \bibitem[Mustafa et al. (2015)]{mustafa2015} Mustafa, S., Nazir, B., Hayat, A., Khan, A. i Madani, S. (2015). Resource management in cloud computing: Taxonomy, prospects, and challenges. Computers and Electrical Engineering, 47, s. 186-203
 \bibitem[OECD (2014)]{oecd2014} OECD (2014). Cloud Computing: The Concept, Impacts and the Role of Government Policy. OECD Digital Economy Papers, No. 240, OECD Publishing, Paris
+\bibitem[Riedmiller i Braun (1993)]{riedmiller1993} Riedmiller, M. i Braun, H. (1993). A direct adaptive method for faster backpropagation learning: The RPROP algorithm. In Neural Networks, 1993., IEEE International Conference on (s. 586-591). IEEE
 \bibitem[Rosenblatt (1957)]{rosenblatt1957} Rosenblatt, F. (1957). The Perceptron--a perceiving and recognizing automaton. Report 85-460-1, Cornell Aeronautical Laboratory
 \bibitem[Rumelhart et al. (1986)]{rumelhart1986} Rumelhart, D. E., Hinton, G. E. i Williams, R. J. (1986). Learning representations by back-propagating errors. Nature, 323, 533-536.
 \bibitem[Shetty (2016)]{shetty2016} Shetty, S. (2016).  Application of Convolutional Neural Network for Image Classification on Pascal VOC Challenge 2012 dataset. arXiv preprint arXiv:1607.03785
@@ -456,6 +525,7 @@ Taylor expansion of the local rounding errors. Praca magisterska, Uniwersytet w 
 \bibitem[Srivastava et al. (2014)]{srivastava2014} Srivastava, N., Hinton, G. E., Krizhevsky, A., Sutskever, I. i Salakhutdinov, R. (2014). Dropout: a simple way to prevent neural networks from overfitting. Journal of Machine Learning Research, 15(1), s. 1929-1958
 \bibitem[Strom (2015)]{strom2015} Strom, N. (2015). Scalable distributed DNN training using commodity GPU cloud computing. INTERSPEECH (tom 7, s. 10)
 \bibitem[Szegedy (2014)]{szegedy2014} Szegedy, C. et al. (2014). Going deeper with convolutions. arXiv preprint arXiv:1409.4842
+\bibitem[Tieleman i Hinton (2012)]{tieleman2012} Tieleman, T. i Hinton, G. (2012). Lecture 6.5-rmsprop: Divide the gradient by a running average of its recent magnitude. COURSERA: Neural networks for machine learning, 4(2)
 \bibitem[Touretzky i Hinton (1985)]{touretzky1985} Touretzky, D. S. i Hinton, G. E. (1985, August). Symbols among the neurons: Details of a connectionist inference architecture. In IJCAI (tom 85, s. 238-243)
 \bibitem[Vanhoucke et al. (2011)]{vanhoucke2011} Vanhoucke, V., Senior, A. i Mao, M. Z. (2011). Improving the speed of neural networks on CPUs. In Proc. Deep Learning and Unsupervised Feature Learning NIPS Workshop (tom 1, s. 4)
 \bibitem[Von Melchner et al. (2000)]{vonmelchner2000} Von Melchner, L., Pallas, S. L. i Sur, M. (2000). Visual behaviour mediated by retinal projections directed to the auditory pathway. Nature, 404(6780), 871-876
