@@ -78,9 +78,11 @@ plot_model(model, to_file='model.png')
 
 # In[32]:
 
+csv_logger = CSVLogger('test_mnist_results.log')
+
 model.fit(x_train, y_train,
           batch_size=batch_size,
           epochs=epochs,
           verbose=2,
-          validation_data=(x_test, y_test))
-
+          validation_data=(x_test, y_test),
+          callbacks=[csv_logger])
