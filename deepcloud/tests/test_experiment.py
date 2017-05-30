@@ -1,10 +1,14 @@
 import boto3, subprocess
 import datetime
 import time
-import pandas as pd
-import numpy as np
+import argparse
 import fabric
 from fabric.api import run, hide
+
+def parseArgs():
+    parser = argparse.ArgumentParser(description='Experiment specs')
+    parser.add_argument('--instance_type', type=str, help='instance type')
+    return  parser.parse_args()
 
 class benchmark:
     def __init__(self, experiments, instance_type, image_id="ami-a3b3d4b5", key_name='dpcld_test1'):
@@ -16,9 +20,6 @@ class benchmark:
         self.client = boto3.client('ec2')
         self.ec2 = boto3.resource('ec2')
         self.p_ids = []
-        #self.instances = self.setUpInstances()
-
-        #self.configureInstances()
 
     def setUpInstances(self):
         num_inst = len(experiments)
@@ -27,7 +28,10 @@ class benchmark:
                                 InstanceType=self.instance_type,
                                 MinCount=num_inst,
                                 MaxCount=num_inst,
-                                KeyName=self.key_name)
+                                KeyName=self.key_name,
+                                IamInstanceProfile={
+                                    'Arn':'arn:aws:iam::465729247037:instance-profile/S3_Admin_Access'}
+                                )
 
         assert response.get('ResponseMetadata').get('HTTPStatusCode') == 200, "Request ended with an error (HTTPStatusCode != 200)"
         assert len(response.get('Instances')) == num_inst, "Number of instances launched is equal to specified"
@@ -63,9 +67,11 @@ class benchmark:
 
     def runExperiment(self, instance, experiment):
         fabric.api.env.host_string = 'ec2-user@{}'.format(instance.public_dns_name)
+        run('mkdir -p logs')
         run('nohup python3 -u test_{0}_{1}.py \
-        --dataset {0} --architecture {1} --run_date {2} \
-        >{2}_{0}_{1}.log 2>{2}_{0}_{1}.err < /dev/null &'.format(*experiment, self.run_date), pty=False)
+        --run_date {2} --dataset {0} --architecture {1} --instance_type {3} \
+        >logs/{2}_{0}_{1}_{3}.log 2>logs/{2}_{0}_{1}_{3}.err < /dev/null &'
+            .format(*experiment, self.run_date, self.instance_type), pty=False)
         self.p_ids.append((instance.id, run('pgrep -f "python3 -u test"')))
 
     def getExperimentLogs(self):
@@ -85,7 +91,8 @@ class benchmark:
                     running_instances.remove(instance)
                     continue
 
-                rSync(instance.public_dns_name)
+                self.rSync(instance.public_dns_name)
+                self.syncWithS3()
 
                 try:
                     run('pgrep -f "python3 -u test"')
@@ -94,7 +101,7 @@ class benchmark:
                     running_instances.remove(instance)
                     continue
 
-                time.sleep(1)
+                time.sleep(60)
 
             print('{}: synchronized logs from all instances'.format(datetime.datetime.now().isoformat()))
         else:
@@ -102,18 +109,25 @@ class benchmark:
 
     def rSync(self, public_dns):
         fabric.operations.local('rsync -aL -e "ssh -i ~/.ssh/{}.pem -o StrictHostKeyChecking=no" \
-        --include="/home/ec2-user/*" --include="*.log" --include="*.err" \
+        --include="/home/ec2-user/logs/*" --include="*.log" --include="*.err" \
         --include="*.out" --include="*.png" --exclude="*" \
-        ec2-user@{}:/home/ec2-user/ \
+        ec2-user@{}:/home/ec2-user/logs/ \
         ~/Studia/mgr/deepcloud/tests/logs/'\
                                 .format(self.key_name, public_dns))
 
-experiments = [("mnist","kerasdef")]
+    def syncWithS3(self):
+        run('aws s3 sync /home/ec2-user/logs s3://deepcloud-logs/ --exclude="*"\
+        --include="*.log" --include="*.err" \
+        --include="*.out" --include="*.png" --region "us-east-2"')
 
-benchmark_td1 = benchmark(experiments=experiments,instance_type='t2.micro')
-benchmark_td1.setUpInstances()
-benchmark_td1.configureInstances()
-benchmark_td1.runExperiments()
-benchmark_td1.getExperimentLogs()
+if __name__ == "__main__":
+    experiments = [("mnist","kerasdef")]#,("cifar","kerasdef")]
+    args = parseArgs()
 
-term_responses = [_.terminate() for _ in benchmark_td1.instances]
+    benchmark_td1 = benchmark(experiments=experiments,instance_type=args.instance_type)
+    benchmark_td1.setUpInstances()
+    benchmark_td1.configureInstances()
+    benchmark_td1.runExperiments()
+    benchmark_td1.getExperimentLogs()
+
+    term_responses = [_.terminate() for _ in benchmark_td1.instances]
