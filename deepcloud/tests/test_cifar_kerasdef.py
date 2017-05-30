@@ -1,17 +1,21 @@
-
-# coding: utf-8
-
-# In[1]:
-
-from __future__ import print_function
 import keras
 from keras.datasets import cifar10
 from keras.preprocessing.image import ImageDataGenerator
 from keras.models import Sequential
 from keras.layers import Dense, Dropout, Activation, Flatten
 from keras.layers import Conv2D, MaxPooling2D
+from keras.utils import plot_model
 import numpy as np
+import pydot
+import graphviz
+import argparse
 
+parser = argparse.ArgumentParser(description='Experiment specs')
+parser.add_argument('--run_date', type=str, help='run date')
+parser.add_argument('--dataset', type=str, help='dataset')
+parser.add_argument('--architecture', type=str, help='model architecture')
+
+args = parser.parse_args()
 
 # In[2]:
 
@@ -24,12 +28,9 @@ data_augmentation = True
 # In[15]:
 
 (x_train, y_train), (x_test, y_test) = cifar10.load_data()
-a = np.random.randint(0, 50000, 10000)
-b = np.random.randint(0, 10000, 2000)
-(x_train, y_train), (x_test, y_test) = (x_train[a], y_train[a]), (x_test[b], y_test[b])
-'''print('x_train shape:', x_train.shape)
-print(x_train.shape[0], 'train samples')
-print(x_test.shape[0], 'test samples')'''
+#a = np.random.randint(0, 50000, 10000)
+#b = np.random.randint(0, 10000, 2000)
+#(x_train, y_train), (x_test, y_test) = (x_train[a], y_train[a]), (x_test[b], y_test[b])
 
 
 # In[16]:
@@ -86,10 +87,13 @@ x_test = x_test.astype('float32')
 x_train /= 255
 x_test /= 255
 
+# In[ ]:
 
-# In[21]:
+plot_model(model, to_file='{}_{}.png'.format(args.dataset, args.architecture))
 
-csv_logger = CSVLogger('test_cifar_results.log')
+# In[32]:
+
+csv_logger = keras.callbacks.CSVLogger('{}_{}_{}.out'.format(args.run_date, args.dataset, args.architecture))
 
 model.fit(x_train, y_train,
           batch_size=batch_size,
