@@ -1,10 +1,12 @@
-import keras
-from keras.datasets import mnist
+from keras.preprocessing import sequence
 from keras.models import Sequential
-from keras.layers import Dense, Dropout, Flatten
-from keras.layers import Conv2D, MaxPooling2D
-from keras import backend as K
+from keras.layers import Dense, Dropout, Activation
+from keras.layers import Embedding
+from keras.layers import LSTM
+from keras.layers import Conv1D, MaxPooling1D
+from keras.datasets import imdb
 from keras.utils import plot_model
+import keras
 import pydot
 import graphviz
 import argparse
@@ -29,8 +31,8 @@ class timeHistory(keras.callbacks.Callback):
     def on_epoch_end(self, epoch, logs={}):
         self.epoch_end = time.time()
         self.epoch_times.append(self.epoch_end-self.epoch_begin)
-        print('Epoch {}:{}'.format(
-            len(epoch_times),
+        print('End of epoch {}:{}'.format(
+            len(self.epoch_times),
             self.epoch_end-self.epoch_begin)
               )
         print(self.batch_times)
@@ -43,38 +45,39 @@ parser.add_argument('--instance_type', type=str, help='instance type')
 
 args = parser.parse_args()
 
-batch_size = 128
-num_classes = 10
-epochs = 12
+max_features = 20000
+maxlen = 100
+embedding_size = 128
 
-img_rows, img_cols = 28, 28
+kernel_size = 5
+filters = 64
+pool_size = 4
 
-(x_train, y_train), (x_test, y_test) = mnist.load_data()
-x_train = x_train.reshape(x_train.shape[0], img_rows, img_cols, 1)
-x_test = x_test.reshape(x_test.shape[0], img_rows, img_cols, 1)
-input_shape = (img_rows, img_cols, 1)
-x_train = x_train.astype('float32')
-x_test = x_test.astype('float32')
-x_train /= 255
-x_test /= 255
+lstm_output_size = 70
 
-y_train = keras.utils.to_categorical(y_train, num_classes)
-y_test = keras.utils.to_categorical(y_test, num_classes)
+batch_size = 30
+epochs = 10
+
+(x_train, y_train), (x_test, y_test) = imdb.load_data(num_words=max_features)
+
+x_train = sequence.pad_sequences(x_train, maxlen=maxlen)
+x_test = sequence.pad_sequences(x_test, maxlen=maxlen)
 
 model = Sequential()
-model.add(Conv2D(32, kernel_size=(3, 3),
-                 activation='relu',
-                 input_shape=input_shape))
-model.add(Conv2D(64, (3, 3), activation='relu'))
-model.add(MaxPooling2D(pool_size=(2, 2)))
+model.add(Embedding(max_features, embedding_size, input_length=maxlen))
 model.add(Dropout(0.25))
-model.add(Flatten())
-model.add(Dense(128, activation='relu'))
-model.add(Dropout(0.5))
-model.add(Dense(num_classes, activation='softmax'))
+model.add(Conv1D(filters,
+                 kernel_size,
+                 padding='valid',
+                 activation='relu',
+                 strides=1))
+model.add(MaxPooling1D(pool_size=pool_size))
+model.add(LSTM(lstm_output_size))
+model.add(Dense(1))
+model.add(Activation('sigmoid'))
 
-model.compile(loss=keras.losses.categorical_crossentropy,
-              optimizer=keras.optimizers.Adadelta(),
+model.compile(loss='binary_crossentropy',
+              optimizer='adam',
               metrics=['accuracy'])
 
 plot_model(model, to_file='logs/{}_{}.png'.format(args.dataset, args.architecture))

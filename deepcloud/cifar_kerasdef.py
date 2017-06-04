@@ -30,8 +30,8 @@ class timeHistory(keras.callbacks.Callback):
     def on_epoch_end(self, epoch, logs={}):
         self.epoch_end = time.time()
         self.epoch_times.append(self.epoch_end-self.epoch_begin)
-        print('Epoch {}:{}'.format(
-            len(epoch_times),
+        print('End of epoch {}:{}'.format(
+            len(self.epoch_times),
             self.epoch_end-self.epoch_begin)
               )
         print(self.batch_times)

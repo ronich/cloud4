@@ -21,6 +21,7 @@ class benchmark:
         self.ec2 = boto3.resource('ec2')
         self.p_ids = []
 
+
     def setUpInstances(self):
         num_inst = len(experiments)
 
@@ -57,7 +58,7 @@ class benchmark:
         fabric.api.env.key_filename = '~/.ssh/{}.pem'.format(self.key_name)
         fabric.api.env.disable_known_hosts
         fabric.api.hide('output')
-        fabric.operations.put('~/Studia/mgr/deepcloud/tests/test_{}_{}.py'.format(*experiment), '.')
+        fabric.operations.put('./{}_{}.py'.format(*experiment), '.')
         run('sudo pip3 install git+git://github.com/fchollet/keras.git --upgrade')
         run('sudo pip3 install pydot')
         run('sudo pip3 install graphviz')
@@ -67,13 +68,12 @@ class benchmark:
 
     def runExperiment(self, instance, experiment):
         fabric.api.env.host_string = 'ec2-user@{}'.format(instance.public_dns_name)
-        print(fabric.api.env.host_string)
         run('mkdir -p logs')
-        run('nohup python3 -u test_{0}_{1}.py \
+        run('nohup python3 -u {0}_{1}.py \
         --run_date {2} --dataset {0} --architecture {1} --instance_type {3} \
         >logs/{2}_{0}_{1}_{3}.log 2>logs/{2}_{0}_{1}_{3}.err < /dev/null &'
             .format(*experiment, self.run_date, self.instance_type), pty=False)
-        self.p_ids.append((instance.id, run('pgrep -f "python3 -u test"')))
+        self.p_ids.append((instance.id, run('pgrep python3')))
 
     def getExperimentLogs(self):
         running_instances = self.instances
@@ -97,7 +97,7 @@ class benchmark:
                 self.syncWithS3()
 
                 try:
-                    run('pgrep -f "python3 -u test"')
+                    run('pgrep python3')
                 except:
                     print('Process on instance {} not found'.format(instance.id))
                     running_instances.remove(instance)
@@ -114,8 +114,7 @@ class benchmark:
         --include="/home/ec2-user/logs/*" --include="*.log" --include="*.err" \
         --include="*.out" --include="*.png" --exclude="*" \
         ec2-user@{}:/home/ec2-user/logs/ \
-        ~/Studia/mgr/deepcloud/tests/logs/'\
-                                .format(self.key_name, public_dns))
+        ./logs/'.format(self.key_name, public_dns))
 
     def syncWithS3(self):
         run('aws s3 sync /home/ec2-user/logs s3://deepcloud-logstash/ --exclude="*"\
@@ -123,12 +122,12 @@ class benchmark:
         --include="*.out" --include="*.png" --region "us-east-1"')
 
 if __name__ == "__main__":
-    experiments = [#("mnist","kerasdef"),
-                   ("mnist","custom")#,
-                   #("imdb","kerasdef"),
-                   #("imdb","lstm_kerasdef"),
-                   #("cifar","kerasdef"),
-                   #("cifar","custom")
+    experiments = [("mnist","kerasdef"),
+                   ("mnist","custom"),
+                   ("imdb","kerasdef"),
+                   ("imdb","lstm_kerasdef"),
+                   ("cifar","kerasdef"),
+                   ("cifar","custom")
                    ]
     args = parseArgs()
 

@@ -5,6 +5,7 @@ from keras.layers import Dense, Dropout, Flatten
 from keras.layers import Conv2D, MaxPooling2D
 from keras import backend as K
 from keras.utils import plot_model
+from keras.preprocessing.image import ImageDataGenerator
 import pydot
 import graphviz
 import argparse
@@ -29,8 +30,8 @@ class timeHistory(keras.callbacks.Callback):
     def on_epoch_end(self, epoch, logs={}):
         self.epoch_end = time.time()
         self.epoch_times.append(self.epoch_end-self.epoch_begin)
-        print('Epoch {}:{}'.format(
-            len(epoch_times),
+        print('End of epoch {}:{}'.format(
+            len(self.epoch_times),
             self.epoch_end-self.epoch_begin)
               )
         print(self.batch_times)
@@ -43,9 +44,9 @@ parser.add_argument('--instance_type', type=str, help='instance type')
 
 args = parser.parse_args()
 
-batch_size = 128
+batch_size = 64
 num_classes = 10
-epochs = 12
+epochs = 36
 
 img_rows, img_cols = 28, 28
 
@@ -61,20 +62,40 @@ x_test /= 255
 y_train = keras.utils.to_categorical(y_train, num_classes)
 y_test = keras.utils.to_categorical(y_test, num_classes)
 
+# generating data
+datagen = ImageDataGenerator(
+    featurewise_center=False,  # set input mean to 0 over the dataset
+    samplewise_center=False,  # set each sample mean to 0
+    featurewise_std_normalization=False,  # divide inputs by std of the dataset
+    samplewise_std_normalization=False,  # divide each input by its std
+    zca_whitening=False,  # apply ZCA whitening
+    rotation_range=0,  # randomly rotate images in the range (degrees, 0 to 180)
+    width_shift_range=0.1,  # randomly shift images horizontally (fraction of total width)
+    height_shift_range=0.1,  # randomly shift images vertically (fraction of total height)
+    horizontal_flip=False,  # randomly flip images
+    vertical_flip=False
+    )
+
 model = Sequential()
-model.add(Conv2D(32, kernel_size=(3, 3),
+model.add(Conv2D(64, kernel_size=(3, 3),
                  activation='relu',
                  input_shape=input_shape))
-model.add(Conv2D(64, (3, 3), activation='relu'))
+model.add(Conv2D(32, (3, 3), activation='relu'))
 model.add(MaxPooling2D(pool_size=(2, 2)))
-model.add(Dropout(0.25))
+model.add(Conv2D(16, (2, 2), activation='relu'))
+model.add(MaxPooling2D(pool_size=(2, 2)))
+model.add(Dropout(0.2))
 model.add(Flatten())
 model.add(Dense(128, activation='relu'))
+model.add(Dense(50, activation='relu'))
 model.add(Dropout(0.5))
 model.add(Dense(num_classes, activation='softmax'))
 
+# initiate RMSprop optimizer
+opt = keras.optimizers.rmsprop(lr=0.0001, decay=1e-6)
+
 model.compile(loss=keras.losses.categorical_crossentropy,
-              optimizer=keras.optimizers.Adadelta(),
+              optimizer=opt,
               metrics=['accuracy'])
 
 plot_model(model, to_file='logs/{}_{}.png'.format(args.dataset, args.architecture))
@@ -82,9 +103,15 @@ plot_model(model, to_file='logs/{}_{}.png'.format(args.dataset, args.architectur
 csv_logger = keras.callbacks.CSVLogger('logs/{}_{}_{}_{}.out'.format(args.run_date, args.dataset, args.architecture, args.instance_type))
 time_history = timeHistory()
 
-model.fit(x_train, y_train,
-          batch_size=batch_size,
-          epochs=epochs,
-          verbose=2,
-          validation_data=(x_test, y_test),
-          callbacks=[csv_logger, time_history])
+datagen.fit(x_train)
+
+model.fit_generator(
+    datagen.flow(
+        x_train, y_train, batch_size=batch_size
+        ),
+    steps_per_epoch=x_train.shape[0] // batch_size,
+    epochs=epochs,
+    verbose=2,
+    validation_data=(x_test, y_test),
+    callbacks=[csv_logger,
+               time_history])
