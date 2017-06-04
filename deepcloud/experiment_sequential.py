@@ -123,7 +123,7 @@ if __name__ == "__main__":
     experiments = [("mnist","kerasdef"),
                    ("mnist","custom"),
                    ("imdb","kerasdef"),
-                   ("imdb","lstm_kerasdef"),
+                   ("imdb","lstmkerasdef"),
                    ("cifar","kerasdef"),
                    ("cifar","custom")
                    ]

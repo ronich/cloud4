@@ -31,9 +31,16 @@ class timeHistory(keras.callbacks.Callback):
         self.epoch_end = time.time()
         self.epoch_times.append(self.epoch_end-self.epoch_begin)
         _d = dict()
+        _d['dataset'] = args.dataset
+        _d['architecture'] = args.architecture
+        _d['instance_type'] = args.instance_type
         _d['epoch'] = len(self.epoch_times)
         _d['time'] = self.epoch_end-self.epoch_begin
         _d['batch_times'] = self.batch_times
+        _d['loss'] = logs.get('loss')
+        _d['val_loss'] = logs.get('val_loss')
+        _d['acc'] = logs.get('acc')
+        _d['val_acc'] = logs.get('val_acc')
         print(_d)
 
 parser = argparse.ArgumentParser(description='Experiment specs')
