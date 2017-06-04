@@ -29,11 +29,11 @@ class timeHistory(keras.callbacks.Callback):
     def on_epoch_end(self, epoch, logs={}):
         self.epoch_end = time.time()
         self.epoch_times.append(self.epoch_end-self.epoch_begin)
-        print('End of epoch {}:{}'.format(
-            len(self.epoch_times),
-            self.epoch_end-self.epoch_begin)
-              )
-        print(self.batch_times)
+        _d = dict()
+        _d['epoch'] = len(self.epoch_times)
+        _d['time'] = self.epoch_end-self.epoch_begin
+        _d['batch_times'] = self.batch_times
+        print(_d)
 
 parser = argparse.ArgumentParser(description='Experiment specs')
 parser.add_argument('--run_date', type=str, help='run date')

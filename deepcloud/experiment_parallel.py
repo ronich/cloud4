@@ -138,3 +138,5 @@ if __name__ == "__main__":
     benchmark_td1.getExperimentLogs()
 
     term_responses = [_.terminate() for _ in benchmark_td1.instances]
+
+    print(term_responses)
