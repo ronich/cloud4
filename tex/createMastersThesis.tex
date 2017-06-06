@@ -408,7 +408,7 @@ Google operuje na rynku PaaS pod 2008 roku (oferując swój App Engine), jednak�
 Sukces głębokich sieci neuronowych przypisywany jest ich umiejętności reprezentacji danych wejściowych i odkrywania panujących w nich zależności z wykorzystaniem wielu ukrytych warstw \citep{lecun2015}. Kluczową rolę w ich budowaniu odegrało użycie procesorów graficznych, które pozwoliły na przyspieszenie uczenia tego typu architektur. Ich szerokie wykorzystanie spotkało się z reakcją ze strony dostawców usług \textit{cloud computingowych}, którzy wprowadzili do swoich ofert jednostki wyposażone w procesory graficzne i optymalizowane pod kątem obliczeń naukowych, wynajmując je po wyższych cenach wraz z obietnicą przyspieszenia operacji algebraicznych. Konfiguracje oferowane przez najpopularniejszych dostawców usług przetwarzania w chmurze przedstawione zostały w tabeli \ref{tab:gpu_units}. Spośród największych graczy, Amazon Web Services oraz Microsoft Azure oferują kompletne zestawy, optymalizowane pod kątem obliczeń naukowych (odpowiednio typy p2.* oraz N*), podczas gdy Google Cloud Platform w obecnie obowiązującej wersji beta pozwala na dołączanie kart graficznych do jednej z oferowanych maszyn. Ponadto, można zauważyć, że o ile jednostki podstawowe są bardzo podobne w przypadku AWS i Azure (p2.xlarge oraz NC6), o tyle wzrost dostępnej mocy obliczeniowej bardziej skomplikowanych jednostek jest znacznie szybszy w przypadku AWS. Wyłącznie w ramach Microsoft Azure są również oferowane jednostki nowszej generacji - NVIDIA Tesla M60.
 
 Ponadto, obecnie do wyboru jest także szeroki wachlarz oprogramowania służacego do konstruowania sieci neuronowych, również z wykorzystaniem GPU. Zaliczają się do nich takie narzędzia jak Caffe (Uniwersytet w Berkeley, \citet{jia2014}), CNTK (Microsoft Research, \citet{yu2014}), MXNet (Distributed Machine Learning Community, \citet{chen2015}), Tensorflow (Google, \citet{abadi2016}), Torch \citep{collobert2011}, Theano (Uniwersytet w Montrealu, \citet{alrfou2016}) oraz Keras (ONEIROS, \citet{chollet2015}). Jednym z głównych zadań problemu uczenia głebokich sieci neuronowych jest znalezienie optymalnego zestawu wag w każdej z warstw sieci, co jest zadaniem, które może zostać sparalelizowane. Każde z wymienionych narzędzi wspiera przetwarzanie równoległe, zarówno z użyciem wielordzeniowych jednostek centralnych, jak i procesorów graficznych. Obliczenia na GPU wykonywane są z pomocą bibliotek dostarczonych przez NVIDIA - cuDNN \citep{chetlur2014}.
-Praca \citet{shi2017} porównuje większość prezentowanych systemów oprogramowania ze sobą, przedstawiając ich silne i słabe strony w popularnych problemach \textit{deep learningowych}.
+W pracy \citet{shi2016} dokonano porównania większości prezentowanych systemów oprogramowania ze sobą i przedstawiono ich silne i słabe strony w popularnych problemach \textit{deep learningowych}.
 
 \noindent
 \begin{tabular}
@@ -437,9 +437,15 @@ GCP & N/D & N/D & N/D & N/D & NVIDIA K80 \\
 \label{tab:gpu_units}
 \end{tabular}
 
-Istnieje uzasadniona potrzeba pomiaru, na jak dużą oszczędność czasową może liczyć osoba decydująca się na wspomaganie obliczeń naukowych procesorami graficznymi oferowanymi przez platformy \textit{cloud computingowe} i czy wiąże się to z dodatkowymi kosztami. Ekperyment ma na celu pomiar czasu potrzebnego na proces generacji różnych architektur głębokich sieci neuronowych na różnych zbiorach danych i związanego z tym kosztu, wybranie zbioru decyzji niezdominowanych (optymalnych w sensie Pareto), a także dostarczenie narzędzia pozwalającego na przeprowadzanie własnych eksperymentów w tym zakresie.
+Istnieje uzasadniona potrzeba pomiaru, na jak dużą oszczędność czasową może liczyć osoba decydująca się na wspomaganie obliczeń naukowych procesorami graficznymi oferowanymi przez platformy \textit{cloud computingowe} i czy wiąże się to z dodatkowymi kosztami. Ekperyment ma na celu pomiar czasu potrzebnego na proces generacji różnych architektur głębokich sieci neuronowych, na różnych zbiorach danych i związanego z tym kosztu, wybranie zbioru decyzji niezdominowanych (optymalnych w sensie Pareto), a także dostarczenie narzędzia pozwalającego na przeprowadzanie własnych eksperymentów w tym zakresie.
 Spośród przedstawionych w tabeli \ref{tab:gpu_units} konfiguracji wybrano jednostkę p2.xlarge oferowaną przez Amazon Web Services do porównania z podobnymi jednostkami bez procesorów graficznych ze względu na status lidera rynku i dojrzałość rozwiązań oferowanych przez tego dostawcę.
-W eksperymencie wykorzystana została także biblioteka Keras, w oparciu o backend Tensorflow. Powodem tej decyzji jest fakt, że została zbudowana w celu ułatwienia przeprowadzania tego typu eksperymentów i oferuje wysoki poziom abstrakcji przy konfigurowaniu architektur bez względu na wykorzystaną u jej podstaw bibliotekę naukową (obecnie możliwe jest wykorzystanie Tensorflow, Theano oraz Deeplearning4j).
+W eksperymencie wykorzystana została także biblioteka Keras, w oparciu o backend Tensorflow. Powodem tej decyzji jest fakt, że została zbudowana w celu ułatwienia przeprowadzania tego typu eksperymentów i oferuje wysoki poziom abstrakcji przy konfigurowaniu architektur bez względu na wykorzystaną u jej podstaw bibliotekę naukową (obecnie możliwe jest wykorzystanie Tensorflow, Theano oraz Deeplearning4j). Należy jednak zaznaczyć, że wszystkie wymienione narzędzia oferują elastyczne API i możliwość edytowania plików konfiguracyjnych dla optymalizowania ich wydajności. Celem przeprowadzanego eksperymentu nie jest porówywanie ich między sobą, nie ustalono zatem jednoznacznie wyższości jednej z bibliotek nad pozostałymi i może istnieć taka konfiguracja, która pozwoli na dalszą optymalizację metody rozwiązania problemu konstruowania sieci neuronowej.
+
+%tabela software, version, github commit id, cuDNN
+
+%tabela z architekturami? ile input/output/layers/parameters
+
+%tabela z wybranym hardware
 
 % co oferuja dostawcy (opisac hardware) + jaki wybralem
 % jaki jest software + jaki wybralem
@@ -452,6 +458,10 @@ W eksperymencie wykorzystana została także biblioteka Keras, w oparciu o backe
 % obrazki architektur
 
 %
+
+\clearpage
+
+\section{Efektywność kosztowa głębokich sieci neuronowych w chmurze}
 
 %tabela z czasami
 \begin{tabular}{lllll}
@@ -478,10 +488,6 @@ mnist & custom & c4.2xlarge & $101.53\pm0.68$ & $0.1152$ \\
 \bottomrule
 \label{tab:experiment_results}
 \end{tabular}
-
-\clearpage
-
-\section{Efektywność kosztowa głębokich sieci neuronowych w chmurze}
 
 \clearpage
 
@@ -583,6 +589,7 @@ Taylor expansion of the local rounding errors. Praca magisterska, Uniwersytet w 
 \bibitem[Schmidhuber i Hochreiter (1997)]{schmidhuber1997} Schmidhuber, J. i Hochreiter, S. (1997). Long short-term memory. Neural Comput, 9(8), s. 1735-1780
 \bibitem[Schmidhuber (2015)]{schmidhuber2015} Schmidhuber, J. (2015). Deep learning in neural networks: An overview. Neural networks, 61, 85-117
 \bibitem[Shetty (2016)]{shetty2016} Shetty, S. (2016).  Application of Convolutional Neural Network for Image Classification on Pascal VOC Challenge 2012 dataset. arXiv preprint arXiv:1607.03785
+\bibitem[Shi et al. (2016)]{shi2016} Shi, S., Wang, Q., Xu, P. i Chu, X. (2016). Benchmarking State-of-the-Art Deep Learning Software Tools. arXiv preprint arXiv:1608.07249
 \bibitem[Shroff (2010)]{shroff2010} Shroff, G. (2010). Enterprise cloud computing. 1st ed. Cambridge: Cambridge University Press
 \bibitem[Smith et al. (2009)]{smith2009} Smith D. M. et al. (2009). Hype Cycle for Cloud Computing (ID: G00168780). Baza danych Gartner
 \bibitem[Smolensky (1986)]{smolensky1986} Smolensky, P. (1986). Parallel distributed processing: Explorations in the microstructure of cognition, tom 1. Information Processing in Dynamical Systems: Foundations of Harmony Theory. MIT Press, Cambridge, MA, USA, 15, 18
