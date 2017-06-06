@@ -108,7 +108,7 @@ Celem niniejszej pracy jest zaproponowanie metody wyznaczania optymalnego koszto
 Odkrycia naukowe ostatnich lat w dziedzinach uczenia maszynowego i sztucznej inteligencji wpłynęły pozytywnie na ich popularność i liczbę potencjalnych zastosowań \citep{lecun2015}. Szczególna uwaga poświęcana jest sieciom neuronowym, które, choć pozwalają na rozwiązywanie dotychczas problematycznych zagadnień \citep{lecun2015}, są algorytmami wymagającymi znacznej ilości danych i mocy obliczeniowej, por. \citet{krizhevsky2012} i \citet{srivastava2014}. Ośrodki naukowe we współpracy z największymi firmami technologicznymi, jak Google czy Microsoft wykorzystują owe modele \citep{goodfellow2016} do rozwiązywania szeregu problemów takich jak klasyfikacja obrazów (\citet{krizhevsky2012}; \citet{shetty2016}; \citet{szegedy2014}; \citet{chen2016}) i przetwarzanie języka naturalnego \citep{hinton2012}. Kluczowa zaleta głębokich sieci neuronowych polega na możliwości budowania modelu z wykorzystaniem nieprzetworzonych danych. W przypadku klasycznych algorytmów \textit{machine learningowych}, konieczna jest inżynieria cech i ręczna ich ekstrakcja, podczas gdy wielowarstwowe sieci neuronowe są metodą, która w sposób automatyczny wykrywa występujące w zbiorach danych schematy, zależności, por. \citet{girschick2014}, \citet{gysel2016} i \citet{mnih2013}. Przykładowo, w przypadku klasyfikacji obrazów, pierwsza warstwa sieci neuronowej odpowiada za detekcję ogólnych jego cech, takich jak umiejscowienie krawędzi w kluczowych miejscach. Kolejna odpowiada za analizowanie ich położenia wzgledem siebie i wykrywanie pewnych motywów. Co do zasady, pierwsze warstwy odpowiadają za ogólne cechy przetwarzanych danych, podczas gdy każda kolejna ma za zadanie przechodzić na wyższy poziom szczegółowości.
 
 
-Na popularności zyskało wykorzystywanie procesorów graficznych (\textit{Graphics Processing Unit, GPU}) oferowanych przez Nvidia do poprawy wydajności procesu generacji tego typu struktur (\citet{jermain2015}; \citet{litvinenko2014}; \citet{strom2015}; \citet{vanhoucke2011}). Ponadto, giganci technologiczni inwestują w poszukiwanie potencjalnych sposobów na dalsze usprawnienie tego procesu, takich jak wykorzystanie bezpośrednio programowalnych macierzy bramek (\textit{Field-Programmable Gate Array}) czy rozwiązania opracowanego przez Wave Computing - \textit{Dataflow Processing Unit (DPU)}, por. \citet{gysel2016}; \citet{chen2016}; \citet{han2016}.
+Na popularności zyskało wykorzystywanie procesorów graficznych (\textit{Graphics Processing Unit, GPU}) oferowanych przez NVIDIA do poprawy wydajności procesu generacji tego typu struktur (\citet{jermain2015}; \citet{litvinenko2014}; \citet{strom2015}; \citet{vanhoucke2011}). Ponadto, giganci technologiczni inwestują w poszukiwanie potencjalnych sposobów na dalsze usprawnienie tego procesu, takich jak wykorzystanie bezpośrednio programowalnych macierzy bramek (\textit{Field-Programmable Gate Array}) czy rozwiązania opracowanego przez Wave Computing - \textit{Dataflow Processing Unit (DPU)}, por. \citet{gysel2016}; \citet{chen2016}; \citet{han2016}.
 
 Zarówno przeprowadzanie symulacji w chmurze, wykorzystywanie procesorów graficznych w celu poprawy wydajności generacji głębokich sieci neuronowych, jak i porównania poszczególnych jednostek były przedmiotem badań, por. \citet{calheiros2010}, \citet{github2017}, \citet{medium2017b}, \citet{hackernoon2017}. Nie przeprowadzono jednak analizy oszczędności czasowych wynikających ze stosowania \textit{GPU} w chmurze i brak jest odpowiedzi na pytanie, czy rekompensują one ich wyższą cenę w porównaniu do klasycznych jednostek.
 
@@ -405,10 +405,10 @@ Google operuje na rynku PaaS pod 2008 roku (oferując swój App Engine), jednak�
 \section{Eksperymentalne pomiary efektywności kosztowej deep learning}
 
 \noindent
-Sukces głębokich sieci neuronowych przypisywany jest ich umiejętności reprezentacji danych wejściowych i odkrywania panujących w nich zależności z wykorzystaniem wielu ukrytych warstw. Kluczową rolę w ich budowaniu odegrało użycie procesorów graficznych, które pozwoliły na przyspieszenie uczenia tego typu architektur. Ich szerokie wykorzystanie spotkało się z reakcją ze strony dostawców usług \textit{cloud computingowych}, którzy wprowadzili do swoich ofert jednostki wyposażone w procesory graficzne i optymalizowane pod kątem obliczeń naukowych, wynajmując je po wyższych cenach wraz z obietnicą przyspieszenia operacji algebraicznych. Konfiguracje oferowane przez najpopularniejszych dostawców usług przetwarzania w chmurze przedstawione zostały w tabeli \ref{tab:gpu_units}.
-Ponadto, obecnie do wyboru jest także szeroki wachlarz oprogramowania służacego do konstruowania sieci neuronowych, również z wykorzystaniem GPU. Zaliczają się do nich takie narzędzia jak Caffe \citep{}, CNTK, MXNet, Tensorflow, Torch, Theano, Keras .
-Praca \citet{} porównuje większość z nich ze sobą, przedstawiając ich silne i słabe strony w zadaniach \textit{deep learningowych}.
- %potrzebne źródła
+Sukces głębokich sieci neuronowych przypisywany jest ich umiejętności reprezentacji danych wejściowych i odkrywania panujących w nich zależności z wykorzystaniem wielu ukrytych warstw \citep{lecun2015}. Kluczową rolę w ich budowaniu odegrało użycie procesorów graficznych, które pozwoliły na przyspieszenie uczenia tego typu architektur. Ich szerokie wykorzystanie spotkało się z reakcją ze strony dostawców usług \textit{cloud computingowych}, którzy wprowadzili do swoich ofert jednostki wyposażone w procesory graficzne i optymalizowane pod kątem obliczeń naukowych, wynajmując je po wyższych cenach wraz z obietnicą przyspieszenia operacji algebraicznych. Konfiguracje oferowane przez najpopularniejszych dostawców usług przetwarzania w chmurze przedstawione zostały w tabeli \ref{tab:gpu_units}. Spośród największych graczy, Amazon Web Services oraz Microsoft Azure oferują kompletne zestawy, optymalizowane pod kątem obliczeń naukowych (odpowiednio typy p2.* oraz N*), podczas gdy Google Cloud Platform w obecnie obowiązującej wersji beta pozwala na dołączanie kart graficznych do jednej z oferowanych maszyn. Ponadto, można zauważyć, że o ile jednostki podstawowe są bardzo podobne w przypadku AWS i Azure (p2.xlarge oraz NC6), o tyle wzrost dostępnej mocy obliczeniowej bardziej skomplikowanych jednostek jest znacznie szybszy w przypadku AWS. Wyłącznie w ramach Microsoft Azure są również oferowane jednostki nowszej generacji - NVIDIA Tesla M60.
+
+Ponadto, obecnie do wyboru jest także szeroki wachlarz oprogramowania służacego do konstruowania sieci neuronowych, również z wykorzystaniem GPU. Zaliczają się do nich takie narzędzia jak Caffe (Uniwersytet w Berkeley, \citet{jia2014}), CNTK (Microsoft Research, \citet{yu2014}), MXNet (Distributed Machine Learning Community, \citet{chen2015}), Tensorflow (Google, \citet{abadi2016}), Torch \citep{collobert2011}, Theano (Uniwersytet w Montrealu, \citet{alrfou2016}) oraz Keras (ONEIROS, \citet{chollet2015}). Jednym z głównych zadań problemu uczenia głebokich sieci neuronowych jest znalezienie optymalnego zestawu wag w każdej z warstw sieci, co jest zadaniem, które może zostać sparalelizowane. Każde z wymienionych narzędzi wspiera przetwarzanie równoległe, zarówno z użyciem wielordzeniowych jednostek centralnych, jak i procesorów graficznych. Obliczenia na GPU wykonywane są z pomocą bibliotek dostarczonych przez NVIDIA - cuDNN \citep{chetlur2014}.
+Praca \citet{shi2017} porównuje większość prezentowanych systemów oprogramowania ze sobą, przedstawiając ich silne i słabe strony w popularnych problemach \textit{deep learningowych}.
 
 \noindent
 \begin{tabular}
@@ -428,17 +428,18 @@ AWS & p2.xlarge & Intel Xeon E5-2686v4 & 4 & 61 GB & NVIDIA K80 \\
 Azure & NC6 & Intel Xeon E5-2690v3 & 6 & 56 GB & NVIDIA K80 \\
       & NC12 & Intel Xeon E5-2690v3 & 12 & 112 GB & 2x NVIDIA K80 \\
       & NC24(r) & Intel Xeon E5-2690v3 & 24 & 224 GB & 4x NVIDIA K80 \\
-      & NC6 & Intel Xeon E5-2690v3 & 6 & 56 GB & NVIDIA M60 \\
-      & NC12 & Intel Xeon E5-2690v3 & 12 & 112 GB & 2x NVIDIA M60 \\
-      & NC24(r) & Intel Xeon E5-2690v3 & 24 & 224 GB & 4x NVIDIA M60 \\
+      & NV6 & Intel Xeon E5-2690v3 & 6 & 56 GB & NVIDIA M60 \\
+      & NV12 & Intel Xeon E5-2690v3 & 12 & 112 GB & 2x NVIDIA M60 \\
+      & NV24(r) & Intel Xeon E5-2690v3 & 24 & 224 GB & 4x NVIDIA M60 \\
 \midrule
 GCP & N/D & N/D & N/D & N/D & NVIDIA K80 \\
 \bottomrule
 \label{tab:gpu_units}
 \end{tabular}
 
-Celem przeprowadzonego eksperymentu było porównanie czasu potrzebnego na proces generacji głębokich sieci neuronowych i związanego z tym kosztu, wybranie zbioru decyzji niezdominowanych (optymalnych w sensie Pareto), a także dostarczenie narzędzia pozwalającego na przeprowadzanie własnych eksperymentów w tym zakresie. Istnieje uzasadniona potrzeba pomiaru, na jak dużą oszczędność czasową może liczyć osoba decydująca się na wspomaganie obliczeń naukowych procesorami graficznymi i czy wiąże się to z dodatkowymi kosztami.
-Spośród przedstawionych w tabeli \ref{tab:gpu_units} konfiguracji wybrano jednostkę p2.xlarge oferowaną przez Amazon Web Services do porównania z podobnymi jednostkami bez procesorów graficznych ze względu na popularność platformy, status lidera rynku i dojrzałość rozwiązań oferowanych przez tego dostawcę. Podobnymi argumentami kierowano się przy wyborze oprogramowania, w eksperymencie wykorzystana została biblioteka Keras, w oparciu o backend Tensorflow.
+Istnieje uzasadniona potrzeba pomiaru, na jak dużą oszczędność czasową może liczyć osoba decydująca się na wspomaganie obliczeń naukowych procesorami graficznymi oferowanymi przez platformy \textit{cloud computingowe} i czy wiąże się to z dodatkowymi kosztami. Ekperyment ma na celu pomiar czasu potrzebnego na proces generacji różnych architektur głębokich sieci neuronowych na różnych zbiorach danych i związanego z tym kosztu, wybranie zbioru decyzji niezdominowanych (optymalnych w sensie Pareto), a także dostarczenie narzędzia pozwalającego na przeprowadzanie własnych eksperymentów w tym zakresie.
+Spośród przedstawionych w tabeli \ref{tab:gpu_units} konfiguracji wybrano jednostkę p2.xlarge oferowaną przez Amazon Web Services do porównania z podobnymi jednostkami bez procesorów graficznych ze względu na status lidera rynku i dojrzałość rozwiązań oferowanych przez tego dostawcę.
+W eksperymencie wykorzystana została także biblioteka Keras, w oparciu o backend Tensorflow. Powodem tej decyzji jest fakt, że została zbudowana w celu ułatwienia przeprowadzania tego typu eksperymentów i oferuje wysoki poziom abstrakcji przy konfigurowaniu architektur bez względu na wykorzystaną u jej podstaw bibliotekę naukową (obecnie możliwe jest wykorzystanie Tensorflow, Theano oraz Deeplearning4j).
 
 % co oferuja dostawcy (opisac hardware) + jaki wybralem
 % jaki jest software + jaki wybralem
@@ -446,6 +447,7 @@ Spośród przedstawionych w tabeli \ref{tab:gpu_units} konfiguracji wybrano jedn
 % co ma zbadac eksperyment
 % jaki bedzie jego efekt
 % jak go przeprowadze
+% tabela ze specyfikacjami maszyn ktore ostatecznie zostaly wybrane do eksperymentu
 % zbiorki danych opisac
 % obrazki architektur
 
@@ -490,7 +492,9 @@ mnist & custom & c4.2xlarge & $101.53\pm0.68$ & $0.1152$ \\
 
 \begin{thebibliography}{99}
 \setlength{\itemsep}{0pt}%
+\bibitem[Abadi et al. (2016)]{abadi2016} Abadi, M., Agarwal, A., Barham, P., Brevdo, E., Chen, Z., Citro, C., ... i Ghemawat, S. (2016). Tensorflow: Large-scale machine learning on heterogeneous distributed systems. arXiv preprint arXiv:1603.04467
 \bibitem[Akaike (1974)]{akaike1974} Akaike, H. (1974). A new look at the statistical model identification. IEEE transactions on automatic control, 19(6), 716-723
+\bibitem[Al-Rhou et al. (2016)]{alrhou2016} Al-Rfou, R., Alain, G., Almahairi, A., Angermueller, C., Bahdanau, D., Ballas, N., ... i Bengio, Y. (2016). Theano: A Python framework for fast computation of mathematical expressions. arXiv preprint arXiv:1605.02688
 \bibitem[Almeida i Silva (1990)]{almeida1990} Almeida, L. i Silva, F. (1990). Speeding up backpropagation. Adv Neural Comput, 151-158
 \bibitem[Anderson i Warrilow (2016)]{anderson2016} Anderson, E. i Warrilow, M. (2016). Market Insight: Cloud Shift — The Transition of IT Spending From Traditional Systems to Cloud. Baza danych Gartner
 %\bibitem[Andrychowicz et al. (2016)]{andrychowicz2016} Andrychowicz, M., Denil, M., Gomez, S., Hoffman, M. W., Pfau, D., Schaul, T. i de Freitas, N. (2016). Learning to learn by gradient descent by gradient descent. In Advances in Neural Information Processing Systems, s. 3981-3989
@@ -505,11 +509,15 @@ mnist & custom & c4.2xlarge & $101.53\pm0.68$ & $0.1152$ \\
 \bibitem[Calheiros et al. (2010)]{calheiros2010} Calheiros, R., Ranjan, R., Beloglazov, A., De Rose, C. i Buyya, R. (2010). CloudSim: a toolkit for modeling and simulation of cloud computing environments and evaluation of resource provisioning algorithms. Software: Practice and Experience, 41(1), s. 23-50
 \bibitem[Chellapilla et al. (2006)]{chellapilla2006} Chellapilla, K., Puri, S. i Simard, P. (2006). High performance convolutional neural networks for document processing. Tenth International Workshop on Frontiers in Handwriting Recognition. Suvisoft
 \bibitem[Chen et al. (2016)]{chen2016} Chen, L. C., Papandreou, G., Kokkinos, I., Murphy, K. i Yuille, A. L. (2016). Deeplab: Semantic image segmentation with deep convolutional nets, atrous convolution, and fully connected crfs. arXiv preprint arXiv:1606.00915
+\bibitem[Chen et al. (2015)]{chen2015} Chen, T., Li, M., Li, Y., Lin, M., Wang, N., Wang, M., ... i Zhang, Z. (2015). Mxnet: A flexible and efficient machine learning library for heterogeneous distributed systems. arXiv preprint arXiv:1512.01274
+\bibitem[Chetlur et al. (2014)]{chetlur2014} Chetlur, S., Woolley, C., Vandermersch, P., Cohen, J., Tran, J., Catanzaro, B. i Shelhamer, E. (2014). cudnn: Efficient primitives for deep learning. arXiv preprint arXiv:1410.0759
+\bibitem[Chollet et al. (2015)]{chollet2015} Chollet, F. i inni (2015). Dostępne pod adresem: \url{https://github.com/fchollet/keras} (dostęp 6 czerwca 2017). GitHub
 \bibitem[Ciresan et al. (2010)]{ciresan2010} Ciresan, D. C., Meier, U., Gambardella, L. M. i Schmidhuber, J. (2010). Deep big simple neural nets for handwritten digit recogntion. Neural Computation, 22(12):3207–3220.
 \bibitem[Ciresan et al. (2011a)]{ciresan2011a} Ciresan, D. C., Meier, U., Masci, J., Gambardella, L. M. i Schmidhuber, J. (2011a). Flexible, high performance convolutional neural networks for image classification. International Joint Conference on Artificial Intelligence IJCAI, s. 1237–1242
 \bibitem[Ciresan et al. (2011b)]{ciresan2011b} Ciresan, D. C., Meier, U., Masci, J. i Schmidhuber, J. (2011b). A committee of neural networks for traffic sign classification. International Joint Conference on Neural Networks (IJCNN), s. 1918–1921.
 \bibitem[Ciresan et al. (2012)]{ciresan2012} Ciresan, D. C., Giusti, A., Gambardella, L. M. i Schmidhuber, J. (2012). Deep neural networks segment neuronal membranes in electron microscopy images. Advances in Neural Information Processing Systems (NIPS), s. 2852–2860
 \bibitem[Ciresan i Schmidhuber (2013)]{ciresan2013} Ciresan, D. C. and Schmidhuber, J. (2013). Multi-column deep neural networks for offline handwritten Chinese character classification. Technical report, IDSIA. arXiv:1309.0261
+\bibitem[Collobert et al. (2011)]{collobert2011} Collobert, R., Kavukcuoglu, K. i Farabet, C. (2011). Torch7: A matlab-like environment for machine learning. In BigLearn, NIPS Workshop (nr EPFL-CONF-192376)
 \bibitem[Edwards (1993)]{edwards1993} Edwards, P. J. (1993). Synaptic weight noise during MLP learning enhances fault-tolerance, generalisation and learning trajectory
 \bibitem[Forbes.com (2017)]{forbes2017} Forbes.com. (2017). Amazon Continues To Gain Share In Cloud Infrastructure Services Market. Dostępne pod adresem: \url{https://www.forbes.com/sites/greatspeculations/2016/08/17/amazon-continues-to-gain-share-in-cloud-infrastructure-services-market/#2277485215b8} (dostęp 11 marca 2017)
 \bibitem[Fukushima (1975)]{fukushima1975} Fukushima, K. (1975). Cognitron: A self-organizing multilayered neural network. Biological cybernetics, 20(3-4), 121-136
@@ -541,6 +549,7 @@ recognition unaffected by shift in position. Biological Cybernetics, 36(4):193�
 \bibitem[Jacobs (1989)]{jacobs1989} Jacobs, R. A. (1988). Increased rates of convergence through learning rate adaptation. Neural networks, 1(4), 295-307
 \bibitem[Jain i Seung (2009)]{jain2009} Jain, V. i Seung, S. (2009). Natural image denoising with convolutional networks. Koller, D., Schuurmans, D., Bengio, Y., and Bottou, L., editors, Advances in Neural Information Processing Systems (NIPS) 21, s. 769–776. Curran Associates, Inc.
 \bibitem[Jermain et al. (2015)]{jermain2015} Jermain, C. L., Rowlands, G. E., Buhrman, R. A., i Ralph, D. C. (2015). GPU-accelerated micromagnetic simulations using cloud computing. arXiv preprint arXiv:1505.01207
+\bibitem[Jia et al. (2014)]{jia2014} Jia, Y., Shelhamer, E., Donahue, J., Karayev, S., Long, J., Girshick, R., ... i Darrell, T. (2014). Caffe: Convolutional architecture for fast feature embedding. Proceedings of the 22nd ACM international conference on Multimedia (s. 675-678). ACM
 \bibitem[Kleinrock (2005)]{kleinrock2005} Kleinrock, L., A Vision for the Internet. ST Journal for Research, tom 2, nr 1, s. 4–5
 \bibitem[Krizhevsky et al. (2012)]{krizhevsky2012} Krizhevsky, A., Sutskever, I. i Hinton, G. (2012). Imagenet classification with deep convolutional neural networks. In Advances in neural information processing systemsk, s. 1097-1105
 \bibitem[LeCun et al. (1989)]{lecun1989a} LeCun, Y., Denker, J. S., Solla, S. A., Howard, R. E., Jackel, L. D. (1989, November). Optimal brain damage. NIPs (tom 2, s. 598-605).
@@ -588,6 +597,7 @@ Taylor expansion of the local rounding errors. Praca magisterska, Uniwersytet w 
 \bibitem[Wenge et al. (1992)]{weng1992} Weng, J., Ahuja, N. i Huang, T. S. (1992, June). Cresceptron: a self-organizing neural network which grows adaptively. In Neural Networks, 1992. IJCNN., International Joint Conference on (Vol. 1, pp. 576-581). IEEE
 \bibitem[Widrow i Hoff (1960)]{widrow1960} Widrow, B. i Hoff, M. E. (1960, August). Adaptive switching circuits. In IRE WESCON convention record (tom 4, nr 1, s. 96-104)
 \bibitem[Yang et al. (2009)]{yang2009} Yang, M., Ji, S., Xu, W., Wang, J., Lv, F., Yu, K., Gong, Y., Dikmen, M., Lin, D. J. i Huang, T. S. (2009). Detecting human actions in surveillance videos. In TREC Video Retrieval Evaluation Workshop
+\bibitem[Yu et al. 2014]{yu2014} Yu, D., Eversole, A., Seltzer, M., Yao, K., Huang, Z., Guenter, B., ... i Droppo, J. (2014). An introduction to computational networks and the computational network toolkit. Microsoft Technical Report MSR-TR-2014–112
 \bibitem[Zhang et al. (2010)]{zhang2010} Zhang, Q., Cheng, L. i Boutaba, R. (2010). Cloud computing: state-of-the-art and research challenges. Journal of Internet Services and Applications, 1(1), s. 7-18
 
 \end{thebibliography}
