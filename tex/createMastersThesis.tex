@@ -119,9 +119,7 @@ Zatem, w pracy badane będą następujące hipotezy:
 \item wykorzystywanie opracowanego narzędzia do wyboru rodzaju jednostki obliczeniowej pozwala na optymalizację kosztową procesu generacji głębokich sieci neuronowych.
 \end{itemize}
 
-Pierwsza hipoteza porusza kwestię efektywności kosztowej jednostek GPU oferowanych w chmurze. Literatura dostarcza dowodów, że stosowanie tego typu jednostek prowadzi do
-krótszego czasu konstruowania sieci neuronowych, por. \citet{jermain2015} i \citet{litvinenko2014}. Nie jest jednak oczywistym, czy efektywniejszym kosztowo rozwiązaniem w przypadku architektury chmurowej są jednostki GPU czy CPU. Pomimo niższego czasu potrzebnego na estymację modelu, cena jednostek wyposażonych w GPU może być
-na tyle wysoka, że ich wynajem nie jest optymalny w sensie kosztowym.
+Pierwsza hipoteza porusza kwestię efektywności kosztowej jednostek GPU oferowanych w chmurze. Literatura dostarcza dowodów, że stosowanie tego typu jednostek prowadzi do krótszego czasu konstruowania sieci neuronowych, por. \citet{jermain2015} i \citet{litvinenko2014}. Nie jest jednak oczywistym, czy efektywniejszym kosztowo rozwiązaniem w przypadku architektury chmurowej są jednostki GPU czy CPU. Pomimo niższego czasu potrzebnego na estymację modelu, cena jednostek wyposażonych w GPU może być na tyle wysoka, że ich wynajem nie jest optymalny w sensie kosztowym.
 
 Następnie chcemy skupić się na porównaniu ofert różnych dostawców usług przetwarzania w chmurze. Dokonamy porównania efektywności kosztowej jednostek wyposażonych w procesory graficzne, dostarczanych przez Amazon, Microsoft oraz Google.
 
@@ -391,7 +389,7 @@ Według najnowszego raportu ,,Magic Quadrant'' firmy Gartner \citep{leong2017}, 
 \begin{figure}[h]
   \centering
 \includegraphics[scale=0.8]{../obrazy/fig:mquad.png}
-\caption{\textit{Magic Quadrant} dla przedsiębiorstw oferujących usługi \textit{cloud computingowe} potwierdza status lidera AWS. Należy jednak rozpatrywać Microsoft oraz Google jako równorzędnych konkuretnów. \label{fig:mquad}}
+\caption{\textit{Magic Quadrant} dla przedsiębiorstw oferujących usługi \textit{cloud computingowe} potwierdza status lidera AWS. Należy jednak rozpatrywać Microsoft oraz Google jako równorzędnych konkuretnów.\label{fig:mquad}}
 \end{figure}
 
 Amazon, pierwszy dostawca usług przetwarzania w chmurze, przechodził stopniową transformację od portalu oferującego książki do online'owego potentata, wykorzystując jednocześnie wysoce innowacyjne rozwiązania do osiągnięcia tego celu. Ta otwartość na innowacje była niejako wymuszona stopniem skomplikowania oferowanego serwisu. Wyświetlenie jednej strony zawierającej informacje o przedmiocie, rekomendacje oraz oceny wymagało licznych, skomplikowanych aplikacji. Ponadto, detaliczny charakter sprzedaży wymagał ciągłego monitorowania zapotrzebowania na zasoby obliczeniowe, ale również obserwowania popytu i wsparcia  procesów operacyjnych systemami informatycznymi (zarówno swoich, jak i partnerów biznesowych). Amazon wykorzystywał technologię wirtualizacji podobnie, jak wiele innych przedsiębiorstw obecnie, by automatycznie i dynamicznie przydzielać zasoby do aplikacji, które tego potrzebowały w danej chwili. Wysoki stopień automatyzacji, który osiągneli w tym zakresie pozwolił im na uruchomienie ich dwóch największych serwisów -  Amazon EC2 (Elastic Compute Cloud) oraz Amazon S3 (Simple Storage System). Amazon EC2 pozwala użytkownikom chmury uruchamiać serwery i zarządzać nimi w jednym z wielu umiejscowionych na różnych kontynentach centrów danych, podczas gdy Amazon S3 jest usługą służącą do przechowywania danych w chmurze. Usługi te miały początkowo zostać udostępnione wewnętrznie i dla partnerów biznesowych, jednak w ramach eksperymentu otwarto je również dla całego świata, gdzie spotkały się z ogromną popularnością, por. \citet{shroff2010}. Ostatecznie doprowadziło do decyzji o uruchomieniu biznesu \textit{cloud computingowego} w 2006 roku. Od tego czasu AWS znacznie rozszerzyło gamę oferowanych usług i dostarcza swoje usługi z wykorzystaniem centrów danych znajdujących się w Ameryce Północnej, Europie, Azji oraz Ameryce Południowej. Do ich silnych stron zaliczana jest duża liczba klientów, najszerszy wachlarz oferowanych usług oraz największe możliwości obliczeniowe, co doprowadziło do ich partnerstwa technologicznego z licznymi przedsiębiorstwami, które dostosowały swoje produkty do uruchamiania na platformie AWS. Z drugiej strony, wymaga to od początkującego użytkownika dużego nakładu czasu, by zaznajomić się z modelem działania i oferowanymi usługami tak, by mógł dostosować je do swoich potrzeb technologicznych.
@@ -400,8 +398,92 @@ Microsoft także coraz bardziej skupia się na dostarczaniu swoich możliwości 
 
 IBM, jeden z najstarszych koncernów informatycznych, również oferuje usługi \textit{cloud computingowe}. W celu przyspieszenia ekspansji na rynku, w 2013 roku IBM kupiło SoftLayer, niezależnego dostawcę usług chmurowych, by w efekcie ukształtować IBM Cloud Services Division. Przez kolejne lata następowała stopniowa migracja klientów z IBM SmartCloud Enterprise do SoftLayer. Obecnie oferują zarówno wirtualizowane serwery, jak i klasyczne dedykowane maszyny. Ponadto, istnieje także możliwość przechowywania obiektów poprzez zintegrowany CDN (\textit{Content Delivery Network}. Softlayer oferuje swoje usługi z wykorzystaniem centrów danych znajdujących się w Ameryce Północnej, Europie oraz Azji. Do zalet IBM Softlayer, podobnie jak w przypadku, Microsoft, można zaliczyć silną markę oraz liczne kontakty z klientami na całym świecie, co z pewnością pozwoli na rozwój w segmencie przedsiębiorstw. Należy jednak zaznaczyć, że historycznie Softlayer był głównie skupiony na klasycznym modelu dostarczania mocy obliczeniowej i nie rozróżnia na swoim portalu serwisów chmurowych i niechmurowych, brak jest także wielu możliwości technologicznych charakterystycznych dla przetwarzania w chmurze, oferowanych przez liderów rynku.
 
-Google operuje na rynku PaaS pod 2008 roku (oferując swój App Engine), jednakże w modelu IaaS aktywni są dopiero od udostępnienia światu Google Compute Engine w 2013 roku. Obecnie w swojej ofercie łączą zarówno wymienione usługi, jak również wachlarz dodatkowych możliwości, takich jak możliwość przechowywania danych i Container Engine - usługę pozwalającą na konteneryzację, to znaczy uruchomienie aplikacji w wydzielonym konetenerze, ale bez konieczności emulowania warstwy sprzętowej i systemu operacyjnego. Centra danych Google znajdują się w Ameryce Północnej, Europie i Azji. Przez wiele lat prowadzenia własnego biznesu internetowego, Google nabyło szeroką ekspertyzę w projektowaniu tego typu rozwiązań. Niewątpliwą zaletą korzystania z ich serwisu jest możliwość korzystania z ich osiągnięć technologicznych w zakresie wirtualizacji, wykorzystania kontenerów czy też narzędzi do zarządzania klastrami jak Kubernetes. Należy wszakże zaznaczyć, że zakres usług przez nich oferowany nie jest jeszcze tak szeroki jak w przypadku liderów rynku. Według \citet{leong2017}, pomimo szybkiego tempa wzrostu, Google wciąż nie rozwija się dostatecznie dynamicznie, by móc osiągnąć status lidera w tej gałęzi rynku informatycznego.
+Google operuje na rynku PaaS pod 2008 roku (oferując swój App Engine), jednakże w modelu IaaS aktywni są dopiero od udostępnienia światu Google Compute Engine w 2013 roku. Obecnie w swojej ofercie łączą zarówno wymienione usługi, jak również wachlarz dodatkowych możliwości, takich jak możliwość przechowywania danych i Container Engine - usługę pozwalającą na konteneryzację, to znaczy uruchomienie aplikacji w wydzielonym konetenerze, ale bez konieczności emulowania warstwy sprzętowej i systemu operacyjnego. Centra danych Google znajdują się w Ameryce Północnej, Europie i Azji. Przez wiele lat prowadzenia własnego biznesu internetowego, Google nabyło szeroką ekspertyzę w projektowaniu tego typu rozwiązań. Niewątpliwą zaletą używania ich serwisu jest możliwość korzystania z ich osiągnięć technologicznych w zakresie wirtualizacji, wykorzystania kontenerów czy też narzędzi do zarządzania klastrami jak Kubernetes. Należy wszakże zaznaczyć, że zakres usług przez nich oferowany nie jest jeszcze tak szeroki jak w przypadku liderów rynku. Według \citet{leong2017}, pomimo szybkiego tempa wzrostu, Google wciąż nie rozwija się dostatecznie dynamicznie, by móc osiągnąć status lidera w tej gałęzi rynku informatycznego.
 
+\clearpage
+
+\section{Eksperymentalne pomiary efektywności kosztowej deep learning}
+
+\noindent
+Sukces głębokich sieci neuronowych przypisywany jest ich umiejętności reprezentacji danych wejściowych i odkrywania panujących w nich zależności z wykorzystaniem wielu ukrytych warstw. Kluczową rolę w ich budowaniu odegrało użycie procesorów graficznych, które pozwoliły na przyspieszenie uczenia tego typu architektur. Ich szerokie wykorzystanie spotkało się z reakcją ze strony dostawców usług \textit{cloud computingowych}, którzy wprowadzili do swoich ofert jednostki wyposażone w procesory graficzne i optymalizowane pod kątem obliczeń naukowych, wynajmując je po wyższych cenach wraz z obietnicą przyspieszenia operacji algebraicznych. Konfiguracje oferowane przez najpopularniejszych dostawców usług przetwarzania w chmurze przedstawione zostały w tabeli \ref{tab:gpu_units}.
+Ponadto, obecnie do wyboru jest także szeroki wachlarz oprogramowania służacego do konstruowania sieci neuronowych, również z wykorzystaniem GPU. Zaliczają się do nich takie narzędzia jak Caffe \citep{}, CNTK, MXNet, Tensorflow, Torch, Theano, Keras .
+Praca \citet{} porównuje większość z nich ze sobą, przedstawiając ich silne i słabe strony w zadaniach \textit{deep learningowych}.
+ %potrzebne źródła
+
+\noindent
+\begin{tabular}
+  {p{0.08\linewidth}
+  p{0.15\linewidth}
+  p{0.24\linewidth}
+  p{0.08\linewidth}
+  p{0.10\linewidth}
+  p{0.20\linewidth}}
+\toprule
+ & Typ jednostki & Procesor & Rdzeni CPU & RAM & GPU \\
+\midrule
+AWS & p2.xlarge & Intel Xeon E5-2686v4 & 4 & 61 GB & NVIDIA K80 \\
+    & p2.8xlarge & Intel Xeon E5-2686v4 & 32 & 488 GB & 8x NVIDIA K80 \\
+    & p2.16xlarge & Intel Xeon E5-2686v4 & 64 & 732 GB & 16x NVIDIA K80 \\
+\midrule
+Azure & NC6 & Intel Xeon E5-2690v3 & 6 & 56 GB & NVIDIA K80 \\
+      & NC12 & Intel Xeon E5-2690v3 & 12 & 112 GB & 2x NVIDIA K80 \\
+      & NC24(r) & Intel Xeon E5-2690v3 & 24 & 224 GB & 4x NVIDIA K80 \\
+      & NC6 & Intel Xeon E5-2690v3 & 6 & 56 GB & NVIDIA M60 \\
+      & NC12 & Intel Xeon E5-2690v3 & 12 & 112 GB & 2x NVIDIA M60 \\
+      & NC24(r) & Intel Xeon E5-2690v3 & 24 & 224 GB & 4x NVIDIA M60 \\
+\midrule
+GCP & N/D & N/D & N/D & N/D & NVIDIA K80 \\
+\bottomrule
+\label{tab:gpu_units}
+\end{tabular}
+
+Celem przeprowadzonego eksperymentu było porównanie czasu potrzebnego na proces generacji głębokich sieci neuronowych i związanego z tym kosztu, wybranie zbioru decyzji niezdominowanych (optymalnych w sensie Pareto), a także dostarczenie narzędzia pozwalającego na przeprowadzanie własnych eksperymentów w tym zakresie. Istnieje uzasadniona potrzeba pomiaru, na jak dużą oszczędność czasową może liczyć osoba decydująca się na wspomaganie obliczeń naukowych procesorami graficznymi i czy wiąże się to z dodatkowymi kosztami.
+Spośród przedstawionych w tabeli \ref{tab:gpu_units} konfiguracji wybrano jednostkę p2.xlarge oferowaną przez Amazon Web Services do porównania z podobnymi jednostkami bez procesorów graficznych ze względu na popularność platformy, status lidera rynku i dojrzałość rozwiązań oferowanych przez tego dostawcę. Podobnymi argumentami kierowano się przy wyborze oprogramowania, w eksperymencie wykorzystana została biblioteka Keras, w oparciu o backend Tensorflow.
+
+% co oferuja dostawcy (opisac hardware) + jaki wybralem
+% jaki jest software + jaki wybralem
+% dlaczego taki eksperyment
+% co ma zbadac eksperyment
+% jaki bedzie jego efekt
+% jak go przeprowadze
+% zbiorki danych opisac
+% obrazki architektur
+
+%
+
+%tabela z czasami
+\begin{tabular}{lllll}
+\toprule
+Zbiór danych & Architektura & Typ instancji & Czas (s) & Minimum funkcji straty \\
+\midrule
+cifar & custom & c4.2xlarge & $29.16\pm0.32$ & $0.0852$ \\
+      & & p2.xlarge & $4.05\pm0.09$ & $0.0913$ \\
+\midrule
+      & kerasdef & c4.2xlarge & $23.20\pm0.53$ & $0.3513$ \\
+      & & p2.xlarge & $4.39\pm0.14$ & $0.3391$ \\
+\midrule
+imdb & kerasdef & c4.2xlarge & $125.12\pm2.07$ & $0.0309$ \\
+      & & p2.xlarge & $10.31\pm0.44$ & $0.0314$ \\
+\midrule
+      & lstmkerasdef & c4.2xlarge & $46.80\pm1.87$ & $0.0101$ \\
+      & & p2.xlarge & $40.16\pm0.92$ & $0.0100$ \\
+\midrule
+mnist & custom & c4.2xlarge & $101.53\pm0.68$ & $0.1152$ \\
+      & & p2.xlarge & $13.00\pm0.28$ & $0.1112$ \\
+\midrule
+      & kerasdef & c4.2xlarge & $89.55\pm1.30$ & $0.0352$ \\
+      & & p2.xlarge & $13.26\pm8.96$ & $0.0369$ \\
+\bottomrule
+\label{tab:experiment_results}
+\end{tabular}
+
+\clearpage
+
+\section{Efektywność kosztowa głębokich sieci neuronowych w chmurze}
+
+\clearpage
+
+\section{Podsumowanie pracy}
 %podsumowanko
 
 \clearpage
