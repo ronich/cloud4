@@ -18,6 +18,9 @@
 \usepackage[noend]{algpseudocode}
 \usepackage{etoolbox}
 \usepackage{titlesec}
+\usepackage{array}
+\newcolumntype{L}[1]{>{\raggedright\arraybackslash}p{#1}}
+\newcolumntype{R}[1]{>{\raggedleft\arraybackslash}p{#1}}
 \urlstyle{same}
 \setlist{itemsep=0pt}
 \setlist{nolistsep}
@@ -418,11 +421,11 @@ W pracy \citet{shi2016} dokonano porównania większości prezentowanych system�
     {p{0.08\linewidth}
     p{0.15\linewidth}
     p{0.24\linewidth}
-    p{0.08\linewidth}
-    p{0.10\linewidth}
+    R{0.08\linewidth}
+    R{0.10\linewidth}
     p{0.19\linewidth}}
   \toprule
-   & Typ jednostki & Procesor & Rdzeni CPU & RAM & GPU \\
+   & \multicolumn{1}{c}{Typ jednostki} & \multicolumn{1}{c}{Procesor} & \multicolumn{1}{c}{Rdzeni CPU} & \multicolumn{1}{c}{RAM} & \multicolumn{1}{c}{GPU} \\
   \midrule
   AWS & p2.xlarge & Intel Xeon E5-2686v4 & 4 & 61 GB & NVIDIA K80 \\
       & p2.8xlarge & Intel Xeon E5-2686v4 & 32 & 488 GB & 8x NVIDIA K80 \\
@@ -443,18 +446,18 @@ W pracy \citet{shi2016} dokonano porównania większości prezentowanych system�
 
 Istnieje uzasadniona potrzeba pomiaru, na jak dużą oszczędność czasową może liczyć osoba decydująca się na wspomaganie obliczeń naukowych procesorami graficznymi oferowanymi przez platformy \textit{cloud computingowe} i czy wiąże się to z dodatkowymi kosztami. Ekperyment ma na celu pomiar czasu potrzebnego na proces generacji różnych architektur głębokich sieci neuronowych, na różnych zbiorach danych i związanego z tym kosztu, wybranie zbioru decyzji niezdominowanych (optymalnych w sensie Pareto), a także dostarczenie narzędzia pozwalającego na przeprowadzanie własnych eksperymentów w tym zakresie.
 Spośród przedstawionych w tabeli~\ref{tab:gpu_units} konfiguracji wybrano jednostkę p2.xlarge oferowaną przez Amazon Web Services do porównania z podobnymi jednostkami bez procesorów graficznych ze względu na status lidera rynku i dojrzałość rozwiązań oferowanych przez tego dostawcę. Została porównana z typem instancji, który jest optymalizowany pod kątem obliczeń, z wysokiej jakości jednostką centralną i najniższym stosunkiem ceny do wydajności - c4.2xlarge. Ich specyfikacje techniczne zostały przedstawione w tabeli \ref{tab:aws_units}.
-W eksperymencie wykorzystana została także biblioteka Keras, w oparciu o backend Tensorflow. Powodem tej decyzji jest fakt, że została zbudowana w celu ułatwienia przeprowadzania tego typu eksperymentów i oferuje wysoki poziom abstrakcji przy konfigurowaniu architektur bez względu na wykorzystaną u jej podstaw bibliotekę naukową (obecnie możliwe jest wykorzystanie Tensorflow, Theano oraz Deeplearning4j). Należy jednak zaznaczyć, że wszystkie wymienione narzędzia oferują elastyczne API i możliwość edytowania plików konfiguracyjnych dla optymalizowania ich wydajności. Celem przeprowadzanego eksperymentu nie jest porówywanie ich między sobą, nie ustalono zatem jednoznacznie wyższości jednej z bibliotek nad pozostałymi i może istnieć taka konfiguracja, która pozwoli na dalszą optymalizację metody rozwiązania problemu konstruowania sieci neuronowej.
+W eksperymencie wykorzystana została także biblioteka Keras, w oparciu o backend Tensorflow. Powodem tej decyzji jest fakt, że została zbudowana w celu ułatwienia przeprowadzania tego typu eksperymentów i oferuje wysoki poziom abstrakcji przy konfigurowaniu architektur bez względu na wykorzystaną u jej podstaw bibliotekę naukową (obecnie możliwe jest wykorzystanie Tensorflow, Theano oraz Deeplearning4j). Należy jednak zaznaczyć, że wszystkie wymienione narzędzia oferują elastyczne API i możliwość edytowania plików konfiguracyjnych dla optymalizowania ich wydajności. Celem przeprowadzanego eksperymentu nie jest porówywanie ich między sobą, nie ustalono zatem jednoznacznie wyższości jednej z bibliotek nad pozostałymi i może istnieć taka konfiguracja, która pozwoli na dalszą optymalizację metody rozwiązania problemu konstruowania sieci neuronowej. Wersje wykorzystanego oprogramowania zostały przedstawione w tabeli~\ref{tab:software}.
 
 \noindent
 \begin{table}
   \begin{tabular}
     {p{0.16\linewidth}
     p{0.26\linewidth}
-    p{0.09\linewidth}
-    p{0.12\linewidth}
+    R{0.09\linewidth}
+    R{0.12\linewidth}
     p{0.24\linewidth}}
   \toprule
-  Typ jednostki & Procesor & Rdzeni CPU & RAM & GPU \\
+  \multicolumn{1}{c}{Typ jednostki} & \multicolumn{1}{c}{Procesor} & \multicolumn{1}{c}{Rdzeni CPU} & \multicolumn{1}{c}{RAM} & \multicolumn{1}{c}{GPU} \\
   \midrule
   p2.xlarge & Intel Xeon E5-2686v4 & 4 & 61 GB & NVIDIA K80 \\
   c4.2xlarge & Intel Xeon E5-2666v3 & 8 & 15 GB & brak \\
@@ -463,10 +466,25 @@ W eksperymencie wykorzystana została także biblioteka Keras, w oparciu o backe
   \caption{Porównywane rodzaje instancji}\label{tab:aws_units}
 \end{table}
 
-% tabela ze specyfikacjami maszyn ktore ostatecznie zostaly wybrane do eksperyment
-
-%tabela software, version, cuDNN
-%%
+\noindent
+\begin{table}
+  \centering
+  \begin{tabular}
+    {p{0.2\linewidth}
+    p{0.4\linewidth}
+    R{0.1\linewidth}}
+  \toprule
+  \multicolumn{1}{c}{Oprogramowanie} & \multicolumn{1}{c}{Twórca} & \multicolumn{1}{c}{Wersja} \\
+  \midrule
+  Python & Python Software Foundation & 3.5 \\
+  Keras & Francois Chollet i inni & 2.0.4 \\
+  Tensorflow & Google Brain & 1.1.0 \\
+  CUDA & NVIDIA & 7.5 \\
+  cuDNN & NVIDIA & 5.1 \\
+  \bottomrule
+  \end{tabular}
+  \caption{W eksperymencie wykorzystano bibliotekę Keras w wersji 2.0.4 opartą o Tensorflow (wersja 1.1.0)}\label{tab:software}
+\end{table}
 
 % jak przeprowadze eksperyment
 
@@ -481,7 +499,7 @@ W eksperymencie wykorzystana została także biblioteka Keras, w oparciu o backe
 \section{Efektywność kosztowa głębokich sieci neuronowych w chmurze}
 
 %tabela z czasami
-\begin{tabular}{lllll}
+\begin{tabular}{lllrr}
 \toprule
 Zbiór danych & Architektura & Typ instancji & Czas (s) & Minimum funkcji straty \\
 \midrule
