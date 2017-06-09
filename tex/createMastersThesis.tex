@@ -21,6 +21,7 @@
 \usepackage{array}
 \newcolumntype{L}[1]{>{\raggedright\arraybackslash}p{#1}}
 \newcolumntype{R}[1]{>{\raggedleft\arraybackslash}p{#1}}
+\newcolumntype{C}[1]{>{\centering\arraybackslash}p{#1}}
 \urlstyle{same}
 \setlist{itemsep=0pt}
 \setlist{nolistsep}
@@ -486,11 +487,41 @@ W eksperymencie wykorzystana została także biblioteka Keras, w oparciu o backe
   \caption{W eksperymencie wykorzystano bibliotekę Keras w wersji 2.0.4 opartą o Tensorflow (wersja 1.1.0)}\label{tab:software}
 \end{table}
 
-% jak przeprowadze eksperyment
+Eksperyment przeprowadzony został z użyciem zbiorów danych będących częstym wyborem w zadaniach porównywania siły predykcyjnej modeli, wydajności sprzętu i oprogramowania - MNIST, IMDB (Large Movie Review Dataset) oraz CIFAR-10. MNIST \citep{lecun1998} jest zbiorem $70~000$ czarno-białych obrazów o rozmiarze 28x28 pikseli, przedstawiających ręcznie pisane cyfry. Pochodzi z większego zbioru danych udostępnionego przez amerykański National Institue of Standards and Technology. Jest częstym wyborem do \textit{benchmarkingu} ze względu na to, że pozwala uniknąć poświęcania znacznej ilości czasu na wstępne przetwarzanie, będąc jednocześnie zbiorem niesyntetycznych danych. Przykładowe obrazy z tego zbioru zaprezentowane zostały na rysunku \ref{fig:mnist_data}. Large Movie Review Dataset został udostępniony publicznie przez \citet{maas2011}, przy okazji ewaluacji modelu służącego do przeprowadzania analizy sentymentu. Zawiera on przyporządkowanie $50~000$ anonimowych, nieformalnych recenzji filmów na popularnej stronie IMDB do jednej z dwóch rozłącznych grup - pozytywnych i negatywnych.
+Przykładowe obserwacje przedstawione zostały w tabeli \ref{tab:imdb_data}. Trzeci z wykorzystanych zbiorów danych, CIFAR-10 składa się z $60~000$ kolorowych obrazów o rozmiarze 32x32 piksele, równomiernie przyporządkowanych do 10 rozłącznych klas. Jego szczegółowy opis, jak również metodologia zbierania danych została zawarta w pracy \citet{krizhevsky2009}. Wybrane obrazy wchodzące w skład tego zbioru danych przedstawiono na rysunku \ref{fig:cifar_data}.
 
-% zbiorki danych opisac
+\begin{figure}[h]
+  \centering
+\includegraphics[scale=0.5]{../obrazy/fig:mnist_data.png}
+\caption{W zbiorze danych MNIST znajdują się obrazy ręcznie pisanych cyfr pochodzących z połączenia dwóch zbiorów danych NIST: Special Database 1 oraz Special Database 3. Special Database 1 zawiera cyfry pisane przez uczniów szkół średnich, podczas gdy Special Database 3 przez United States Census Bureau \label{fig:mnist_data}}
+\end{figure}
 
-% obrazki architektur
+\noindent
+\begin{table}
+  \begin{tabular}
+    {C{0.4\linewidth}
+    C{0.3\linewidth}
+    C{0.2\linewidth}}
+  \toprule
+  \multicolumn{1}{c}{Nieprzetworzona opinia} & \multicolumn{1}{c}{Słownik wyrazów} & \multicolumn{1}{c}{Klasyfikacja} \\
+  \midrule
+   If you look at Corey Large's information here on IMDb, apparently there's a movie called "Reload" in production[...] & dict{} & (-) \\
+   Very good drama although it appeared to have a few blank areas [...] & dict{} & (+) \\
+   Weak plot, predictable violence, only semi interesting characters. [...] & dict{} & (-) \\
+  \bottomrule
+  \end{tabular}
+  \caption{Nieprzetworzone oraz przetworzone obserwacje (będące słownikiem wyrazów i ich częstości występowania) pochodzące ze zbioru Large Movie Review Dataset wraz z oceną ich sentymentu - pozytywną (+) lub negatywną (-).}\label{tab:imdb_data}
+\end{table}
+
+\begin{figure}[h]
+  \centering
+\includegraphics[scale=0.9]{../obrazy/fig:cifar_data.png}
+\caption{Każdy z obrazów wchodzących w skład zbioru danych CIFAR-10 został przyporządkowany do jednej z 10 kategorii (zostały one przedstawione w kolejnych wierszach: airplane, automobile, bird, cat, deer, dog, frog, horse, ship, truck). \label{fig:cifar_data}}
+\end{figure}
+
+%Eksperyment przeprowadzany będzie poprzez dokonywanie wielokrotnych, empirycznych pomiarów dla każdej rozważanej jednostki obliczeniowej. Wynikiem każdego pomiaru będzie koszt wynajmu serwera oraz czas potrzebny na skonstruowanie modelu. Wybranym do przeprowadzania eksperymentu problemem jest przetwarzanie obrazu (stworzenie klasyfikatora). Następnie przeprowadzimy agregację otrzymanych wyników oraz analizy zbioru dostępnych decyzji, by ostatecznie przedstawić zbiór decyzji optymalnych w sensie Pareto.
+
+% opisać architektury + obrazki architektur
 
 %tabela z architekturami? ile input/output/layers/parameters
 
@@ -595,14 +626,17 @@ mnist & custom & c4.2xlarge & $101.53\pm0.68$ & $0.1152$ \\
 \bibitem[Jermain et al. (2015)]{jermain2015} Jermain, C. L., Rowlands, G. E., Buhrman, R. A., i Ralph, D. C. (2015). GPU-accelerated micromagnetic simulations using cloud computing. arXiv preprint arXiv:1505.01207
 \bibitem[Jia et al. (2014)]{jia2014} Jia, Y., Shelhamer, E., Donahue, J., Karayev, S., Long, J., Girshick, R., \ldots i Darrell, T. (2014). Caffe: Convolutional architecture for fast feature embedding. Proceedings of the 22nd ACM international conference on Multimedia (s. 675-678). ACM
 \bibitem[Kleinrock (2005)]{kleinrock2005} Kleinrock, L., A Vision for the Internet. ST Journal for Research, tom 2, nr 1, s. 4–5
+\bibitem[Krizhevsky i Hinton (2009)]{krizhevsky2009} Krizhevsky, A. i Hinton, G. (2009). Learning multiple layers of features from tiny images
 \bibitem[Krizhevsky et al. (2012)]{krizhevsky2012} Krizhevsky, A., Sutskever, I. i Hinton, G. (2012). Imagenet classification with deep convolutional neural networks. In Advances in neural information processing systemsk, s. 1097-1105
 \bibitem[LeCun et al. (1989)]{lecun1989a} LeCun, Y., Denker, J. S., Solla, S. A., Howard, R. E., Jackel, L. D. (1989, November). Optimal brain damage. NIPs (tom 2, s. 598-605).
 \bibitem[LeCun et al. (1989)]{lecun1989b} LeCun, Y., Boser, B., Denker, J. S., Henderson, D., Howard, R. E., Hubbard, W. i Jackel, L. D. (1989). Backpropagation applied to handwritten zip code recognition. Neural computation, 1(4), 541-551
+\bibitem[LeCun et al. (1998)]{lecun1998} LeCun, Y., Bottou, L. , Bengio, Y. i Haffner, P. (1998). Gradient-based learning applied to document recognition. Proceedings of the IEEE, 86(11):2278-2324
 \bibitem[LeCun, Bengio i Hinton (2015)]{lecun2015} LeCun, Y., Bengio, Y. i Hinton, G. (2015). Deep learning. Nature, 521(7553), s.436-444
 \bibitem[Leong et al. (2017)]{leong2017} Leong, L., Petri, G., Gill, B. i Dorosh, M. (2017). Magic Quadrant for Cloud Infrastructure as a Service. Gartner.com. Dostępne pod adresem: \url{https://www.gartner.com/doc/reprints?id=1-2G2O5FC&ct=150519} (dostęp 11 marca 2017)
 \bibitem[Linnainmaa (1970)]{linnainmaa1970} Linnainmaa, S. (1970). The representation of the cumulative rounding error of an algorithm as a
 Taylor expansion of the local rounding errors. Praca magisterska, Uniwersytet w Helsinkach
 \bibitem[Litvinenko (2014)]{litvinenko2014} Litvinenko, N. (2014). Using of GPUs for cluster analysis of large data by K-means method arXiv preprint arXiv:1402.3788
+\bibitem[Maas et al. (2011)]{maas2011} Maas, A. L., Daly, R. E., Pham, P. T., Huang, D., Ng, A. Y. i Potts, C. (2011). Learning word vectors for sentiment analysis. In Proceedings of the 49th Annual Meeting of the Association for Computational Linguistics: Human Language Technologies-Volume 1 (s. 142-150). Association for Computational Linguistics
 \bibitem[Mackay (1992)]{mackay1992} MacKay, D. J. (1992). A practical Bayesian framework for backpropagation networks. Neural computation, 4(3), 448-472
 \bibitem[McCulloch i Pitts (1943)]{mcculloch1943} McCulloch, W. S. i Pitts, W. (1943). A logical calculus of the ideas immanent in nervous activity. The bulletin of mathematical biophysics, 5(4), s. 115-133
 \bibitem[Medium (2017a)]{medium2017a} Medium (2017). TensorFlow 1.0 is here. Let’s do some Deep Learning on the Amazon Cloud! – Sigmoidal. Dostępne pod adresem: \url{https://medium.com/sigmoidal/tensorflow-1-0-is-here-lets-do-some-deep-learning-on-the-amazon-cloud-9234eab31fa5#.vyxzk4bwk} (dostęp 14 marca 2017)
