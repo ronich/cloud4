@@ -57,9 +57,9 @@ epochs = 300
 data_augmentation = True
 
 (x_train, y_train), (x_test, y_test) = cifar10.load_data()
-a = np.random.randint(0, 50000, 10000)
-b = np.random.randint(0, 10000, 2000)
-(x_train, y_train), (x_test, y_test) = (x_train[a], y_train[a]), (x_test[b], y_test[b])
+#a = np.random.randint(0, 50000, 10000)
+#b = np.random.randint(0, 10000, 2000)
+#(x_train, y_train), (x_test, y_test) = (x_train[a], y_train[a]), (x_test[b], y_test[b])
 
 y_train = keras.utils.to_categorical(y_train, num_classes)
 y_test = keras.utils.to_categorical(y_test, num_classes)
