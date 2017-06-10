@@ -19,7 +19,7 @@ class benchmark:
         self.run_date = datetime.date.strftime(datetime.date.today(), '%Y%m%d')
         self.client = boto3.client('ec2')
         self.ec2 = boto3.resource('ec2')
-        self.p_ids = []
+        self.p_ids = dict{}
 
 
     def setUpInstances(self):
@@ -73,7 +73,7 @@ class benchmark:
         --run_date {2} --dataset {0} --architecture {1} --instance_type {3} \
         >logs/{2}_{0}_{1}_{3}.log 2>logs/{2}_{0}_{1}_{3}.err < /dev/null &'
             .format(*experiment, self.run_date, self.instance_type), pty=False)
-        self.p_ids.append((instance.id, run('pgrep python3')))
+        self.p_ids[instance.id] = run('pgrep python3')
 
     def getExperimentLogs(self):
         running_instances = self.instances

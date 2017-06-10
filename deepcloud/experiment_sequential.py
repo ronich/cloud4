@@ -19,7 +19,7 @@ class benchmark:
         self.run_date = datetime.date.strftime(datetime.date.today(), '%Y%m%d')
         self.client = boto3.client('ec2')
         self.ec2 = boto3.resource('ec2')
-        self.p_ids = []
+        self.p_ids = dict()
 
     def setUpInstances(self):
 
@@ -71,37 +71,33 @@ class benchmark:
         --run_date {2} --dataset {0} --architecture {1} --instance_type {3} \
         >logs/{2}_{0}_{1}_{3}.log 2>logs/{2}_{0}_{1}_{3}.err < /dev/null &'
             .format(*experiment, self.run_date, self.instance_type), pty=False)
-        self.p_ids.append((instance.id, run('pgrep python3')))
+        self.p_ids[instance.id] = run('pgrep python3')
 
     def getExperimentLogs(self):
-        running_instances = self.instances
 
-        while running_instances:
-            for instance in self.instances:
-                fabric.api.env.host_string = 'ec2-user@{}'.format(instance.public_dns_name)
+        while True:
+            instance = self.instances[0]
+            fabric.api.env.host_string = 'ec2-user@{}'.format(instance.public_dns_name)
 
-                # this raises errors - didnt work as expected
-                status = benchmark_td1.client.describe_instance_status(InstanceIds=[instance.id])\
-                .get('InstanceStatuses')[0]\
-                .get('InstanceState')\
-                .get('Name')
+            status = benchmark_td1.client.describe_instance_status(InstanceIds=[instance.id])\
+            .get('InstanceStatuses')[0]\
+            .get('InstanceState')\
+            .get('Name')
 
-                if status != 'running':
-                    print('Instance {} not running'.format(instance.id))
-                    running_instances.remove(instance)
-                    continue
+            if status != 'running':
+                print('Instance {} not running'.format(instance.id))
+                break
 
-                self.rSync(instance.public_dns_name)
-                self.syncWithS3()
+            self.rSync(instance.public_dns_name)
+            self.syncWithS3()
 
-                try:
-                    run('pgrep python3')
-                except:
-                    print('Process on instance {} not found'.format(instance.id))
-                    running_instances.remove(instance)
-                    continue
+            try:
+                run('pgrep python3')
+            except:
+                print('Process on instance {} not found'.format(instance.id))
+                break
 
-                time.sleep(60)
+            time.sleep(60)
 
             print('{}: synchronized logs from all instances'.format(datetime.datetime.now().isoformat()))
         else:
@@ -131,8 +127,8 @@ if __name__ == "__main__":
 
     benchmark_td1 = benchmark(experiments=experiments,instance_type=args.instance_type)
     benchmark_td1.setUpInstances()
-    benchmark_td1.configureInstances()
     for e in benchmark_td1.experiments:
+        benchmark_td1.configureInstance(benchmark_td1.instances[0], e)
         benchmark_td1.runExperiment(benchmark_td1.instances[0], e)
         benchmark_td1.getExperimentLogs()
 
