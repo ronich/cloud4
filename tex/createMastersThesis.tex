@@ -445,7 +445,7 @@ W pracy \citet{shi2016} dokonano porównania większości prezentowanych system�
   \caption{Jednostki oferowane przez dostawców usług cloud computingowych. Google Cloud Platform oferuje, w przeciwieństwie do pozostałych dostawców, dokupienie jednostki graficznej do wynajmowanego serwera.}\label{tab:gpu_units}
 \end{table}
 
-Istnieje uzasadniona potrzeba pomiaru, na jak dużą oszczędność czasową może liczyć osoba decydująca się na wspomaganie obliczeń naukowych procesorami graficznymi oferowanymi przez platformy \textit{cloud computingowe} i czy wiąże się to z dodatkowymi kosztami. Ekperyment ma na celu pomiar czasu potrzebnego na proces generacji różnych architektur głębokich sieci neuronowych, na różnych zbiorach danych i związanego z tym kosztu, wybranie zbioru decyzji niezdominowanych (optymalnych w sensie Pareto), a także dostarczenie narzędzia pozwalającego na przeprowadzanie własnych eksperymentów w tym zakresie.
+Istnieje uzasadniona potrzeba pomiaru, na jak dużą oszczędność czasową może liczyć osoba decydująca się na wspomaganie obliczeń naukowych procesorami graficznymi oferowanymi przez platformy \textit{cloud computingowe} i czy wiąże się to z dodatkowymi kosztami. Ekperyment ma na celu empiryczny pomiar czasu potrzebnego na proces generacji różnych architektur głębokich sieci neuronowych, na różnych zbiorach danych i związanego z tym kosztu, wybranie zbioru decyzji niezdominowanych (optymalnych w sensie Pareto), a także dostarczenie narzędzia pozwalającego na przeprowadzanie własnych eksperymentów w tym zakresie.
 Spośród przedstawionych w tabeli~\ref{tab:gpu_units} konfiguracji wybrano jednostkę p2.xlarge oferowaną przez Amazon Web Services do porównania z podobnymi jednostkami bez procesorów graficznych ze względu na status lidera rynku i dojrzałość rozwiązań oferowanych przez tego dostawcę. Została porównana z typem instancji, który jest optymalizowany pod kątem obliczeń, z wysokiej jakości jednostką centralną i najniższym stosunkiem ceny do wydajności - c4.2xlarge. Ich specyfikacje techniczne zostały przedstawione w tabeli \ref{tab:aws_units}.
 W eksperymencie wykorzystana została także biblioteka Keras, w oparciu o backend Tensorflow. Powodem tej decyzji jest fakt, że została zbudowana w celu ułatwienia przeprowadzania tego typu eksperymentów i oferuje wysoki poziom abstrakcji przy konfigurowaniu architektur bez względu na wykorzystaną u jej podstaw bibliotekę naukową (obecnie możliwe jest wykorzystanie Tensorflow, Theano oraz Deeplearning4j). Należy jednak zaznaczyć, że wszystkie wymienione narzędzia oferują elastyczne API i możliwość edytowania plików konfiguracyjnych dla optymalizowania ich wydajności. Celem przeprowadzanego eksperymentu nie jest porówywanie ich między sobą, nie ustalono zatem jednoznacznie wyższości jednej z bibliotek nad pozostałymi i może istnieć taka konfiguracja, która pozwoli na dalszą optymalizację metody rozwiązania problemu konstruowania sieci neuronowej. Wersje wykorzystanego oprogramowania zostały przedstawione w tabeli~\ref{tab:software}.
 
@@ -555,43 +555,112 @@ Dla zbioru CIFAR-10 eksperyment również przeprowadzany jest z wykorzystaniem d
 \caption{Podobnie jak w przypadku zbioru danych MNIST, na rysunku przedstawiono architekturę domyślną (lewa strona) oraz rozbudowaną (prawa strona).\label{fig:cifar_cnn}}
 \end{figure}
 
-%Eksperyment przeprowadzany będzie poprzez dokonywanie wielokrotnych, empirycznych pomiarów dla każdej rozważanej jednostki obliczeniowej. Wynikiem każdego pomiaru będzie koszt wynajmu serwera oraz czas potrzebny na skonstruowanie modelu. Wybranym do przeprowadzania eksperymentu problemem jest przetwarzanie obrazu (stworzenie klasyfikatora). Następnie przeprowadzimy agregację otrzymanych wyników oraz analizy zbioru dostępnych decyzji, by ostatecznie przedstawić zbiór decyzji optymalnych w sensie Pareto.
-
-% opisać architektury + obrazki architektur
-
-%tabela z architekturami? ile input/output/layers/parameters
-
-%cos jeszcze?
-
 \clearpage
 
 \section{Efektywność kosztowa głębokich sieci neuronowych w chmurze}
 
-%tabela z czasami
-\begin{tabular}{lllrr}
-\toprule
-Zbiór danych & Architektura & Typ instancji & Czas (s) & Minimum funkcji straty \\
-\midrule
-cifar & custom & c4.2xlarge & $29.16\pm0.32$ & $0.0852$ \\
-      & & p2.xlarge & $4.05\pm0.09$ & $0.0913$ \\
-\midrule
-      & kerasdef & c4.2xlarge & $23.20\pm0.53$ & $0.3513$ \\
-      & & p2.xlarge & $4.39\pm0.14$ & $0.3391$ \\
-\midrule
-imdb & kerasdef & c4.2xlarge & $125.12\pm2.07$ & $0.0309$ \\
-      & & p2.xlarge & $10.31\pm0.44$ & $0.0314$ \\
-\midrule
-      & lstmkerasdef & c4.2xlarge & $46.80\pm1.87$ & $0.0101$ \\
-      & & p2.xlarge & $40.16\pm0.92$ & $0.0100$ \\
-\midrule
-mnist & custom & c4.2xlarge & $101.53\pm0.68$ & $0.1152$ \\
-      & & p2.xlarge & $13.00\pm0.28$ & $0.1112$ \\
-\midrule
-      & kerasdef & c4.2xlarge & $89.55\pm1.30$ & $0.0352$ \\
-      & & p2.xlarge & $13.26\pm8.96$ & $0.0369$ \\
-\bottomrule
-\label{tab:experiment_results}
-\end{tabular}
+\noindent
+Analizowanymi w eksperymencie miarami są czas potrzebny na naukę modelu sieci neuronowej, ilość pracy potrzebna na osiągnięcie tego celu oraz wskaźniki oceny jakości modelu takie jak jego trafność i wartości funkcji straty dla zbioru treningowego i walidacyjnego. Otrzymane rezultaty prezentowane są w podziale na poszczególne zbiory danych, architektury modeli i typy jednostki, na której wykonywane były obliczenia.
+
+Tabela \ref{tab:experiment_results} przedstawia czasy potrzebne na wykonanie jednej iteracji przez zbiór danych (\textit{epoch}) w postaci średnia $\pm$ odchylenie standardowe. Wykorzystanie jednostek posiadających procesory graficzne pozwala na przyspieszenie obliczeń pięcio-, a nawet dwunastokrotnie w porównaniu do serwerów nie wyposażonych w \textit{GPU} dla sieci konwolucyjnych jednokierunkowych. %czy to jest na pewno OK?
+W przypadku sieci rekurencyjnej, w której wykorzystane są jednostki typu LSTM, różnica jest zdecydowanie mniejsza (ok. $40$ sekund w porównaniu do ok. $46$ sekund). Pomiary czasów uczenia wykazują bardzo niewielkie wahania (wykresy pudełkowe ilustrujące porównanie dla dwóch rodzajów instancji przedstawione są na rysunku \ref{fig:experiment_results}), z wyjątkiem pierwszej iteracji, która w przypadku rekurencyjnej architektury dla zbioru danych IMDB (\textit{lstmkerasdef} oraz architektury niestandardowej dla zbioru danych MNIST (\textit{kerasdef}) trwała znacznie dłużej niż kolejne.
+
+\noindent
+\begin{table}
+  \begin{tabular}
+    {C{0.2\linewidth}
+    C{0.2\linewidth}
+    C{0.2\linewidth}
+    R{0.25\linewidth}
+    }
+  \toprule
+  \multicolumn{1}{C{0.15\linewidth}}{Zbiór danych} & \multicolumn{1}{C{0.15\linewidth}}{Architektura} & \multicolumn{1}{C{0.15\linewidth}}{Typ instancji} & \multicolumn{1}{C{0.2\linewidth}}{Czas (s)}\\
+  \midrule
+  cifar & custom & c4.2xlarge &  $133.11\pm0.32$ \\
+        &        & p2.xlarge &   $20.15\pm0.12$ \\
+        & kerasdef & c4.2xlarge &  $116.36\pm0.45$ \\
+        &        & p2.xlarge &    $21.65\pm0.1$ \\
+  imdb &        & c4.2xlarge &  $124.71\pm0.12$ \\
+        &        & p2.xlarge &   $10.23\pm0.44$ \\
+        & lstm kerasdef & c4.2xlarge &   $45.94\pm0.43$ \\
+        &        & p2.xlarge &   $39.94\pm1.22$ \\
+  mnist & custom & c4.2xlarge &   $94.28\pm0.23$ \\
+        &        & p2.xlarge &   $12.81\pm0.21$ \\
+        & kerasdef & c4.2xlarge &    $81.5\pm2.68$ \\
+        &        & p2.xlarge &  $16.73\pm21.45$ \\
+  \bottomrule
+  \end{tabular}
+  \caption{Czasy potrzebne na wykonanie jednej iteracji przez wszystkie obserwacje podczas uczenia modelu sieci neuronowej dla poszczególnych zbiorów danych i architektur.\label{tab:experiment_results}}
+\end{table}
+
+\begin{figure}[h]
+  \centering
+\includegraphics[scale=0.5]{../obrazy/fig:experiment_results.png}
+\caption{Wykresy pudełkowe czasów potrzebnych na jedną iterację przez zbiór danych.\label{fig:experiment_results}}
+\end{figure}
+
+% wyniki eksperymentu, prezentowane porównanie cpu vs gpu na wykresach i w tabelach
+% prezentuję czasy potrzebne na nauczenie sieci
+% tabela: gpu oferuje x razy speedup w porownaniu do cpu (z wyjatkiem lstm- pytanie dlaczego?)
+% boxplot: ogolnie odchylenia standardowe czasow uczenia sa niewielkie, z wyjatkiem pierwszej iteracji przez zbior danych, ktora moze trwac dluzej
+% prezentuje wyniki uczenia - accuracy, loss modelu w zależności od czasu
+% porównuję ceny jednostek w modelu spot i on-demand
+
+\noindent
+\begin{table}
+  \begin{tabular}
+    {C{0.1\linewidth}
+    C{0.12\linewidth}
+    C{0.1\linewidth}
+    R{0.12\linewidth}
+    R{0.12\linewidth}
+    R{0.12\linewidth}
+    R{0.12\linewidth}
+    }
+  \toprule
+  \multicolumn{1}{C{0.1\linewidth}}{Zbiór danych} & \multicolumn{1}{C{0.12\linewidth}}{Architektura} & \multicolumn{1}{C{0.1\linewidth}}{Typ instancji} & \multicolumn{1}{C{0.12\linewidth}}{Funkcja straty (zbiór trening.)} & \multicolumn{1}{C{0.12\linewidth}}{Funkcja straty (zbiór walid.)} & \multicolumn{1}{C{0.12\linewidth}}{Trafność (zbiór trening.)} & \multicolumn{1}{C{0.12\linewidth}}{Trafność (zbiór walid.)} \\
+  \midrule
+  cifar & custom & c4.2xlarge &                           $0.2180$ &                           $0.4204$ &                    $0.9309$ &                     $0.8743$ \\
+        &        & p2.xlarge &                          $0.2207$ &                           $0.4083$ &                    $0.9308$ &                     $0.8767$ \\
+        & kerasdef & c4.2xlarge &                          $0.6217$ &                           $0.6494$ &                    $0.7935$ &                     $0.7874$ \\
+        &        & p2.xlarge &                          $0.6031$ &                           $0.6331$ &                    $0.8004$ &                     $0.7967$ \\
+  imdb & kerasdef & c4.2xlarge &                           $0.0290$ &                           $0.2706$ &                    $0.9896$ &                     $0.8864$ \\
+        &        & p2.xlarge &                          $0.0292$ &                           $0.2838$ &                    $0.9894$ &                     $0.8871$ \\
+        & lstm kerasdef & c4.2xlarge &                          $0.0079$ &                           $0.3594$ &                    $0.9972$ &                     $0.8482$ \\
+        &        & p2.xlarge &                          $0.0095$ &                           $0.3701$ &                    $0.9969$ &                     $0.8515$ \\
+  mnist & custom & c4.2xlarge &                          $0.1184$ &                            $0.0260$ &                    $0.9679$ &                     $0.9921$ \\
+        &        & p2.xlarge &                          $0.1183$ &                           $0.0292$ &                    $0.9691$ &                     $0.9913$ \\
+        & kerasdef & c4.2xlarge &                          $0.0366$ &                           $0.0265$ &                    $0.9889$ &                     $0.9916$ \\
+        &        & p2.xlarge &                          $0.0384$ &                           $0.0275$ &                    $0.9889$ &                     $0.9904$ \\
+  \bottomrule
+  \end{tabular}
+  \caption{Wartości funkcji celu i trafności dla zbioru treningowego i walidacyjnego w konstruowanych architekturach sieci.\label{tab:experiment_metrics}}
+\end{table}
+
+\begin{figure}[h]
+  \centering
+\includegraphics[scale=0.5]{../obrazy/fig:experiment_loss.png}
+\caption{Wykresy wartości funkcji celu dla zbioru treningowego.\label{fig:experiment_loss}}
+\end{figure}
+
+\begin{figure}[h]
+  \centering
+\includegraphics[scale=0.5]{../obrazy/fig:experiment_loss_val.png}
+\caption{Wykresy wartości funkcji celu dla zbioru walidacyjnego.\label{fig:experiment_loss_val}}
+\end{figure}
+
+\begin{figure}[h]
+  \centering
+\includegraphics[scale=0.5]{../obrazy/fig:experiment_acc.png}
+\caption{Wykresy trafności dla zbioru treningowego.\label{fig:experiment_acc}}
+\end{figure}
+
+\begin{figure}[h]
+  \centering
+\includegraphics[scale=0.5]{../obrazy/fig:experiment_acc_val.png}
+\caption{Wykresy trafności dla zbioru walidacyjnego.\label{fig:expriment_acc_val}}
+\end{figure}
+
 
 \clearpage
 
