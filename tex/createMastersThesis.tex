@@ -562,16 +562,15 @@ Dla zbioru CIFAR-10 eksperyment również przeprowadzany jest z wykorzystaniem d
 \noindent
 Analizowanymi w eksperymencie miarami są czas potrzebny na naukę modelu sieci neuronowej, ilość pracy potrzebna na osiągnięcie tego celu oraz wskaźniki oceny jakości modelu takie jak jego trafność i wartości funkcji straty dla zbioru treningowego i walidacyjnego. Otrzymane rezultaty prezentowane są w podziale na poszczególne zbiory danych, architektury modeli i typy jednostki, na której wykonywane były obliczenia.
 
-Tabela \ref{tab:experiment_results} przedstawia czasy potrzebne na wykonanie jednej iteracji przez zbiór danych (\textit{epoch}) w postaci średnia $\pm$ odchylenie standardowe. Wykorzystanie jednostek posiadających procesory graficzne pozwala na przyspieszenie obliczeń pięcio-, a nawet dwunastokrotnie w porównaniu do serwerów nie wyposażonych w \textit{GPU} dla sieci konwolucyjnych jednokierunkowych. %czy to jest na pewno OK?
-W przypadku sieci rekurencyjnej, w której wykorzystane są jednostki typu LSTM, różnica jest zdecydowanie mniejsza (ok. $40$ sekund w porównaniu do ok. $46$ sekund). Pomiary czasów uczenia wykazują bardzo niewielkie wahania (wykresy pudełkowe ilustrujące porównanie dla dwóch rodzajów instancji przedstawione są na rysunku \ref{fig:experiment_results}), z wyjątkiem pierwszej iteracji, która w przypadku rekurencyjnej architektury dla zbioru danych IMDB (\textit{lstmkerasdef} oraz architektury niestandardowej dla zbioru danych MNIST (\textit{kerasdef}) trwała znacznie dłużej niż kolejne.
+Tabela \ref{tab:experiment_results} przedstawia czasy potrzebne na wykonanie jednej iteracji przez zbiór danych (\textit{epoch}) w postaci średnia $\pm$ odchylenie standardowe. Wykorzystanie jednostek posiadających procesory graficzne pozwala na przyspieszenie obliczeń pięcio-, a nawet dwunastokrotnie w porównaniu do serwerów nie wyposażonych w \textit{GPU} dla jednokierunkowych sieci konwolucyjnych. W przypadku sieci rekurencyjnej, w której wykorzystane są jednostki typu LSTM, różnica jest zdecydowanie mniejsza (ok. $40$ sekund w porównaniu do ok. $46$ sekund). Pomiary czasów uczenia wykazują bardzo niewielkie wahania (wykresy pudełkowe ilustrujące porównanie dla dwóch rodzajów instancji przedstawione są na rysunku \ref{fig:experiment_results}), z wyjątkiem pierwszej iteracji, która w przypadku rekurencyjnej architektury dla zbioru danych IMDB (\textit{lstmkerasdef} oraz architektury niestandardowej dla zbioru danych MNIST (\textit{kerasdef}) trwała znacznie dłużej niż kolejne.
 
 \noindent
 \begin{table}
   \begin{tabular}
-    {C{0.2\linewidth}
-    C{0.2\linewidth}
-    C{0.2\linewidth}
-    R{0.25\linewidth}
+    {C{0.21\linewidth}
+    C{0.21\linewidth}
+    C{0.21\linewidth}
+    R{0.26\linewidth}
     }
   \toprule
   \multicolumn{1}{C{0.15\linewidth}}{Zbiór danych} & \multicolumn{1}{C{0.15\linewidth}}{Architektura} & \multicolumn{1}{C{0.15\linewidth}}{Typ instancji} & \multicolumn{1}{C{0.2\linewidth}}{Czas (s)}\\
@@ -599,12 +598,33 @@ W przypadku sieci rekurencyjnej, w której wykorzystane są jednostki typu LSTM,
 \caption{Wykresy pudełkowe czasów potrzebnych na jedną iterację przez zbiór danych.\label{fig:experiment_results}}
 \end{figure}
 
-% wyniki eksperymentu, prezentowane porównanie cpu vs gpu na wykresach i w tabelach
-% prezentuję czasy potrzebne na nauczenie sieci
-% tabela: gpu oferuje x razy speedup w porownaniu do cpu (z wyjatkiem lstm- pytanie dlaczego?)
-% boxplot: ogolnie odchylenia standardowe czasow uczenia sa niewielkie, z wyjatkiem pierwszej iteracji przez zbior danych, ktora moze trwac dluzej
-% prezentuje wyniki uczenia - accuracy, loss modelu w zależności od czasu
-% porównuję ceny jednostek w modelu spot i on-demand
+Ceny wykorzystywanych instancji na rynku spot i on-demand zostały zaprezentowane w tabeli \ref{tab:instance_prices}. W przypadku cen on-demand instancje p2.xlarge są o $126\%$ droższe w porównaniu do c4.2xlarge. Jest to stosunek cen, który, biorąc pod uwagę różnicę w czasie potrzebnym na zbudowaniu modelu, sugeruje wybór jednostki wyposażonej w GPU. Pozwoli to na oszczędność czasu potrzebnego na obliczenia, ale także prowadzi do optymalizacji kosztowej.
+Stosowanie jednostek wyposażonych w GPU jest również rekomendowane w przypadku decydowana się na wynajem instancji na rynku spot, gdzie średnia (mediana) ceny instancji p2.xlarge w czasie przeprowadzanego eksperymentu była o $124\%$ ($129\%$) wyższa od średniej (mediany) ceny instancji c4.2xlarge.
+
+Nakład pracy potrzebny na skonstruowanie sieci neuronowej z wykorzystaniem maszyny wyposażonej w procesor graficzny jest taki sam, jak w przypadku serwera nie wyposażonego w GPU. Powodem tego stanu rzeczy jest wykorzystanie wysokopoziomowych bibliotek (Keras oraz Tensorflow lub Theano), które automatycznie wykrywają obecność kart graficznych przystosowanych do obliczeń naukowych oraz sterowników pochodzących od NVIDIA (CUDA, cudNN) i dostosowują do tego sposób przydzielania zadań.
+
+\noindent
+\begin{table}
+  \begin{tabular}
+    {C{0.16\linewidth}
+    R{0.24\linewidth}
+    R{0.24\linewidth}
+    R{0.25\linewidth}}
+  \toprule
+  \multicolumn{1}{C{0.15\linewidth}}{Typ jednostki} & \multicolumn{1}{C{0.22\linewidth}}{Cena on-demand (\$)} & \multicolumn{1}{C{0.22\linewidth}}{Cena spot (średnia, \$)} & \multicolumn{1}{C{0.22\linewidth}}{Cena spot (mediana, \$)} \\
+  \midrule
+  p2.xlarge & $0.9000$ & $0.2450$ & $0.2489$ \\
+  c4.2xlarge & $0.3980$ & $0.1092$ & $0.1085$ \\
+  \bottomrule
+  \end{tabular}
+  \caption{Ceny instancji na rynku on-demand oraz spot w czasie przeprowadzania eksperymentu.}\label{tab:instance_prices}
+\end{table}
+
+W tabeli \ref{tab:experiment_metrics} oraz na wykresach \ref{fig:experiment_loss}, \ref{fig:experiment_loss_val},
+\ref{fig:experiment_acc}, \ref{fig:experiment_acc_val} przedstawiono metryki jakości estymowanych modeli - funkcję straty i trafność. Ostatecznie z wykorzystaniem obu typów instancji osiągnięto podobne wyniki, jednakże z wyjątkiem sieci rekurencyjnej wartość funkcji straty czy trafności znacznie szybciej asymptotycznie zbiega do wartości granicznej w przypadku serwerów wyposażonych w procesory graficzne (por. także w tabeli \ref{tab:experiment_results}).
+
+Analizując miary służące oceny estymowanych modeli można zauważyć, że o ile modyfikacja domyślnej architektury prowadziła do uzyskania lepszego modelu dla zbioru danych CIFAR-10 (trafność na zbiorze walidacyjnym architektury \textit{custom} wyniosła około $0,87$, a dla architektury \textit{kerasdef} około $0,79$), o tyle dla zbioru MNIST nie poskutkowała znaczną różnicą w wynikach. Ponadto, w przypadku obu architektur stworzonych dla zbioru danych IMDB, jak również w przypadku architektury domyślnej dla zbioru danych CIFAR-10 miało miejsce przeuczenie sieci neuronowej. Nie jest ona w stanie wystarczająco dobrze uogólniać odkryte zależności na obserwacje nie pochodzące ze zbioru treningowego, co skutkuje wzrostem funkcji straty (spadkiem trafności) na zbiorze walidacyjnym. Występuje on po 2. iteracji w przypadku architektur zbudowanych na potrzeby zbioru danych IMDB i po około 120. iteracji modelu domyślnego dla CIFAR-10.
+%Wynika to z faktu, że liczba iteracji przez zbiór danych była jednak ustalana na potrzeby pomiaru czasu przypadającego na jeden \textit{epoch}, nie na potrzeby uzyskania najlepszego modelu.
 
 \noindent
 \begin{table}
@@ -658,7 +678,7 @@ W przypadku sieci rekurencyjnej, w której wykorzystane są jednostki typu LSTM,
 \begin{figure}[h]
   \centering
 \includegraphics[scale=0.5]{../obrazy/fig:experiment_acc_val.png}
-\caption{Wykresy trafności dla zbioru walidacyjnego.\label{fig:expriment_acc_val}}
+\caption{Wykresy trafności dla zbioru walidacyjnego.\label{fig:experiment_acc_val}}
 \end{figure}
 
 
