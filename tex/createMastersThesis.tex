@@ -1,4 +1,5 @@
 \documentclass[12pt,a4paper,twoside]{article}
+\usepackage[toc,page]{appendix}
 \usepackage[T1]{fontenc}
 \usepackage[utf8]{inputenc}
 \usepackage[polish]{babel}
@@ -19,6 +20,14 @@
 \usepackage{etoolbox}
 \usepackage{titlesec}
 \usepackage{array}
+\usepackage{listings}
+\lstset{
+  basicstyle=\ttfamily\footnotesize,
+  columns=fullflexible,
+  frame=single,
+  breaklines=true,
+  postbreak=\mbox{\textcolor{red}{$\hookrightarrow$}\space},
+}
 \newcolumntype{L}[1]{>{\raggedright\arraybackslash}p{#1}}
 \newcolumntype{R}[1]{>{\raggedleft\arraybackslash}p{#1}}
 \newcolumntype{C}[1]{>{\centering\arraybackslash}p{#1}}
@@ -33,6 +42,7 @@
 }
 \makeatletter
 \renewcommand{\ALG@name}{Algorytm}
+\renewcommand\appendixpagename{Załączniki}
 \makeatother
 \titlelabel{\thetitle.\quad}
 \makeatletter
@@ -466,7 +476,6 @@ W eksperymencie wykorzystana została także biblioteka Keras, w oparciu o backe
   \end{tabular}
   \caption{Porównywane rodzaje instancji}\label{tab:aws_units}
 \end{table}
-
 \noindent
 \begin{table}
   \centering
@@ -506,9 +515,9 @@ Przykładowe obserwacje przedstawione zostały w tabeli \ref{tab:imdb_data}. Wst
   \toprule
   \multicolumn{1}{c}{Nieprzetworzona opinia} & \multicolumn{1}{c}{Klasyfikacja} \\
   \midrule
-   If you look at Corey Large's information here on IMDb, apparently there's a movie called "Reload" in production[...] & (-) \\
-   Very good drama although it appeared to have a few blank areas [...] & (+) \\
-   Weak plot, predictable violence, only semi interesting characters. [...] & (-) \\
+   If you look at Corey Large's information here on IMDb, apparently there's a movie called ,,Reload'' in production[\ldots] & (-) \\
+   Very good drama although it appeared to have a few blank areas [\ldots] & (+) \\
+   Weak plot, predictable violence, only semi interesting characters. [\ldots] & (-) \\
   \bottomrule
   \end{tabular}
   \caption{Nieprzetworzone obserwacje pochodzące ze zbioru Large Movie Review Dataset wraz z oceną ich sentymentu - pozytywną (+) lub negatywną (-).\label{tab:imdb_data}}
@@ -540,7 +549,6 @@ Połączenie rekurencyjne ma wagę $1$ i ma na celu zapewnienie, że \textit{cet
 \includegraphics[scale=0.75]{../obrazy/fig:lstm_memcell.png}
 \caption{Jednostka \textit{Long-Short Term Memory}. Oprócz klasycznej architektury neuronu z połączeniem rekurencyjnym, elementami wchodzącymi w jej skład są trzy bramki: wejściowa (\textit{input gate}), pamięci (\textit{forget gate}) i wyjściowa (\textit{output gate}).\label{fig:lstm_memcell}}
 \end{figure}
-
 \begin{figure}[h]
   \centering
 \includegraphics[scale=0.35]{../obrazy/fig:imdb_cnn.png}
@@ -591,7 +599,6 @@ Tabela \ref{tab:experiment_results} przedstawia czasy potrzebne na wykonanie jed
   \end{tabular}
   \caption{Czasy potrzebne na wykonanie jednej iteracji przez wszystkie obserwacje podczas uczenia modelu sieci neuronowej dla poszczególnych zbiorów danych i architektur.\label{tab:experiment_results}}
 \end{table}
-
 \begin{figure}[h]
   \centering
 \includegraphics[scale=0.5]{../obrazy/fig:experiment_results.png}
@@ -656,31 +663,26 @@ Analizując miary służące oceny estymowanych modeli można zauważyć, że o 
   \end{tabular}
   \caption{Wartości funkcji celu i trafności dla zbioru treningowego i walidacyjnego w konstruowanych architekturach sieci.\label{tab:experiment_metrics}}
 \end{table}
-
 \begin{figure}[h]
   \centering
 \includegraphics[scale=0.5]{../obrazy/fig:experiment_loss.png}
 \caption{Wykresy wartości funkcji celu dla zbioru treningowego.\label{fig:experiment_loss}}
 \end{figure}
-
 \begin{figure}[h]
   \centering
 \includegraphics[scale=0.5]{../obrazy/fig:experiment_loss_val.png}
 \caption{Wykresy wartości funkcji celu dla zbioru walidacyjnego.\label{fig:experiment_loss_val}}
 \end{figure}
-
 \begin{figure}[h]
   \centering
 \includegraphics[scale=0.5]{../obrazy/fig:experiment_acc.png}
 \caption{Wykresy trafności dla zbioru treningowego.\label{fig:experiment_acc}}
 \end{figure}
-
 \begin{figure}[h]
   \centering
 \includegraphics[scale=0.5]{../obrazy/fig:experiment_acc_val.png}
 \caption{Wykresy trafności dla zbioru walidacyjnego.\label{fig:experiment_acc_val}}
 \end{figure}
-
 
 \clearpage
 
@@ -689,15 +691,1045 @@ Analizując miary służące oceny estymowanych modeli można zauważyć, że o 
 
 \clearpage
 
+\begin{appendices}
+
+\section{Eksperyment}
+
+\subsection{Kod sterujący}
+
+\begin{lstlisting}[language=python]
+
+  import boto3, subprocess
+  import datetime
+  import time
+  import argparse
+  import fabric
+  from fabric.api import run, hide
+
+  def parseArgs():
+      parser = argparse.ArgumentParser(description='Experiment specs')
+      parser.add_argument('--instance_type', type=str, help='instance type')
+      return  parser.parse_args()
+
+  class benchmark:
+      def __init__(self, experiments, instance_type, image_id="ami-a3b3d4b5", key_name='dpcld_test1'):
+          self.experiments = experiments
+          self.instance_type = instance_type
+          self.image_id = image_id
+          self.key_name = key_name
+          self.run_date = datetime.date.strftime(datetime.date.today(), '%Y%m%d')
+          self.client = boto3.client('ec2')
+          self.ec2 = boto3.resource('ec2')
+          self.p_ids = dict()
+
+      def setUpInstances(self):
+
+          response = self.client.run_instances(ImageId=self.image_id,
+                                  InstanceType=self.instance_type,
+                                  MinCount=1,
+                                  MaxCount=1,
+                                  KeyName=self.key_name,
+                                  IamInstanceProfile={
+                                      'Arn':'arn:aws:iam::465729247037:instance-profile/S3_Admin_Access'}
+                                  )
+
+          assert response.get('ResponseMetadata').get('HTTPStatusCode') == 200, "Request ended with an error (HTTPStatusCode != 200)"
+          assert len(response.get('Instances')) == 1, "Number of instances launched is equal to specified"
+
+          instance_ids = []
+          instance_ids.extend([_.get('InstanceId') for _ in response.get('Instances')])
+
+          waiter = self.client.get_waiter('instance_status_ok')
+          waiter.wait(InstanceIds=instance_ids)
+
+          print('Set up instances: {}'.format(' '.join(instance_ids)))
+
+          self.instances = [self.ec2.Instance(_) for _ in instance_ids]
+
+          #return [self.ec2.Instance(_) for _ in instance_ids]
+
+      def configureInstances(self):
+          [self.configureInstance(i, e) for i, e in zip(self.instances, self.experiments)]
+
+      def configureInstance(self, instance, experiment):
+          instance.create_tags(Tags=[{'Key':'Name', 'Value':'sequential experiment'}])
+          fabric.api.env.host_string = 'ec2-user@{}'.format(instance.public_dns_name)
+          fabric.api.env.key_filename = '~/.ssh/{}.pem'.format(self.key_name)
+          fabric.api.env.disable_known_hosts
+          fabric.api.hide('output')
+          fabric.operations.put('./{}_{}.py'.format(*experiment), '.')
+          run('sudo pip3 install git+git://github.com/fchollet/keras.git --upgrade')
+          run('sudo pip3 install pydot')
+          run('sudo pip3 install graphviz')
+
+      def runExperiments(self):
+          [self.runExperiment(i, e) for i, e in zip(self.instances, self.experiments)]
+
+      def runExperiment(self, instance, experiment):
+          fabric.api.env.host_string = 'ec2-user@{}'.format(instance.public_dns_name)
+          run('mkdir -p logs')
+          run('nohup python3 -u {0}_{1}.py \
+          --run_date {2} --dataset {0} --architecture {1} --instance_type {3} \
+          >logs/{2}_{0}_{1}_{3}.log 2>logs/{2}_{0}_{1}_{3}.err < /dev/null &'
+              .format(*experiment, self.run_date, self.instance_type), pty=False)
+          self.p_ids[instance.id] = run('pgrep python3')
+
+      def getExperimentLogs(self):
+
+          while True:
+              instance = self.instances[0]
+              fabric.api.env.host_string = 'ec2-user@{}'.format(instance.public_dns_name)
+
+              status = benchmark_td1.client.describe_instance_status(InstanceIds=[instance.id])\
+              .get('InstanceStatuses')[0]\
+              .get('InstanceState')\
+              .get('Name')
+
+              if status != 'running':
+                  print('Instance {} not running'.format(instance.id))
+                  break
+
+              self.rSync(instance.public_dns_name)
+              self.syncWithS3()
+
+              try:
+                  run('pgrep python3')
+              except:
+                  print('Process on instance {} not found'.format(instance.id))
+                  break
+
+              time.sleep(60)
+
+              print('{}: synchronized logs from all instances'.format(datetime.datetime.now().isoformat()))
+          else:
+              print('All instances are down or finished their tasks')
+
+      def rSync(self, public_dns):
+          fabric.operations.local('rsync -aL -e "ssh -i ~/.ssh/{}.pem -o StrictHostKeyChecking=no" \
+          --include="/home/ec2-user/logs/*" --include="*.log" --include="*.err" \
+          --include="*.out" --include="*.png" --exclude="*" \
+          ec2-user@{}:/home/ec2-user/logs/ \
+          ./logs/'.format(self.key_name, public_dns))
+
+      def syncWithS3(self):
+          run('aws s3 sync /home/ec2-user/logs s3://deepcloud-logstash/ --exclude="*"\
+          --include="*.log" --include="*.err" \
+          --include="*.out" --include="*.png" --region "us-east-1"')
+
+  if __name__ == "__main__":
+      experiments = [("mnist","kerasdef"),
+                     ("mnist","custom"),
+                     ("imdb","kerasdef"),
+                     ("imdb","lstmkerasdef"),
+                     ("cifar","kerasdef"),
+                     ("cifar","custom")
+                     ]
+      args = parseArgs()
+
+      benchmark_td1 = benchmark(experiments=experiments,instance_type=args.instance_type)
+      benchmark_td1.setUpInstances()
+      for e in benchmark_td1.experiments:
+          benchmark_td1.configureInstance(benchmark_td1.instances[0], e)
+          benchmark_td1.runExperiment(benchmark_td1.instances[0], e)
+          benchmark_td1.getExperimentLogs()
+
+      term_responses = [_.terminate() for _ in benchmark_td1.instances]
+
+      print(term_responses)
+
+\end{lstlisting}
+\clearpage
+
+\subsection{Zbiór danych CIFAR-10, architektura niestandardowa (custom)}
+\begin{lstlisting}[language=python]
+  import keras
+  from keras.datasets import cifar10
+  from keras.preprocessing.image import ImageDataGenerator
+  from keras.models import Sequential
+  from keras.layers import Dense, Dropout, Activation, Flatten
+  from keras.layers import Conv2D, MaxPooling2D, AveragePooling2D
+  from keras.utils import plot_model
+  import pydot
+  import graphviz
+  import argparse
+  import numpy as np
+  import time
+
+  class timeHistory(keras.callbacks.Callback):
+      def on_train_begin(self, logs={}):
+          self.batch_times = []
+          self.epoch_times = []
+
+      def on_batch_begin(self, batch, logs={}):
+          self.batch_begin = time.time()
+
+      def on_batch_end(self, batch, logs={}):
+          self.batch_end = time.time()
+          self.batch_times.append(self.batch_end-self.batch_begin)
+
+      def on_epoch_begin(self, epoch, logs={}):
+          self.epoch_begin = time.time()
+          self.batch_times = []
+
+      def on_epoch_end(self, epoch, logs={}):
+          self.epoch_end = time.time()
+          self.epoch_times.append(self.epoch_end-self.epoch_begin)
+          _d = dict()
+          _d['dataset'] = args.dataset
+          _d['architecture'] = args.architecture
+          _d['instance_type'] = args.instance_type
+          _d['epoch'] = len(self.epoch_times)
+          _d['time'] = self.epoch_end-self.epoch_begin
+          _d['batch_times'] = self.batch_times
+          _d['loss'] = logs.get('loss')
+          _d['val_loss'] = logs.get('val_loss')
+          _d['acc'] = logs.get('acc')
+          _d['val_acc'] = logs.get('val_acc')
+          print(_d)
+
+  parser = argparse.ArgumentParser(description='Experiment specs')
+  parser.add_argument('--run_date', type=str, help='run date')
+  parser.add_argument('--dataset', type=str, help='dataset')
+  parser.add_argument('--architecture', type=str, help='model architecture')
+  parser.add_argument('--instance_type', type=str, help='instance type')
+
+  args = parser.parse_args()
+
+  batch_size = 64
+  num_classes = 10
+  epochs = 300
+  data_augmentation = True
+
+  (x_train, y_train), (x_test, y_test) = cifar10.load_data()
+  #a = np.random.randint(0, 50000, 10000)
+  #b = np.random.randint(0, 10000, 2000)
+  #(x_train, y_train), (x_test, y_test) = (x_train[a], y_train[a]), (x_test[b], y_test[b])
+
+  y_train = keras.utils.to_categorical(y_train, num_classes)
+  y_test = keras.utils.to_categorical(y_test, num_classes)
+
+  # generating data
+  datagen = ImageDataGenerator(
+      featurewise_center=False,  # set input mean to 0 over the dataset
+      samplewise_center=False,  # set each sample mean to 0
+      featurewise_std_normalization=False,  # divide inputs by std of the dataset
+      samplewise_std_normalization=False,  # divide each input by its std
+      zca_whitening=False,  # apply ZCA whitening
+      rotation_range=0,  # randomly rotate images in the range (degrees, 0 to 180)
+      width_shift_range=0.1,  # randomly shift images horizontally (fraction of total width)
+      height_shift_range=0.1,  # randomly shift images vertically (fraction of total height)
+      horizontal_flip=True,  # randomly flip images
+      vertical_flip=False
+      )
+
+  model = Sequential()
+
+  model.add(Conv2D(16, (3, 3), padding='same',
+                   input_shape=x_train.shape[1:]))
+  model.add(Activation('relu'))
+  model.add(Conv2D(32, (3, 3)))
+  model.add(Activation('relu'))
+  model.add(Conv2D(32, (3, 3)))
+  model.add(Activation('relu'))
+  model.add(AveragePooling2D(pool_size=(2, 2)))
+  model.add(Dropout(0.25))
+
+  model.add(Conv2D(64, (3, 3), padding='same'))
+  model.add(Activation('relu'))
+  model.add(Conv2D(64, (3, 3)))
+  model.add(Activation('relu'))
+  model.add(AveragePooling2D(pool_size=(2, 2)))
+  model.add(Dropout(0.25))
+
+  model.add(Flatten())
+  model.add(Dense(768))
+  model.add(Activation('relu'))
+  model.add(Dense(256))
+  model.add(Activation('relu'))
+  model.add(Dropout(0.5))
+  model.add(Dense(num_classes))
+  model.add(Activation('softmax'))
+
+  model.compile(loss='categorical_crossentropy',
+                optimizer=keras.optimizers.Adadelta(),
+                metrics=['accuracy'])
+
+  x_train = x_train.astype('float32')
+  x_test = x_test.astype('float32')
+  x_train /= 255
+  x_test /= 255
+
+  plot_model(model, to_file='logs/{}_{}.png'.format(args.dataset, args.architecture))
+
+  csv_logger = keras.callbacks.CSVLogger('logs/{}_{}_{}_{}.out'.format(args.run_date, args.dataset, args.architecture, args.instance_type))
+  time_history = timeHistory()
+
+  datagen.fit(x_train)
+
+  model.fit_generator(
+      datagen.flow(
+          x_train, y_train, batch_size=batch_size
+          ),
+      steps_per_epoch=x_train.shape[0] // batch_size,
+      epochs=epochs,
+      validation_data=(x_test, y_test),
+      verbose=2,
+      callbacks=[csv_logger, time_history])
+\end{lstlisting}
+\clearpage
+\subsection{Zbiór danych CIFAR-10, architektura domyślna (kerasdef)}
+\begin{lstlisting}[language=python]
+  import keras
+  from keras.datasets import cifar10
+  from keras.preprocessing.image import ImageDataGenerator
+  from keras.models import Sequential
+  from keras.layers import Dense, Dropout, Activation, Flatten
+  from keras.layers import Conv2D, MaxPooling2D
+  from keras.utils import plot_model
+  import pydot
+  import graphviz
+  import argparse
+  import numpy as np
+  import time
+
+  class timeHistory(keras.callbacks.Callback):
+      def on_train_begin(self, logs={}):
+          self.batch_times = []
+          self.epoch_times = []
+
+      def on_batch_begin(self, batch, logs={}):
+          self.batch_begin = time.time()
+
+      def on_batch_end(self, batch, logs={}):
+          self.batch_end = time.time()
+          self.batch_times.append(self.batch_end-self.batch_begin)
+
+      def on_epoch_begin(self, epoch, logs={}):
+          self.epoch_begin = time.time()
+          self.batch_times = []
+
+      def on_epoch_end(self, epoch, logs={}):
+          self.epoch_end = time.time()
+          self.epoch_times.append(self.epoch_end-self.epoch_begin)
+          _d = dict()
+          _d['dataset'] = args.dataset
+          _d['architecture'] = args.architecture
+          _d['instance_type'] = args.instance_type
+          _d['epoch'] = len(self.epoch_times)
+          _d['time'] = self.epoch_end-self.epoch_begin
+          _d['batch_times'] = self.batch_times
+          _d['loss'] = logs.get('loss')
+          _d['val_loss'] = logs.get('val_loss')
+          _d['acc'] = logs.get('acc')
+          _d['val_acc'] = logs.get('val_acc')
+          print(_d)
+
+  parser = argparse.ArgumentParser(description='Experiment specs')
+  parser.add_argument('--run_date', type=str, help='run date')
+  parser.add_argument('--dataset', type=str, help='dataset')
+  parser.add_argument('--architecture', type=str, help='model architecture')
+  parser.add_argument('--instance_type', type=str, help='instance type')
+
+  args = parser.parse_args()
+
+  batch_size = 32
+  num_classes = 10
+  epochs = 200
+
+  (x_train, y_train), (x_test, y_test) = cifar10.load_data()
+  #a = np.random.randint(0, 50000, 10000)
+  #b = np.random.randint(0, 10000, 2000)
+  #(x_train, y_train), (x_test, y_test) = (x_train[a], y_train[a]), (x_test[b], y_test[b])
+
+  y_train = keras.utils.to_categorical(y_train, num_classes)
+  y_test = keras.utils.to_categorical(y_test, num_classes)
+
+  model = Sequential()
+
+  model.add(Conv2D(32, (3, 3), padding='same',
+                   input_shape=x_train.shape[1:]))
+  model.add(Activation('relu'))
+  model.add(Conv2D(32, (3, 3)))
+  model.add(Activation('relu'))
+  model.add(MaxPooling2D(pool_size=(2, 2)))
+  model.add(Dropout(0.25))
+
+  model.add(Conv2D(64, (3, 3), padding='same'))
+  model.add(Activation('relu'))
+  model.add(Conv2D(64, (3, 3)))
+  model.add(Activation('relu'))
+  model.add(MaxPooling2D(pool_size=(2, 2)))
+  model.add(Dropout(0.25))
+
+  model.add(Flatten())
+  model.add(Dense(512))
+  model.add(Activation('relu'))
+  model.add(Dropout(0.5))
+  model.add(Dense(num_classes))
+  model.add(Activation('softmax'))
+
+  # initiate RMSprop optimizer
+  opt = keras.optimizers.rmsprop(lr=0.0001, decay=1e-6)
+
+  model.compile(loss='categorical_crossentropy',
+                optimizer=opt,
+                metrics=['accuracy'])
+
+  x_train = x_train.astype('float32')
+  x_test = x_test.astype('float32')
+  x_train /= 255
+  x_test /= 255
+
+  plot_model(model, to_file='logs/{}_{}.png'.format(args.dataset, args.architecture))
+
+  csv_logger = keras.callbacks.CSVLogger('logs/{}_{}_{}_{}.out'.format(args.run_date, args.dataset, args.architecture, args.instance_type))
+  time_history = timeHistory()
+
+  model.fit(
+      x_train, y_train,
+      batch_size=batch_size,
+      epochs=epochs,
+      validation_data=(x_test, y_test),
+      verbose=2,
+      shuffle=True,
+      callbacks=[csv_logger, time_history])
+\end{lstlisting}
+\clearpage
+\subsection{Zbiór danych IMDB, architektura domyślna, jednokierunkowa (kerasdef)}
+\begin{lstlisting}[language=python]
+  from keras.preprocessing import sequence
+  from keras.models import Sequential
+  from keras.layers import Dense, Dropout, Activation
+  from keras.layers import Embedding
+  from keras.layers import Conv1D, GlobalMaxPooling1D
+  from keras.datasets import imdb
+  from keras.utils import plot_model
+  import keras
+  import pydot
+  import graphviz
+  import argparse
+  import time
+
+  class timeHistory(keras.callbacks.Callback):
+      def on_train_begin(self, logs={}):
+          self.batch_times = []
+          self.epoch_times = []
+
+      def on_batch_begin(self, batch, logs={}):
+          self.batch_begin = time.time()
+
+      def on_batch_end(self, batch, logs={}):
+          self.batch_end = time.time()
+          self.batch_times.append(self.batch_end-self.batch_begin)
+
+      def on_epoch_begin(self, epoch, logs={}):
+          self.epoch_begin = time.time()
+          self.batch_times = []
+
+      def on_epoch_end(self, epoch, logs={}):
+          self.epoch_end = time.time()
+          self.epoch_times.append(self.epoch_end-self.epoch_begin)
+          _d = dict()
+          _d['dataset'] = args.dataset
+          _d['architecture'] = args.architecture
+          _d['instance_type'] = args.instance_type
+          _d['epoch'] = len(self.epoch_times)
+          _d['time'] = self.epoch_end-self.epoch_begin
+          _d['batch_times'] = self.batch_times
+          _d['loss'] = logs.get('loss')
+          _d['val_loss'] = logs.get('val_loss')
+          _d['acc'] = logs.get('acc')
+          _d['val_acc'] = logs.get('val_acc')
+          print(_d)
+
+  parser = argparse.ArgumentParser(description='Experiment specs')
+  parser.add_argument('--run_date', type=str, help='run date')
+  parser.add_argument('--dataset', type=str, help='dataset')
+  parser.add_argument('--architecture', type=str, help='model architecture')
+  parser.add_argument('--instance_type', type=str, help='instance type')
+
+  args = parser.parse_args()
+
+  max_features = 5000
+  maxlen = 400
+  batch_size = 32
+  embedding_dims = 50
+  filters = 250
+  kernel_size = 3
+  hidden_dims = 250
+  epochs = 10
+
+  (x_train, y_train), (x_test, y_test) = imdb.load_data(num_words=max_features)
+
+  x_train = sequence.pad_sequences(x_train, maxlen=maxlen)
+  x_test = sequence.pad_sequences(x_test, maxlen=maxlen)
+
+  model = Sequential()
+  model.add(Embedding(max_features,
+                      embedding_dims,
+                      input_length=maxlen))
+  model.add(Dropout(0.2))
+  model.add(Conv1D(filters,
+                   kernel_size,
+                   padding='valid',
+                   activation='relu',
+                   strides=1))
+  model.add(GlobalMaxPooling1D())
+  model.add(Dense(hidden_dims))
+  model.add(Dropout(0.2))
+  model.add(Activation('relu'))
+  model.add(Dense(1))
+  model.add(Activation('sigmoid'))
+
+  model.compile(loss='binary_crossentropy',
+                optimizer='adam',
+                metrics=['accuracy'])
+
+  plot_model(model, to_file='logs/{}_{}.png'.format(args.dataset, args.architecture))
+
+  csv_logger = keras.callbacks.CSVLogger('logs/{}_{}_{}_{}.out'.format(args.run_date, args.dataset, args.architecture, args.instance_type))
+  time_history = timeHistory()
+
+  model.fit(x_train, y_train,
+            batch_size=batch_size,
+            epochs=epochs,
+            verbose=2,
+            validation_data=(x_test, y_test),
+            callbacks=[csv_logger, time_history])
+\end{lstlisting}
+\clearpage
+\subsection{Zbiór danych IMDB, architektura domyślna, rekurencyjna (lstm kerasdef)}
+\begin{lstlisting}[language=python]
+  from keras.preprocessing import sequence
+  from keras.models import Sequential
+  from keras.layers import Dense, Dropout, Activation
+  from keras.layers import Embedding
+  from keras.layers import LSTM
+  from keras.layers import Conv1D, MaxPooling1D
+  from keras.datasets import imdb
+  from keras.utils import plot_model
+  import keras
+  import pydot
+  import graphviz
+  import argparse
+  import time
+
+  class timeHistory(keras.callbacks.Callback):
+      def on_train_begin(self, logs={}):
+          self.batch_times = []
+          self.epoch_times = []
+
+      def on_batch_begin(self, batch, logs={}):
+          self.batch_begin = time.time()
+
+      def on_batch_end(self, batch, logs={}):
+          self.batch_end = time.time()
+          self.batch_times.append(self.batch_end-self.batch_begin)
+
+      def on_epoch_begin(self, epoch, logs={}):
+          self.epoch_begin = time.time()
+          self.batch_times = []
+
+      def on_epoch_end(self, epoch, logs={}):
+          self.epoch_end = time.time()
+          self.epoch_times.append(self.epoch_end-self.epoch_begin)
+          _d = dict()
+          _d['dataset'] = args.dataset
+          _d['architecture'] = args.architecture
+          _d['instance_type'] = args.instance_type
+          _d['epoch'] = len(self.epoch_times)
+          _d['time'] = self.epoch_end-self.epoch_begin
+          _d['batch_times'] = self.batch_times
+          _d['loss'] = logs.get('loss')
+          _d['val_loss'] = logs.get('val_loss')
+          _d['acc'] = logs.get('acc')
+          _d['val_acc'] = logs.get('val_acc')
+          print(_d)
+
+  parser = argparse.ArgumentParser(description='Experiment specs')
+  parser.add_argument('--run_date', type=str, help='run date')
+  parser.add_argument('--dataset', type=str, help='dataset')
+  parser.add_argument('--architecture', type=str, help='model architecture')
+  parser.add_argument('--instance_type', type=str, help='instance type')
+
+  args = parser.parse_args()
+
+  max_features = 20000
+  maxlen = 100
+  embedding_size = 128
+
+  kernel_size = 5
+  filters = 64
+  pool_size = 4
+
+  lstm_output_size = 70
+
+  batch_size = 30
+  epochs = 10
+
+  (x_train, y_train), (x_test, y_test) = imdb.load_data(num_words=max_features)
+
+  x_train = sequence.pad_sequences(x_train, maxlen=maxlen)
+  x_test = sequence.pad_sequences(x_test, maxlen=maxlen)
+
+  model = Sequential()
+  model.add(Embedding(max_features, embedding_size, input_length=maxlen))
+  model.add(Dropout(0.25))
+  model.add(Conv1D(filters,
+                   kernel_size,
+                   padding='valid',
+                   activation='relu',
+                   strides=1))
+  model.add(MaxPooling1D(pool_size=pool_size))
+  model.add(LSTM(lstm_output_size))
+  model.add(Dense(1))
+  model.add(Activation('sigmoid'))
+
+  model.compile(loss='binary_crossentropy',
+                optimizer='adam',
+                metrics=['accuracy'])
+
+  plot_model(model, to_file='logs/{}_{}.png'.format(args.dataset, args.architecture))
+
+  csv_logger = keras.callbacks.CSVLogger('logs/{}_{}_{}_{}.out'.format(args.run_date, args.dataset, args.architecture, args.instance_type))
+  time_history = timeHistory()
+
+  model.fit(x_train, y_train,
+            batch_size=batch_size,
+            epochs=epochs,
+            verbose=2,
+            validation_data=(x_test, y_test),
+            callbacks=[csv_logger, time_history])
+\end{lstlisting}
+\clearpage
+\subsection{Zbiór danych MNIST, architektura niestandardowa (custom)}
+\begin{lstlisting}[language=python]
+  import keras
+  from keras.datasets import mnist
+  from keras.models import Sequential
+  from keras.layers import Dense, Dropout, Flatten
+  from keras.layers import Conv2D, MaxPooling2D
+  from keras import backend as K
+  from keras.utils import plot_model
+  from keras.preprocessing.image import ImageDataGenerator
+  import pydot
+  import graphviz
+  import argparse
+  import time
+
+  class timeHistory(keras.callbacks.Callback):
+      def on_train_begin(self, logs={}):
+          self.batch_times = []
+          self.epoch_times = []
+
+      def on_batch_begin(self, batch, logs={}):
+          self.batch_begin = time.time()
+
+      def on_batch_end(self, batch, logs={}):
+          self.batch_end = time.time()
+          self.batch_times.append(self.batch_end-self.batch_begin)
+
+      def on_epoch_begin(self, epoch, logs={}):
+          self.epoch_begin = time.time()
+          self.batch_times = []
+
+      def on_epoch_end(self, epoch, logs={}):
+          self.epoch_end = time.time()
+          self.epoch_times.append(self.epoch_end-self.epoch_begin)
+          _d = dict()
+          _d['dataset'] = args.dataset
+          _d['architecture'] = args.architecture
+          _d['instance_type'] = args.instance_type
+          _d['epoch'] = len(self.epoch_times)
+          _d['time'] = self.epoch_end-self.epoch_begin
+          _d['batch_times'] = self.batch_times
+          _d['loss'] = logs.get('loss')
+          _d['val_loss'] = logs.get('val_loss')
+          _d['acc'] = logs.get('acc')
+          _d['val_acc'] = logs.get('val_acc')
+          print(_d)
+
+  parser = argparse.ArgumentParser(description='Experiment specs')
+  parser.add_argument('--run_date', type=str, help='run date')
+  parser.add_argument('--dataset', type=str, help='dataset')
+  parser.add_argument('--architecture', type=str, help='model architecture')
+  parser.add_argument('--instance_type', type=str, help='instance type')
+
+  args = parser.parse_args()
+
+  batch_size = 64
+  num_classes = 10
+  epochs = 36
+
+  img_rows, img_cols = 28, 28
+
+  (x_train, y_train), (x_test, y_test) = mnist.load_data()
+  x_train = x_train.reshape(x_train.shape[0], img_rows, img_cols, 1)
+  x_test = x_test.reshape(x_test.shape[0], img_rows, img_cols, 1)
+  input_shape = (img_rows, img_cols, 1)
+  x_train = x_train.astype('float32')
+  x_test = x_test.astype('float32')
+  x_train /= 255
+  x_test /= 255
+
+  y_train = keras.utils.to_categorical(y_train, num_classes)
+  y_test = keras.utils.to_categorical(y_test, num_classes)
+
+  # generating data
+  datagen = ImageDataGenerator(
+      featurewise_center=False,  # set input mean to 0 over the dataset
+      samplewise_center=False,  # set each sample mean to 0
+      featurewise_std_normalization=False,  # divide inputs by std of the dataset
+      samplewise_std_normalization=False,  # divide each input by its std
+      zca_whitening=False,  # apply ZCA whitening
+      rotation_range=0,  # randomly rotate images in the range (degrees, 0 to 180)
+      width_shift_range=0.1,  # randomly shift images horizontally (fraction of total width)
+      height_shift_range=0.1,  # randomly shift images vertically (fraction of total height)
+      horizontal_flip=False,  # randomly flip images
+      vertical_flip=False
+      )
+
+  model = Sequential()
+  model.add(Conv2D(64, kernel_size=(3, 3),
+                   activation='relu',
+                   input_shape=input_shape))
+  model.add(Conv2D(32, (3, 3), activation='relu'))
+  model.add(MaxPooling2D(pool_size=(2, 2)))
+  model.add(Conv2D(16, (2, 2), activation='relu'))
+  model.add(MaxPooling2D(pool_size=(2, 2)))
+  model.add(Dropout(0.2))
+  model.add(Flatten())
+  model.add(Dense(128, activation='relu'))
+  model.add(Dense(50, activation='relu'))
+  model.add(Dropout(0.5))
+  model.add(Dense(num_classes, activation='softmax'))
+
+  # initiate RMSprop optimizer
+  opt = keras.optimizers.rmsprop(lr=0.0001, decay=1e-6)
+
+  model.compile(loss=keras.losses.categorical_crossentropy,
+                optimizer=opt,
+                metrics=['accuracy'])
+
+  plot_model(model, to_file='logs/{}_{}.png'.format(args.dataset, args.architecture))
+
+  csv_logger = keras.callbacks.CSVLogger('logs/{}_{}_{}_{}.out'.format(args.run_date, args.dataset, args.architecture, args.instance_type))
+  time_history = timeHistory()
+
+  datagen.fit(x_train)
+
+  model.fit_generator(
+      datagen.flow(
+          x_train, y_train, batch_size=batch_size
+          ),
+      steps_per_epoch=x_train.shape[0] // batch_size,
+      epochs=epochs,
+      verbose=2,
+      validation_data=(x_test, y_test),
+      callbacks=[csv_logger,
+                 time_history])
+\end{lstlisting}
+\clearpage
+\subsection{Zbiór danych MNIST, architektura domyślna (kerasdef)}
+\begin{lstlisting}[language=python]
+  import keras
+  from keras.datasets import mnist
+  from keras.models import Sequential
+  from keras.layers import Dense, Dropout, Flatten
+  from keras.layers import Conv2D, MaxPooling2D
+  from keras import backend as K
+  from keras.utils import plot_model
+  import pydot
+  import graphviz
+  import argparse
+  import time
+
+  class timeHistory(keras.callbacks.Callback):
+      def on_train_begin(self, logs={}):
+          self.batch_times = []
+          self.epoch_times = []
+
+      def on_batch_begin(self, batch, logs={}):
+          self.batch_begin = time.time()
+
+      def on_batch_end(self, batch, logs={}):
+          self.batch_end = time.time()
+          self.batch_times.append(self.batch_end-self.batch_begin)
+
+      def on_epoch_begin(self, epoch, logs={}):
+          self.epoch_begin = time.time()
+          self.batch_times = []
+
+      def on_epoch_end(self, epoch, logs={}):
+          self.epoch_end = time.time()
+          self.epoch_times.append(self.epoch_end-self.epoch_begin)
+          _d = dict()
+          _d['dataset'] = args.dataset
+          _d['architecture'] = args.architecture
+          _d['instance_type'] = args.instance_type
+          _d['epoch'] = len(self.epoch_times)
+          _d['time'] = self.epoch_end-self.epoch_begin
+          _d['batch_times'] = self.batch_times
+          _d['loss'] = logs.get('loss')
+          _d['val_loss'] = logs.get('val_loss')
+          _d['acc'] = logs.get('acc')
+          _d['val_acc'] = logs.get('val_acc')
+          print(_d)
+
+  parser = argparse.ArgumentParser(description='Experiment specs')
+  parser.add_argument('--run_date', type=str, help='run date')
+  parser.add_argument('--dataset', type=str, help='dataset')
+  parser.add_argument('--architecture', type=str, help='model architecture')
+  parser.add_argument('--instance_type', type=str, help='instance type')
+
+  args = parser.parse_args()
+
+  batch_size = 128
+  num_classes = 10
+  epochs = 12
+
+  img_rows, img_cols = 28, 28
+
+  (x_train, y_train), (x_test, y_test) = mnist.load_data()
+  x_train = x_train.reshape(x_train.shape[0], img_rows, img_cols, 1)
+  x_test = x_test.reshape(x_test.shape[0], img_rows, img_cols, 1)
+  input_shape = (img_rows, img_cols, 1)
+  x_train = x_train.astype('float32')
+  x_test = x_test.astype('float32')
+  x_train /= 255
+  x_test /= 255
+
+  y_train = keras.utils.to_categorical(y_train, num_classes)
+  y_test = keras.utils.to_categorical(y_test, num_classes)
+
+  model = Sequential()
+  model.add(Conv2D(32, kernel_size=(3, 3),
+                   activation='relu',
+                   input_shape=input_shape))
+  model.add(Conv2D(64, (3, 3), activation='relu'))
+  model.add(MaxPooling2D(pool_size=(2, 2)))
+  model.add(Dropout(0.25))
+  model.add(Flatten())
+  model.add(Dense(128, activation='relu'))
+  model.add(Dropout(0.5))
+  model.add(Dense(num_classes, activation='softmax'))
+
+  model.compile(loss=keras.losses.categorical_crossentropy,
+                optimizer=keras.optimizers.Adadelta(),
+                metrics=['accuracy'])
+
+  plot_model(model, to_file='logs/{}_{}.png'.format(args.dataset, args.architecture))
+
+  csv_logger = keras.callbacks.CSVLogger('logs/{}_{}_{}_{}.out'.format(args.run_date, args.dataset, args.architecture, args.instance_type))
+  time_history = timeHistory()
+
+  model.fit(x_train, y_train,
+            batch_size=batch_size,
+            epochs=epochs,
+            verbose=2,
+            validation_data=(x_test, y_test),
+            callbacks=[csv_logger, time_history])
+\end{lstlisting}
+\clearpage
+
+\subsection{Analiza rezultatów}
+\begin{lstlisting}[language=python]
+import json
+import os, re
+from pprint import pprint
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+from math import floor
+
+plt.rc('font', family='serif')
+
+plt.rc('xtick', labelsize='x-large')
+plt.rc('ytick', labelsize='x-large')
+plt.rc('axes', labelsize='x-large')
+plt.rc('axes', titlesize='x-large')
+plt.rc('legend', fontsize='x-large')
+
+files = []
+for file in os.listdir('../logs'):
+    if re.match('^20170610.*log', file):
+        files.append(file)
+
+def parseLog(file):
+    with open('../analysis/data/{}.jsons'.format(file[:-4]), 'w') as fw:
+        with open('../logs/{}'.format(file)) as f:
+            for line in f:
+                if re.match('^\{', line):
+                    json.dump(json.loads(line.replace("'", '"')), fw)
+                    fw.write('\n')
+
+[parseLog(file) for file in files]
+
+
+files = []
+for file in os.listdir('data'):
+    if re.match('^20170610.*jsons', file):
+        files.append(file)
+
+def parseJsons(file):
+    with open('data/{}'.format(file)) as f:
+        sl = []
+        for i, line in enumerate(f):
+            _s = pd.read_json(line, typ='series')
+            sl.append(_s)
+        df = pd.concat(sl, axis=1).T
+        df['time'] = df['time'].astype(float)
+        df['acc'] = df['acc'].astype(float)
+        df['loss'] = df['loss'].astype(float)
+    return df
+
+for i, file in enumerate(files):
+    if i == 0:
+        df_all = parseJsons(file)
+    else:
+        df_all = df_all.append(parseJsons(file))
+
+_dprint = df_all.groupby(['dataset', 'architecture','instance_type'])['time','loss'].aggregate({'time' : [np.mean, np.std], 'loss' : ['min']})
+_dprint['Czas (s)'] = '$'+_dprint['time']['mean'].round(2).astype(str)+'+/-'+_dprint['time']['std'].round(2).astype(str)+'$'
+_dprint.columns = _dprint.columns.get_level_values(0)
+
+print(_dprint[['Czas (s)']].to_latex())
+
+df_all = df_all.reset_index()
+df_all['data_arch'] = df_all['dataset'] + '_' + df_all['architecture']
+
+df_grp = df_all.sort_values(by='data_arch').groupby('data_arch')
+
+fig, axes = plt.subplots(nrows=3, ncols=2, figsize=[14, 18], sharey=False)
+fig.subplots_adjust(hspace=0.35,wspace=0.1)
+boxprops=dict(linewidth=1.5, color='1')
+
+# Loop through each group and plot boxplot to appropriate axis
+for i, k in enumerate(sorted(list(df_grp.groups.keys()))):
+    group = df_grp.get_group(k)
+    group.boxplot(ax=axes[floor(i/2)][i%2],
+                  column='time',
+                  by='instance_type',
+                  boxprops=boxprops,
+                  return_type='axes')
+    axes[floor(i/2)][i%2].set_title('Zbior danych: {}\nArchitektura: {}'.format(k.split('_')[0], k.split('_')[1]))
+    axes[floor(i/2)][i%2].set_xlabel('Typ instancji')
+    axes[floor(i/2)][i%2].set_ylabel('Czas obliczen (s)')
+
+fig.suptitle('')
+
+fig.savefig('fig:experiment_results.png')
+#plt.show()
+
+_dprint = df_all.groupby(['dataset', 'architecture','instance_type'])['loss','val_loss'].aggregate({'acc' : ['max'], 'val_acc' : ['max'], 'loss' : ['min'], 'val_loss' : ['min']})
+_dprint['Funkcja straty (zbior treningowy)'] = '$'+_dprint['loss'].round(4).astype(str)+'$'
+_dprint['Funkcja straty (zbior walidacyjny)'] = '$'+_dprint['val_loss'].round(4).astype(str)+'$'
+_dprint['Trafnosc (zbior treningowy)'] = '$'+_dprint['acc'].round(4).astype(str)+'$'
+_dprint['Trafnosc (zbior walidacyjny)'] = '$'+_dprint['val_acc'].round(4).astype(str)+'$'
+_dprint.columns = _dprint.columns.get_level_values(0)
+
+print(_dprint.ix[:,4:9].to_latex())
+
+get_ipython().magic('matplotlib inline')
+
+tmp = df_all
+tmp['timecum'] = df_all.sort_values(by='epoch').groupby(['data_arch','instance_type']).cumsum()['time']
+df_grp = tmp.groupby('data_arch')
+
+lsd = {'c4.2xlarge':'solid', 'p2.xlarge':'dashed'}
+
+fig, axes = plt.subplots(nrows=3, ncols=2, figsize=[14, 18], sharey=False)
+fig.subplots_adjust(hspace=0.35,wspace=0.25)
+
+for i, k in enumerate(sorted(list(df_grp.groups.keys()))):
+    group = df_grp.get_group(k)
+    labels=[]
+    for key, grp in group.groupby(['instance_type']):
+        ax = grp.plot(ax=axes[floor(i/2)][i%2], kind='line', x='timecum', y='loss', c='black', ls=lsd.get(key))
+        labels.append(key)
+        lines, _ = ax.get_legend_handles_labels()
+        ax.legend(lines, labels, loc=1)
+        if i == 0:
+            start, end = ax.get_xlim()
+            ax.xaxis.set_ticks(range(0, int(end)+1, 10000))
+    axes[floor(i/2)][i%2].set_title('Zbior danych: {}\nArchitektura: {}'.format(k.split('_')[0], k.split('_')[1]))
+    axes[floor(i/2)][i%2].set_xlabel('Czas obliczen (s)')
+    axes[floor(i/2)][i%2].set_ylabel('Wartosc funkcji celu')
+
+fig.suptitle('')
+fig.savefig('fig:experiment_loss.png')
+
+fig, axes = plt.subplots(nrows=3, ncols=2, figsize=[14, 18], sharey=False)
+fig.subplots_adjust(hspace=0.35, wspace=0.25)
+
+for i, k in enumerate(sorted(list(df_grp.groups.keys()))):
+    group = df_grp.get_group(k)
+    labels=[]
+    for key, grp in group.groupby(['instance_type']):
+        ax = grp.plot(ax=axes[floor(i/2)][i%2], kind='line', x='timecum', y='acc', c='black', ls=lsd.get(key))
+        labels.append(key)
+        lines, _ = ax.get_legend_handles_labels()
+        ax.legend(lines, labels, loc=4)
+        if i == 0:
+            start, end = ax.get_xlim()
+            ax.xaxis.set_ticks(range(0, int(end)+1, 10000))
+    axes[floor(i/2)][i%2].set_title('Zbior danych: {}\nArchitektura: {}'.format(k.split('_')[0], k.split('_')[1]))
+    axes[floor(i/2)][i%2].set_xlabel('Czas obliczen (s)')
+    axes[floor(i/2)][i%2].set_ylabel('Trafnosc')
+
+fig.suptitle('')
+fig.savefig('fig:experiment_acc.png')
+
+fig, axes = plt.subplots(nrows=3, ncols=2, figsize=[14, 18], sharey=False)
+fig.subplots_adjust(hspace=0.35,wspace=0.25)
+
+for i, k in enumerate(sorted(list(df_grp.groups.keys()))):
+    group = df_grp.get_group(k)
+    for key, grp in group.groupby(['instance_type']):
+        ax = grp.plot(ax=axes[floor(i/2)][i%2], kind='line', x='timecum', y='val_loss', c='black', ls=lsd.get(key))
+        labels.append(key)
+        if i == 0:
+            start, end = ax.get_xlim()
+            ax.xaxis.set_ticks(range(0, int(end)+1, 10000))
+    lines, _ = ax.get_legend_handles_labels()
+    ax.legend(lines, labels, loc='best')
+    axes[floor(i/2)][i%2].set_title('Zbior danych: {}\nArchitektura: {}'.format(k.split('_')[0], k.split('_')[1]))
+    axes[floor(i/2)][i%2].set_xlabel('Czas obliczen (s)')
+    axes[floor(i/2)][i%2].set_ylabel('Wartosc funkcji celu')
+
+fig.suptitle('')
+fig.savefig('fig:experiment_loss_val.png')
+
+fig, axes = plt.subplots(nrows=3, ncols=2, figsize=[14, 18], sharey=False)
+fig.subplots_adjust(hspace=0.35,wspace=0.25)
+
+for i, k in enumerate(sorted(list(df_grp.groups.keys()))):
+    group = df_grp.get_group(k)
+    for key, grp in group.groupby(['instance_type']):
+        ax = grp.plot(ax=axes[floor(i/2)][i%2], kind='line', x='timecum', y='val_acc', c='black', ls=lsd.get(key))
+        labels.append(key)
+        if i == 0:
+            start, end = ax.get_xlim()
+            ax.xaxis.set_ticks(range(0, int(end)+1, 10000))
+    lines, _ = ax.get_legend_handles_labels()
+    ax.legend(lines, labels, loc='best')
+    axes[floor(i/2)][i%2].set_title('Zbior danych: {}\nArchitektura: {}'.format(k.split('_')[0], k.split('_')[1]))
+    axes[floor(i/2)][i%2].set_xlabel('Czas obliczen (s)')
+    axes[floor(i/2)][i%2].set_ylabel('Trafnosc')
+
+fig.suptitle('')
+fig.savefig('fig:experiment_acc_val.png')
+
+\end{lstlisting}
+\end{appendices}
+\clearpage
+
 \begin{thebibliography}{99}
 \setlength{\itemsep}{0pt}%
 \bibitem[Abadi et al. (2016)]{abadi2016} Abadi, M., Agarwal, A., Barham, P., Brevdo, E., Chen, Z., Citro, C., \ldots i Ghemawat, S. (2016). Tensorflow: Large-scale machine learning on heterogeneous distributed systems. arXiv preprint arXiv:1603.04467
 \bibitem[Akaike (1974)]{akaike1974} Akaike, H. (1974). A new look at the statistical model identification. IEEE transactions on automatic control, 19(6), 716-723
-<<<<<<< HEAD
 \bibitem[Al-Rhou et al. (2016)]{alrhou2016} Al-Rfou, R., Alain, G., Almahairi, A., Angermueller, C., Bahdanau, D., Ballas, N., \ldots i Bengio, Y. (2016). Theano: A Python framework for fast computation of mathematical expressions. arXiv preprint arXiv:1605.02688
-=======
 \bibitem[Al-Rfou et al. (2016)]{alrfou2016} Al-Rfou, R., Alain, G., Almahairi, A., Angermueller, C., Bahdanau, D., Ballas, N., \ldots i Bengio, Y. (2016). Theano: A Python framework for fast computation of mathematical expressions. arXiv preprint arXiv:1605.02688
->>>>>>> c519c0ba37edc62c0b03758a44221a6d87df4816
 \bibitem[Almeida i Silva (1990)]{almeida1990} Almeida, L. i Silva, F. (1990). Speeding up backpropagation. Adv Neural Comput, 151-158
 \bibitem[Anderson i Warrilow (2016)]{anderson2016} Anderson, E. i Warrilow, M. (2016). Market Insight: Cloud Shift — The Transition of IT Spending From Traditional Systems to Cloud. Baza danych Gartner
 %\bibitem[Andrychowicz et al. (2016)]{andrychowicz2016} Andrychowicz, M., Denil, M., Gomez, S., Hoffman, M. W., Pfau, D., Schaul, T. i de Freitas, N. (2016). Learning to learn by gradient descent by gradient descent. In Advances in Neural Information Processing Systems, s. 3981-3989
