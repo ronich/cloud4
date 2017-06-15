@@ -130,13 +130,10 @@ Zarówno przeprowadzanie symulacji w chmurze, wykorzystywanie procesorów grafic
 Zatem, w pracy badane będą następujące hipotezy:
 \begin{itemize}
 \item stosowanie jednostek wykorzystujących GPU jest rozwiązaniem efektywnym kosztowo  w porównaniu do jednostek wyposażonych wyłącznie w CPU,
-\item wynajem jednostek AWS P2 jest efektywniejsze kosztowo od jednostek oferowanych przez Microsoft Azure oraz Google Cloud,
 \item wykorzystywanie opracowanego narzędzia do wyboru rodzaju jednostki obliczeniowej pozwala na optymalizację kosztową procesu generacji głębokich sieci neuronowych.
 \end{itemize}
 
 Pierwsza hipoteza porusza kwestię efektywności kosztowej jednostek GPU oferowanych w chmurze. Literatura dostarcza dowodów, że stosowanie tego typu jednostek prowadzi do krótszego czasu konstruowania sieci neuronowych, por. \citet{jermain2015} i \citet{litvinenko2014}. Nie jest jednak oczywistym, czy efektywniejszym kosztowo rozwiązaniem w przypadku architektury chmurowej są jednostki GPU czy CPU. Pomimo niższego czasu potrzebnego na estymację modelu, cena jednostek wyposażonych w GPU może być na tyle wysoka, że ich wynajem nie jest optymalny w sensie kosztowym.
-
-Następnie chcemy skupić się na porównaniu ofert różnych dostawców usług przetwarzania w chmurze. Dokonamy porównania efektywności kosztowej jednostek wyposażonych w procesory graficzne, dostarczanych przez Amazon, Microsoft oraz Google.
 
 Efektem pracy będzie dostarczenie narzędzia przeprowadzającego eksperymenty i pozwalającego na wybór najefektywniejszej kosztowo jednostki obliczeniowej. To narzędzie ma na
 celu przeprowadzenie optymalizacji kosztowej w zależności od rozważanych jednostek obliczeniowych i przedstawionego problemu.
