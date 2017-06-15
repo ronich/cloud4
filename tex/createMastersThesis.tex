@@ -42,6 +42,7 @@
 }
 \makeatletter
 \renewcommand{\ALG@name}{Algorytm}
+\renewcommand\appendixtocname{Załączniki}
 \renewcommand\appendixpagename{Załączniki}
 \makeatother
 \titlelabel{\thetitle.\quad}
@@ -571,7 +572,6 @@ Dla zbioru CIFAR-10 eksperyment również przeprowadzany jest z wykorzystaniem d
 Analizowanymi w eksperymencie miarami są czas potrzebny na naukę modelu sieci neuronowej, ilość pracy potrzebna na osiągnięcie tego celu oraz wskaźniki oceny jakości modelu takie jak jego trafność i wartości funkcji straty dla zbioru treningowego i walidacyjnego. Otrzymane rezultaty prezentowane są w podziale na poszczególne zbiory danych, architektury modeli i typy jednostki, na której wykonywane były obliczenia.
 
 Tabela \ref{tab:experiment_results} przedstawia czasy potrzebne na wykonanie jednej iteracji przez zbiór danych (\textit{epoch}) w postaci średnia $\pm$ odchylenie standardowe. Wykorzystanie jednostek posiadających procesory graficzne pozwala na przyspieszenie obliczeń pięcio-, a nawet dwunastokrotnie w porównaniu do serwerów nie wyposażonych w \textit{GPU} dla jednokierunkowych sieci konwolucyjnych. W przypadku sieci rekurencyjnej, w której wykorzystane są jednostki typu LSTM, różnica jest zdecydowanie mniejsza (ok. $40$ sekund w porównaniu do ok. $46$ sekund). Pomiary czasów uczenia wykazują bardzo niewielkie wahania (wykresy pudełkowe ilustrujące porównanie dla dwóch rodzajów instancji przedstawione są na rysunku \ref{fig:experiment_results}), z wyjątkiem pierwszej iteracji, która w przypadku rekurencyjnej architektury dla zbioru danych IMDB (\textit{lstmkerasdef} oraz architektury niestandardowej dla zbioru danych MNIST (\textit{kerasdef}) trwała znacznie dłużej niż kolejne.
-
 \noindent
 \begin{table}
   \begin{tabular}
@@ -610,6 +610,7 @@ Stosowanie jednostek wyposażonych w GPU jest również rekomendowane w przypadk
 
 Nakład pracy potrzebny na skonstruowanie sieci neuronowej z wykorzystaniem maszyny wyposażonej w procesor graficzny jest taki sam, jak w przypadku serwera nie wyposażonego w GPU. Powodem tego stanu rzeczy jest wykorzystanie wysokopoziomowych bibliotek (Keras oraz Tensorflow lub Theano), które automatycznie wykrywają obecność kart graficznych przystosowanych do obliczeń naukowych oraz sterowników pochodzących od NVIDIA (CUDA, cudNN) i dostosowują do tego sposób przydzielania zadań.
 
+Należy zatem pozytywnie zweryfikować postawione hipotezy badawcze -- stosowanie jednostek wykorzystujących GPU, oferowanych w Amazon Web Services, jest rozwiązaniem efektywnym kosztowo w porównaniu do jednostek wyposażonych wyłącznie w CPU. Ponadto, wykorzystywanie przedstawionego narzędzia pozwala na porównanie czasu potrzebnego na uczenie dla wybranych zbiorów danych, architektur i wybór optymalnego dla danego problemu rozwiązania.
 \noindent
 \begin{table}
   \begin{tabular}
@@ -632,7 +633,6 @@ W tabeli \ref{tab:experiment_metrics} oraz na wykresach \ref{fig:experiment_loss
 
 Analizując miary służące oceny estymowanych modeli można zauważyć, że o ile modyfikacja domyślnej architektury prowadziła do uzyskania lepszego modelu dla zbioru danych CIFAR-10 (trafność na zbiorze walidacyjnym architektury \textit{custom} wyniosła około $0,87$, a dla architektury \textit{kerasdef} około $0,79$), o tyle dla zbioru MNIST nie poskutkowała znaczną różnicą w wynikach. Ponadto, w przypadku obu architektur stworzonych dla zbioru danych IMDB, jak również w przypadku architektury domyślnej dla zbioru danych CIFAR-10 miało miejsce przeuczenie sieci neuronowej. Nie jest ona w stanie wystarczająco dobrze uogólniać odkryte zależności na obserwacje nie pochodzące ze zbioru treningowego, co skutkuje wzrostem funkcji straty (spadkiem trafności) na zbiorze walidacyjnym. Występuje on po 2. iteracji w przypadku architektur zbudowanych na potrzeby zbioru danych IMDB i po około 120. iteracji modelu domyślnego dla CIFAR-10.
 %Wynika to z faktu, że liczba iteracji przez zbiór danych była jednak ustalana na potrzeby pomiaru czasu przypadającego na jeden \textit{epoch}, nie na potrzeby uzyskania najlepszego modelu.
-
 \noindent
 \begin{table}
   \begin{tabular}
@@ -687,7 +687,142 @@ Analizując miary służące oceny estymowanych modeli można zauważyć, że o 
 \clearpage
 
 \section{Podsumowanie pracy}
-%podsumowanko
+
+\noindent
+W pracy przeprowadzono analizę korzyści płynących z wykorzystywania jednostek posiadających GPU w usługach chmurowych Amazon Web Services. Odpowiedziano na pytanie, czy ich stosowanie jest sposobem na optymalizację kosztową procesu generowania głębokich sieci neuronowychi oraz czy ich większa wydajność rekompensuje wyższą cenę niż w przypadku jednostek nie wyposażonych w procesory graficzne. Dokonano tego przez zrealizowanie eksperymentalnego porównania czasu, nakładu pracy potrzebnego na proces generacji sieci neuronowej i cen wynajmu jednostek obliczeniowych. Wyniki eksperymentu pokazują, że pomimo wyższego kosztu wynajmu instancji GPU za godzinę, zarówno na rynku on-demand, jak i spot, przyśpieszenie procesu uczenia jest na tyle duże, że ich wybór jest rozwiązaniem efektywnym kosztowo względem wykorzystywania instancji bez procesorów graficznych.
+
+Serwery oferowane w ramach usług \textit{cloud computingowych} coraz częściej wykorzystywane są w celu uczenia modeli \textit{machine learningowych} (\citet{calheiros2010}, \citet{github2017}). Przedstawienie narzędzia, służącego do wykonywania \textit{benchmarku} dla dowolnie wybranych jednostek oferowanych w ramach chmury obliczeniowej, dowolnych zbiorów danych i architektur sieci neuronowych ma na celu ułatwić podjęcie decyzji o wyborze serwera i pozwolić na zmierzenie oszczędności względem innych typów jednostek.
+
+Jako kierunki przyszłej pracy można wyznaczyć rozszerzenie eksperymentu zarówno na inne rodzaje zbiorów danych, jak również inne rodzaje architektur. Szczególną uwagę warto poświęcić zadaniom uczenia bez nadzoru, a także rekurencyjnym sieciom neuronowym, które obok sieci konwolucyjnych znajdują obecnie szerokie zastosowanie w rozwiązywaniu problemów \textit{machine learningowych}. Ponadto, istnieje również potrzeba przeprowadzenia podobnego eksperymentu w celu porównania kosztów uczenia modeli na jednostkach oferowanych przez różnych dostawców usług \textit{cloud computingowych}.
+
+\clearpage
+
+\begin{thebibliography}{99}
+\setlength{\itemsep}{0pt}%
+\bibitem[Abadi et al. (2016)]{abadi2016} Abadi, M., Agarwal, A., Barham, P., Brevdo, E., Chen, Z., Citro, C., \ldots i Ghemawat, S. (2016). Tensorflow: Large-scale machine learning on heterogeneous distributed systems. arXiv preprint arXiv:1603.04467
+\bibitem[Akaike (1974)]{akaike1974} Akaike, H. (1974). A new look at the statistical model identification. IEEE transactions on automatic control, 19(6), 716-723
+\bibitem[Al-Rhou et al. (2016)]{alrhou2016} Al-Rfou, R., Alain, G., Almahairi, A., Angermueller, C., Bahdanau, D., Ballas, N., \ldots i Bengio, Y. (2016). Theano: A Python framework for fast computation of mathematical expressions. arXiv preprint arXiv:1605.02688
+\bibitem[Al-Rfou et al. (2016)]{alrfou2016} Al-Rfou, R., Alain, G., Almahairi, A., Angermueller, C., Bahdanau, D., Ballas, N., \ldots i Bengio, Y. (2016). Theano: A Python framework for fast computation of mathematical expressions. arXiv preprint arXiv:1605.02688
+\bibitem[Almeida i Silva (1990)]{almeida1990} Almeida, L. i Silva, F. (1990). Speeding up backpropagation. Adv Neural Comput, 151-158
+\bibitem[Anderson i Warrilow (2016)]{anderson2016} Anderson, E. i Warrilow, M. (2016). Market Insight: Cloud Shift — The Transition of IT Spending From Traditional Systems to Cloud. Baza danych Gartner
+%\bibitem[Andrychowicz et al. (2016)]{andrychowicz2016} Andrychowicz, M., Denil, M., Gomez, S., Hoffman, M. W., Pfau, D., Schaul, T. i de Freitas, N. (2016). Learning to learn by gradient descent by gradient descent. In Advances in Neural Information Processing Systems, s. 3981-3989
+\bibitem[Antonopoulos i Gilliam (2010)]{antonopoulos2010} Antonopoulos, N. i Gillam, L. (2010). Cloud computing, 1st ed. London: Springer
+\bibitem[Armburst et al. (2010)]{armburst2010} Armbrust, M., Stoica, I., Zaharia, M., Fox, A., Griffith, R., Joseph, A., Katz, R., Konwinski, A., Lee, G., Patterson, D. i Rabkin, A. (2010). A view of cloud computing. Communications of the ACM, 53(4), s. 50
+\bibitem[Baun i Kunze (2011)]{baun2011} Baun, C. i Kunze, M. (2011). Cloud computing. 1st ed. Heidelberg [etc.]: Springer
+\bibitem[Bengio i Delalleau (2011)]{bengio2011} Bengio, Y. i Delalleau, O. (2011, October). On the expressive power of deep architectures. In International Conference on Algorithmic Learning Theory (s. 18-36). Springer Berlin Heidelberg
+\bibitem[Bengio et al. (2007a)]{bengio2007a} Bengio, Y., Lamblin, P., Popovici, D. i Larochelle, H. (2007a). Greedy layer-wise training of deep networks. Advances in neural information processing systems, 19, 153
+\bibitem[Bengio i LeCun (2007b)]{bengio2007b} Bengio, Y. i LeCun, Y. (2007b). Scaling learning algorithms towards AI. Large-scale kernel machines, 34(5), 1-41
+\bibitem[Buyya et al. (2009)]{buyya2009} Buyya, R., Yeo, C., Venugopal, S., Broberg, J. i Brandic, I. (2009). Cloud computing and emerging IT platforms: Vision, hype, and reality for delivering computing as the 5th utility. Future Generation Computer Systems, 25(6), s. 599-616
+\bibitem[Carr (2008)]{carr2008} Carr, N. G. (2008). The big switch: Rewiring the world, from Edison to Google. WW Norton and Company
+\bibitem[Calheiros et al. (2010)]{calheiros2010} Calheiros, R., Ranjan, R., Beloglazov, A., De Rose, C. i Buyya, R. (2010). CloudSim: a toolkit for modeling and simulation of cloud computing environments and evaluation of resource provisioning algorithms. Software: Practice and Experience, 41(1), s. 23-50
+\bibitem[Chellapilla et al. (2006)]{chellapilla2006} Chellapilla, K., Puri, S. i Simard, P. (2006). High performance convolutional neural networks for document processing. Tenth International Workshop on Frontiers in Handwriting Recognition. Suvisoft
+\bibitem[Chen et al. (2016)]{chen2016} Chen, L. C., Papandreou, G., Kokkinos, I., Murphy, K. i Yuille, A. L. (2016). Deeplab: Semantic image segmentation with deep convolutional nets, atrous convolution, and fully connected crfs. arXiv preprint arXiv:1606.00915
+\bibitem[Chen et al. (2015)]{chen2015} Chen, T., Li, M., Li, Y., Lin, M., Wang, N., Wang, M., \ldots i Zhang, Z. (2015). Mxnet: A flexible and efficient machine learning library for heterogeneous distributed systems. arXiv preprint arXiv:1512.01274
+\bibitem[Chetlur et al. (2014)]{chetlur2014} Chetlur, S., Woolley, C., Vandermersch, P., Cohen, J., Tran, J., Catanzaro, B. i Shelhamer, E. (2014). cudnn: Efficient primitives for deep learning. arXiv preprint arXiv:1410.0759
+\bibitem[Chollet et al. (2015)]{chollet2015} Chollet, F. i inni (2015). Dostępne pod adresem: \url{https://github.com/fchollet/keras} (dostęp 6 czerwca 2017). GitHub
+\bibitem[Ciresan et al. (2010)]{ciresan2010} Ciresan, D. C., Meier, U., Gambardella, L. M. i Schmidhuber, J. (2010). Deep big simple neural nets for handwritten digit recogntion. Neural Computation, 22(12):3207–3220.
+\bibitem[Ciresan et al. (2011a)]{ciresan2011a} Ciresan, D. C., Meier, U., Masci, J., Gambardella, L. M. i Schmidhuber, J. (2011a). Flexible, high performance convolutional neural networks for image classification. International Joint Conference on Artificial Intelligence IJCAI, s. 1237–1242
+\bibitem[Ciresan et al. (2011b)]{ciresan2011b} Ciresan, D. C., Meier, U., Masci, J. i Schmidhuber, J. (2011b). A committee of neural networks for traffic sign classification. International Joint Conference on Neural Networks (IJCNN), s. 1918–1921.
+\bibitem[Ciresan et al. (2012)]{ciresan2012} Ciresan, D. C., Giusti, A., Gambardella, L. M. i Schmidhuber, J. (2012). Deep neural networks segment neuronal membranes in electron microscopy images. Advances in Neural Information Processing Systems (NIPS), s. 2852–2860
+\bibitem[Ciresan i Schmidhuber (2013)]{ciresan2013} Ciresan, D. C. and Schmidhuber, J. (2013). Multi-column deep neural networks for offline handwritten Chinese character classification. Technical report, IDSIA. arXiv:1309.0261
+\bibitem[Collobert et al. (2011)]{collobert2011} Collobert, R., Kavukcuoglu, K. i Farabet, C. (2011). Torch7: A matlab-like environment for machine learning. In BigLearn, NIPS Workshop (nr EPFL-CONF-192376)
+\bibitem[Edwards (1993)]{edwards1993} Edwards, P. J. (1993). Synaptic weight noise during MLP learning enhances fault-tolerance, generalisation and learning trajectory
+\bibitem[Forbes.com (2017)]{forbes2017} Forbes.com. (2017). Amazon Continues To Gain Share In Cloud Infrastructure Services Market. Dostępne pod adresem: \url{https://www.forbes.com/sites/greatspeculations/2016/08/17/amazon-continues-to-gain-share-in-cloud-infrastructure-services-market/#2277485215b8} (dostęp 11 marca 2017)
+\bibitem[Fukushima (1975)]{fukushima1975} Fukushima, K. (1975). Cognitron: A self-organizing multilayered neural network. Biological cybernetics, 20(3-4), 121-136
+\bibitem[Fukushima (1980)]{fukushima1980} Fukushima, K. (1980). Neocognitron: A self-organizing neural network for a mechanism of pattern recognition unaffected by shift in position. Biological Cybernetics, 36(4):193–202
+\bibitem[Girshick et al. (2014)]{girschick2014} Girshick, R., Donahue, J., Darrell, T. i Malik, J. (2014). Rich feature hierarchies for accurate object detection and semantic segmentation. In Proceedings of the IEEE conference on computer vision and pattern recognition, s. 580-587
+\bibitem[Github (2017)]{github2017} GitHub. (2017). Benchmarks for popular convolutional neural network models on CPU and different GPUs, with and without cuDNN. Dostępne pod adresem: \url{https://github.com/jcjohnson/cnn-benchmarks} (dostęp 14 marca 2017)
+\bibitem[Goldberg (1974)]{goldberg1974} Goldberg, R. P. (1974). Survey of virtual machine research. IEEE Comput Mag 7(6):34–45
+\bibitem[Goldberg i Levy (2014)]{goldberg2014} Goldberg, Y. i Levy, O. (2014). word2vec explained: Deriving mikolov et al.'s negative-sampling word-embedding method. arXiv preprint arXiv:1402.3722
+\bibitem[Goodfellow et al. (2016)]{goodfellow2016} Goodfellow, I., Bengio, Y. i Courville, A. (2016). Deep Learning. MIT Press
+\bibitem[Graves i Schmidhuber (2005)]{graves2005} Graves, A. i Schmidhuber, J. (2005). Framewise phoneme classification with bidirectional LSTM and other neural network architectures. Neural Networks, 18(5), 602-610
+\bibitem[Gysel (2016)]{gysel2016} Gysel P. M. (2016). Ristretto: Hardware-Oriented Approximation of Convolutional Neural Networks. arXiv preprint arXiv:1605.06402
+\bibitem[Hacker Noon (2017)]{hackernoon2017} Hacker Noon. (2017). GPUs and Kubernetes for Deep Learning. Dostępne pod adresem: \url{https://hackernoon.com/gpus-kubernetes-for-deep-learning-part-1-3-d8eebe0dd6fe#.jn1xjvpd2} (dostęp 14 marca 2017)
+%\bibitem[Han et al. (2015)]{han2015} Han, S., Mao, H. i Dally, W. J. (2015). Deep compression: Compressing deep neural networks with pruning, trained quantization and huffman coding. arXiv preprint arXiv:1510.00149
+\bibitem[Han et al. (2016)]{han2016} Han, S., Liu, X., Mao, H., Pu, J., Pedram, A., Horowitz, M. A. i Dally, W. J. (2016) EIE: Efficient Inference Engine on Compressed Deep Neural Network. arXiv preprint arXiv:1602.01528, 2016a
+\bibitem[Hanson (1990)]{hanson1990} Hanson, S. J. (1990). A stochastic version of the delta rule. Physica D: Nonlinear Phenomena, 42(1-3), 265-272
+\bibitem[Hastie i Tibshirani (1990)]{hastie1990} Hastie, T. J. i Tibshirani, R. J. (1990). Generalized additive models (tom 43). CRC press
+\bibitem[Hebb (1949)]{hebb1949} Hebb, D.O. (1949). The Organization of Behavior. New York: Wiley and Sons
+\bibitem[Hecht-Nielsen (1988)]{hecht1988} Hecht-Nielsen, R. (1988). Theory of the backpropagation neural network. Neural Networks, 1, s. 445
+\bibitem[Hinton i Sejnowski (1986)]{hinton1986} Hinton, G. E. i Sejnowski, T. J. (1986). Learning and relearning in Boltzmann Machines. Parallel Distributed Processing, Rumelhart et al, Eds
+\bibitem[Hinton i Van Camp (1993)]{hinton1993} Hinton, G. E. i Van Camp, D. (1993, August). Keeping the neural networks simple by minimizing the description length of the weights. Proceedings of the sixth annual conference on Computational learning theory (s. 5-13). ACM
+\bibitem[Hinton (2006a)]{hinton2006a} Hinton, G. (2006a). Reducing the Dimensionality of Data with Neural Networks. Science, 313(5786), s. 504-507
+\bibitem[Hinton et al. (2006b)]{hinton2006b} Hinton, G., Osindero, S. i Teh, Y. (2006b). A Fast Learning Algorithm for Deep Belief Nets. Neural Computation, 18(7), s. 1527-1554
+\bibitem[Hinton et al. (2012)]{hinton2012} Hinton, G., Deng, L., Yu, D., Dahl, G., Mohamed, A., Jaitly, N., Senior, A., Vanhoucke, V., Nguyen, P., Sainath, T. i Kingsbury, B. (2012). Deep Neural Networks for Acoustic Modeling in Speech Recognition: The Shared Views of Four Research Groups. IEEE Signal Processing Magazine, 29(6), s. 82-97
+\bibitem[Hochreiter (1991)]{hochreiter1991} Hochreiter, S. (1991). Untersuchungen zu dynamischen neuronalen Netzen. Diploma thesis, Institut für Informatik, Lehrstuhl Prof. Brauer, Technische Universität München. Advisor: J. Schmidhuber
+\bibitem[Hochreiter i Schmidhuber (1997)]{hochreiter1997} Hochreiter, S. i Schmidhuber, J. (1997). Long short-term memory. Neural computation, 9(8), s. 1735-1780
+\bibitem[Igel i Husken (2003)]{igel2003} Igel, C. i Hüsken, M. (2003). Empirical evaluation of the improved Rprop learning algorithms. Neurocomputing, 50, s. 105-123
+\bibitem[Ivakhnenko i Lapa (1965)]{ivakhnenko1965} Ivakhnenko, A. G. i Lapa, V. G. (1965). Cybernetic Predicting Devices. CCM Information Corporation
+\bibitem[Ivakhnenko i Lapa (1967)]{ivakhnenko1967} Ivakhnenko, A. G., Lapa, V. G., and McDonough, R. N. (1967). Cybernetics and forecasting techniques. American Elsevier, NY
+\bibitem[Ivakhnenko i Lapa (1968)]{ivakhnenko1968} Ivakhnenko, A. G. (1968). The group method of data handling-a rival of the method of stochastic approximation. Soviet Automatic Control, 13(3), 43-55
+\bibitem[Jacobs (1989)]{jacobs1989} Jacobs, R. A. (1988). Increased rates of convergence through learning rate adaptation. Neural networks, 1(4), 295-307
+\bibitem[Jain i Seung (2009)]{jain2009} Jain, V. i Seung, S. (2009). Natural image denoising with convolutional networks. Koller, D., Schuurmans, D., Bengio, Y., and Bottou, L., editors, Advances in Neural Information Processing Systems (NIPS) 21, s. 769–776. Curran Associates, Inc.
+\bibitem[Jermain et al. (2015)]{jermain2015} Jermain, C. L., Rowlands, G. E., Buhrman, R. A., i Ralph, D. C. (2015). GPU-accelerated micromagnetic simulations using cloud computing. arXiv preprint arXiv:1505.01207
+\bibitem[Jia et al. (2014)]{jia2014} Jia, Y., Shelhamer, E., Donahue, J., Karayev, S., Long, J., Girshick, R., \ldots i Darrell, T. (2014). Caffe: Convolutional architecture for fast feature embedding. Proceedings of the 22nd ACM international conference on Multimedia (s. 675-678). ACM
+\bibitem[Kingma i Ba (2014)]{kingma2014} Kingma, D. i Ba, J. (2014). Adam: A method for stochastic optimization. arXiv preprint arXiv:1412.6980
+\bibitem[Kleinrock (2005)]{kleinrock2005} Kleinrock, L., A Vision for the Internet. ST Journal for Research, tom 2, nr 1, s. 4–5
+\bibitem[Krizhevsky i Hinton (2009)]{krizhevsky2009} Krizhevsky, A. i Hinton, G. (2009). Learning multiple layers of features from tiny images
+\bibitem[Krizhevsky et al. (2012)]{krizhevsky2012} Krizhevsky, A., Sutskever, I. i Hinton, G. (2012). Imagenet classification with deep convolutional neural networks. In Advances in neural information processing systemsk, s. 1097-1105
+\bibitem[LeCun et al. (1989)]{lecun1989a} LeCun, Y., Denker, J. S., Solla, S. A., Howard, R. E., Jackel, L. D. (1989, November). Optimal brain damage. NIPs (tom 2, s. 598-605).
+\bibitem[LeCun et al. (1989)]{lecun1989b} LeCun, Y., Boser, B., Denker, J. S., Henderson, D., Howard, R. E., Hubbard, W. i Jackel, L. D. (1989). Backpropagation applied to handwritten zip code recognition. Neural computation, 1(4), 541-551
+\bibitem[LeCun et al. (1998)]{lecun1998} LeCun, Y., Bottou, L. , Bengio, Y. i Haffner, P. (1998). Gradient-based learning applied to document recognition. Proceedings of the IEEE, 86(11):2278-2324
+\bibitem[LeCun, Bengio i Hinton (2015)]{lecun2015} LeCun, Y., Bengio, Y. i Hinton, G. (2015). Deep learning. Nature, 521(7553), s.436-444
+\bibitem[Leong et al. (2017)]{leong2017} Leong, L., Petri, G., Gill, B. i Dorosh, M. (2017). Magic Quadrant for Cloud Infrastructure as a Service. Gartner.com. Dostępne pod adresem: \url{https://www.gartner.com/doc/reprints?id=1-2G2O5FC&ct=150519} (dostęp 11 marca 2017)
+\bibitem[Linnainmaa (1970)]{linnainmaa1970} Linnainmaa, S. (1970). The representation of the cumulative rounding error of an algorithm as a
+Taylor expansion of the local rounding errors. Praca magisterska, Uniwersytet w Helsinkach
+\bibitem[Litvinenko (2014)]{litvinenko2014} Litvinenko, N. (2014). Using of GPUs for cluster analysis of large data by K-means method arXiv preprint arXiv:1402.3788
+\bibitem[Maas et al. (2011)]{maas2011} Maas, A. L., Daly, R. E., Pham, P. T., Huang, D., Ng, A. Y. i Potts, C. (2011). Learning word vectors for sentiment analysis. In Proceedings of the 49th Annual Meeting of the Association for Computational Linguistics: Human Language Technologies-Volume 1 (s. 142-150). Association for Computational Linguistics
+\bibitem[Mackay (1992)]{mackay1992} MacKay, D. J. (1992). A practical Bayesian framework for backpropagation networks. Neural computation, 4(3), 448-472
+\bibitem[McCulloch i Pitts (1943)]{mcculloch1943} McCulloch, W. S. i Pitts, W. (1943). A logical calculus of the ideas immanent in nervous activity. The bulletin of mathematical biophysics, 5(4), s. 115-133
+\bibitem[Medium (2017a)]{medium2017a} Medium (2017). TensorFlow 1.0 is here. Let’s do some Deep Learning on the Amazon Cloud! – Sigmoidal. Dostępne pod adresem: \url{https://medium.com/sigmoidal/tensorflow-1-0-is-here-lets-do-some-deep-learning-on-the-amazon-cloud-9234eab31fa5#.vyxzk4bwk} (dostęp 14 marca 2017)
+\bibitem[Medium (2017b)]{medium2017b} Medium (2017). Keras with GPU on Amazon EC2 – a step-by-step instruction. Dostępne pod adresem: \url{https://medium.com/@mateuszsieniawski/keras-with-gpu-on-amazon-ec2-a-step-by-step-instruction-4f90364e49ac#.i2rxriv4g} (dostęp 14 marca 2017)
+\bibitem[Mell i Grance (2011)]{mell2011} Mell, P. i Grance T. (2011). The NIST definition of cloud computing
+\bibitem[Menon et al. (2005)]{menon2005} Menon, A., Santos, J., Turner, Y., Janakiraman, G. i Zwaenepoel, W. (2005). Diagnosing performance overheads in the xen virtual machine environment. Proceedings of the 1st ACM/USENIX international conference on Virtual execution environments - VEE '05
+\bibitem[Minsky i Papert (1969)]{minsky1969} Minsky, M. i Papert, S. (1969). Perceptrons. Cambridge, MA: MIT Press
+\bibitem[Misra et al. (2016)]{misra2016} Misra, I., Lawrence Zitnick, C., Mitchell, M. i Girshick, R. (2016). Seeing through the Human Reporting Bias: Visual Classifiers from Noisy Human-Centric Labels. In Proceedings of the IEEE Conference on Computer Vision and Pattern Recognition (s. 2930-2939)
+\bibitem[Mnih et al. (2013)]{mnih2013} Mnih, V., Kavukcuoglu, K., Silver, D., Graves, A., Antonoglou, I., Wierstra, D. i Riedmiller, M. (2013). Playing atari with deep reinforcement learning. arXiv preprint arXiv:1312.5602
+\bibitem[Moody (1991)]{moody1991} Moody, J. E. (1991, December). The effective number of parameters: An analysis of generalization and regularization in nonlinear learning systems. In NIPS (tom 4, s. 847-854)
+\bibitem[Moody i Utans (1994)]{moody1994} Moody, J., i Utans, J. (1994). Architecture selection strategies for neural networks: Application to corporate bond rating prediction. In Neural networks in the capital markets (pp. 277-300). John Wiley \& Sons.
+\bibitem[Mustafa et al. (2015)]{mustafa2015} Mustafa, S., Nazir, B., Hayat, A., Khan, A. i Madani, S. (2015). Resource management in cloud computing: Taxonomy, prospects, and challenges. Computers and Electrical Engineering, 47, s. 186-203
+\bibitem[Nowlan i Hinton (1992)]{nowlan1992} Nowlan, S. J. i Hinton, G. E. (1992). Simplifying neural networks by soft weight-sharing. Neural computation, 4(4), 473-493
+\bibitem[OECD (2014)]{oecd2014} OECD (2014). Cloud Computing: The Concept, Impacts and the Role of Government Policy. OECD Digital Economy Papers, No. 240, OECD Publishing, Paris
+\bibitem[Oh i Jung (2004)]{oh2004} Oh, K. S. i Jung, K. (2004). GPU implementation of neural networks. Pattern Recognition, 37(6), 1311-1314
+\bibitem[Ranzato et al. (2006)]{ranzato2006} Ranzato, M., Poultney, C., Chopra, S. i LeCun, Y. (2006). Efficient learning of sparse representations with an energy-based model. In et al., J. P., editor, Advances in Neural Information Processing Systems (NIPS 2006). MIT Press
+\bibitem[Ranzato et al. (2007)]{ranzato2007} Ranzato, M. A., Huang, F., Boureau, Y. i LeCun, Y. (2007). Unsupervised learning of invariant feature hierarchies with applications to object recognition. Proc. Computer Vision and Pattern Recognition Conference (CVPR’07), s. 1–8. IEEE Press
+\bibitem[Riedmiller i Braun (1993)]{riedmiller1993} Riedmiller, M. i Braun, H. (1993). A direct adaptive method for faster backpropagation learning: The RPROP algorithm. In Neural Networks, 1993., IEEE International Conference on (s. 586-591). IEEE
+\bibitem[Rosenblatt (1957)]{rosenblatt1957} Rosenblatt, F. (1957). The Perceptron--a perceiving and recognizing automaton. Report 85-460-1, Cornell Aeronautical Laboratory
+\bibitem[Rumelhart et al. (1986)]{rumelhart1986} Rumelhart, D. E., Hinton, G. E. i Williams, R. J. (1986). Learning representations by back-propagating errors. Nature, 323, 533-536
+\bibitem[Schuster (1997)]{schuster1997} Schuster, M. i Paliwal, K. K. (1997). Bidirectional recurrent neural networks. IEEE Transactions on Signal Processing, 45(11), s. 2673-2681
+\bibitem[Schmidhuber i Hochreiter (1997)]{schmidhuber1997} Schmidhuber, J. i Hochreiter, S. (1997). Long short-term memory. Neural Comput, 9(8), s. 1735-1780
+\bibitem[Schmidhuber (2015)]{schmidhuber2015} Schmidhuber, J. (2015). Deep learning in neural networks: An overview. Neural networks, 61, 85-117
+\bibitem[Shetty (2016)]{shetty2016} Shetty, S. (2016).  Application of Convolutional Neural Network for Image Classification on Pascal VOC Challenge 2012 dataset. arXiv preprint arXiv:1607.03785
+\bibitem[Shi et al. (2016)]{shi2016} Shi, S., Wang, Q., Xu, P. i Chu, X. (2016). Benchmarking State-of-the-Art Deep Learning Software Tools. arXiv preprint arXiv:1608.07249
+\bibitem[Shroff (2010)]{shroff2010} Shroff, G. (2010). Enterprise cloud computing. 1st ed. Cambridge: Cambridge University Press
+\bibitem[Smith et al. (2009)]{smith2009} Smith D. M. et al. (2009). Hype Cycle for Cloud Computing (ID: G00168780). Baza danych Gartner
+\bibitem[Smolensky (1986)]{smolensky1986} Smolensky, P. (1986). Parallel distributed processing: Explorations in the microstructure of cognition, tom 1. Information Processing in Dynamical Systems: Foundations of Harmony Theory. MIT Press, Cambridge, MA, USA, 15, 18
+\bibitem[Srivastava et al. (2014)]{srivastava2014} Srivastava, N., Hinton, G. E., Krizhevsky, A., Sutskever, I. i Salakhutdinov, R. (2014). Dropout: a simple way to prevent neural networks from overfitting. Journal of Machine Learning Research, 15(1), s. 1929-1958
+\bibitem[Strom (2015)]{strom2015} Strom, N. (2015). Scalable distributed DNN training using commodity GPU cloud computing. INTERSPEECH (tom 7, s. 10)
+\bibitem[Szegedy (2014)]{szegedy2014} Szegedy, C. et al. (2014). Going deeper with convolutions. arXiv preprint arXiv:1409.4842
+\bibitem[Tieleman i Hinton (2012)]{tieleman2012} Tieleman, T. i Hinton, G. (2012). Lecture 6.5-rmsprop: Divide the gradient by a running average of its recent magnitude. COURSERA: Neural networks for machine learning, 4(2)
+\bibitem[Touretzky i Hinton (1985)]{touretzky1985} Touretzky, D. S. i Hinton, G. E. (1985, August). Symbols among the neurons: Details of a connectionist inference architecture. In IJCAI (tom 85, s. 238-243)
+\bibitem[Vanhoucke et al. (2011)]{vanhoucke2011} Vanhoucke, V., Senior, A. i Mao, M. Z. (2011). Improving the speed of neural networks on CPUs. In Proc. Deep Learning and Unsupervised Feature Learning NIPS Workshop (tom 1, s. 4)
+\bibitem[Wan (1993)]{wan1993} Wan, E.A., 1993. Time series prediction by using a connectionist network with internal delay lines. Santa Fe Institute Studies in the sciences of complexity-proceedings volume (tom 15, s. 195-195). Addison-Wesley publishing co.
+\bibitem[Ward i Baker (2013)]{ward2013} Ward, J.S. i Barker, A. (2013). A Cloud Computing Survey: Developments and Future Trends in Infrastructure as a Service Computing
+\bibitem[Wenge et al. (1992)]{weng1992} Weng, J., Ahuja, N. i Huang, T. S. (1992, June). Cresceptron: a self-organizing neural network which grows adaptively. In Neural Networks, 1992. IJCNN., International Joint Conference on (Vol. 1, pp. 576-581). IEEE
+\bibitem[Widrow i Hoff (1960)]{widrow1960} Widrow, B. i Hoff, M. E. (1960, August). Adaptive switching circuits. In IRE WESCON convention record (tom 4, nr 1, s. 96-104)
+\bibitem[Yang et al. (2009)]{yang2009} Yang, M., Ji, S., Xu, W., Wang, J., Lv, F., Yu, K., Gong, Y., Dikmen, M., Lin, D. J. i Huang, T. S. (2009). Detecting human actions in surveillance videos. In TREC Video Retrieval Evaluation Workshop
+\bibitem[Yu et al. (2014)]{yu2014} Yu, D., Eversole, A., Seltzer, M., Yao, K., Huang, Z., Guenter, B., \ldots i Droppo, J. (2014). An introduction to computational networks and the computational network toolkit. Microsoft Technical Report MSR-TR-2014–112
+\bibitem[Zeiler (2012)]{zeiler2012} Zeiler, M. D. (2012). ADADELTA: an adaptive learning rate method. arXiv preprint arXiv:1212.5701
+\bibitem[Zhang et al. (2010)]{zhang2010} Zhang, Q., Cheng, L. i Boutaba, R. (2010). Cloud computing: state-of-the-art and research challenges. Journal of Internet Services and Applications, 1(1), s. 7-18
+
+\end{thebibliography}
+\clearpage
+
+\listoffigures
+
+\clearpage
+
+\listoftables
 
 \clearpage
 
@@ -1722,135 +1857,6 @@ fig.savefig('fig:experiment_acc_val.png')
 
 \end{lstlisting}
 \end{appendices}
-\clearpage
-
-\begin{thebibliography}{99}
-\setlength{\itemsep}{0pt}%
-\bibitem[Abadi et al. (2016)]{abadi2016} Abadi, M., Agarwal, A., Barham, P., Brevdo, E., Chen, Z., Citro, C., \ldots i Ghemawat, S. (2016). Tensorflow: Large-scale machine learning on heterogeneous distributed systems. arXiv preprint arXiv:1603.04467
-\bibitem[Akaike (1974)]{akaike1974} Akaike, H. (1974). A new look at the statistical model identification. IEEE transactions on automatic control, 19(6), 716-723
-\bibitem[Al-Rhou et al. (2016)]{alrhou2016} Al-Rfou, R., Alain, G., Almahairi, A., Angermueller, C., Bahdanau, D., Ballas, N., \ldots i Bengio, Y. (2016). Theano: A Python framework for fast computation of mathematical expressions. arXiv preprint arXiv:1605.02688
-\bibitem[Al-Rfou et al. (2016)]{alrfou2016} Al-Rfou, R., Alain, G., Almahairi, A., Angermueller, C., Bahdanau, D., Ballas, N., \ldots i Bengio, Y. (2016). Theano: A Python framework for fast computation of mathematical expressions. arXiv preprint arXiv:1605.02688
-\bibitem[Almeida i Silva (1990)]{almeida1990} Almeida, L. i Silva, F. (1990). Speeding up backpropagation. Adv Neural Comput, 151-158
-\bibitem[Anderson i Warrilow (2016)]{anderson2016} Anderson, E. i Warrilow, M. (2016). Market Insight: Cloud Shift — The Transition of IT Spending From Traditional Systems to Cloud. Baza danych Gartner
-%\bibitem[Andrychowicz et al. (2016)]{andrychowicz2016} Andrychowicz, M., Denil, M., Gomez, S., Hoffman, M. W., Pfau, D., Schaul, T. i de Freitas, N. (2016). Learning to learn by gradient descent by gradient descent. In Advances in Neural Information Processing Systems, s. 3981-3989
-\bibitem[Antonopoulos i Gilliam (2010)]{antonopoulos2010} Antonopoulos, N. i Gillam, L. (2010). Cloud computing, 1st ed. London: Springer
-\bibitem[Armburst et al. (2010)]{armburst2010} Armbrust, M., Stoica, I., Zaharia, M., Fox, A., Griffith, R., Joseph, A., Katz, R., Konwinski, A., Lee, G., Patterson, D. i Rabkin, A. (2010). A view of cloud computing. Communications of the ACM, 53(4), s. 50
-\bibitem[Baun i Kunze (2011)]{baun2011} Baun, C. i Kunze, M. (2011). Cloud computing. 1st ed. Heidelberg [etc.]: Springer
-\bibitem[Bengio i Delalleau (2011)]{bengio2011} Bengio, Y. i Delalleau, O. (2011, October). On the expressive power of deep architectures. In International Conference on Algorithmic Learning Theory (s. 18-36). Springer Berlin Heidelberg
-\bibitem[Bengio et al. (2007a)]{bengio2007a} Bengio, Y., Lamblin, P., Popovici, D. i Larochelle, H. (2007a). Greedy layer-wise training of deep networks. Advances in neural information processing systems, 19, 153
-\bibitem[Bengio i LeCun (2007b)]{bengio2007b} Bengio, Y. i LeCun, Y. (2007b). Scaling learning algorithms towards AI. Large-scale kernel machines, 34(5), 1-41
-\bibitem[Buyya et al. (2009)]{buyya2009} Buyya, R., Yeo, C., Venugopal, S., Broberg, J. i Brandic, I. (2009). Cloud computing and emerging IT platforms: Vision, hype, and reality for delivering computing as the 5th utility. Future Generation Computer Systems, 25(6), s. 599-616
-\bibitem[Carr (2008)]{carr2008} Carr, N. G. (2008). The big switch: Rewiring the world, from Edison to Google. WW Norton and Company
-\bibitem[Calheiros et al. (2010)]{calheiros2010} Calheiros, R., Ranjan, R., Beloglazov, A., De Rose, C. i Buyya, R. (2010). CloudSim: a toolkit for modeling and simulation of cloud computing environments and evaluation of resource provisioning algorithms. Software: Practice and Experience, 41(1), s. 23-50
-\bibitem[Chellapilla et al. (2006)]{chellapilla2006} Chellapilla, K., Puri, S. i Simard, P. (2006). High performance convolutional neural networks for document processing. Tenth International Workshop on Frontiers in Handwriting Recognition. Suvisoft
-\bibitem[Chen et al. (2016)]{chen2016} Chen, L. C., Papandreou, G., Kokkinos, I., Murphy, K. i Yuille, A. L. (2016). Deeplab: Semantic image segmentation with deep convolutional nets, atrous convolution, and fully connected crfs. arXiv preprint arXiv:1606.00915
-\bibitem[Chen et al. (2015)]{chen2015} Chen, T., Li, M., Li, Y., Lin, M., Wang, N., Wang, M., \ldots i Zhang, Z. (2015). Mxnet: A flexible and efficient machine learning library for heterogeneous distributed systems. arXiv preprint arXiv:1512.01274
-\bibitem[Chetlur et al. (2014)]{chetlur2014} Chetlur, S., Woolley, C., Vandermersch, P., Cohen, J., Tran, J., Catanzaro, B. i Shelhamer, E. (2014). cudnn: Efficient primitives for deep learning. arXiv preprint arXiv:1410.0759
-\bibitem[Chollet et al. (2015)]{chollet2015} Chollet, F. i inni (2015). Dostępne pod adresem: \url{https://github.com/fchollet/keras} (dostęp 6 czerwca 2017). GitHub
-\bibitem[Ciresan et al. (2010)]{ciresan2010} Ciresan, D. C., Meier, U., Gambardella, L. M. i Schmidhuber, J. (2010). Deep big simple neural nets for handwritten digit recogntion. Neural Computation, 22(12):3207–3220.
-\bibitem[Ciresan et al. (2011a)]{ciresan2011a} Ciresan, D. C., Meier, U., Masci, J., Gambardella, L. M. i Schmidhuber, J. (2011a). Flexible, high performance convolutional neural networks for image classification. International Joint Conference on Artificial Intelligence IJCAI, s. 1237–1242
-\bibitem[Ciresan et al. (2011b)]{ciresan2011b} Ciresan, D. C., Meier, U., Masci, J. i Schmidhuber, J. (2011b). A committee of neural networks for traffic sign classification. International Joint Conference on Neural Networks (IJCNN), s. 1918–1921.
-\bibitem[Ciresan et al. (2012)]{ciresan2012} Ciresan, D. C., Giusti, A., Gambardella, L. M. i Schmidhuber, J. (2012). Deep neural networks segment neuronal membranes in electron microscopy images. Advances in Neural Information Processing Systems (NIPS), s. 2852–2860
-\bibitem[Ciresan i Schmidhuber (2013)]{ciresan2013} Ciresan, D. C. and Schmidhuber, J. (2013). Multi-column deep neural networks for offline handwritten Chinese character classification. Technical report, IDSIA. arXiv:1309.0261
-\bibitem[Collobert et al. (2011)]{collobert2011} Collobert, R., Kavukcuoglu, K. i Farabet, C. (2011). Torch7: A matlab-like environment for machine learning. In BigLearn, NIPS Workshop (nr EPFL-CONF-192376)
-\bibitem[Edwards (1993)]{edwards1993} Edwards, P. J. (1993). Synaptic weight noise during MLP learning enhances fault-tolerance, generalisation and learning trajectory
-\bibitem[Forbes.com (2017)]{forbes2017} Forbes.com. (2017). Amazon Continues To Gain Share In Cloud Infrastructure Services Market. Dostępne pod adresem: \url{https://www.forbes.com/sites/greatspeculations/2016/08/17/amazon-continues-to-gain-share-in-cloud-infrastructure-services-market/#2277485215b8} (dostęp 11 marca 2017)
-\bibitem[Fukushima (1975)]{fukushima1975} Fukushima, K. (1975). Cognitron: A self-organizing multilayered neural network. Biological cybernetics, 20(3-4), 121-136
-\bibitem[Fukushima (1980)]{fukushima1980} Fukushima, K. (1980). Neocognitron: A self-organizing neural network for a mechanism of pattern recognition unaffected by shift in position. Biological Cybernetics, 36(4):193–202
-\bibitem[Girshick et al. (2014)]{girschick2014} Girshick, R., Donahue, J., Darrell, T. i Malik, J. (2014). Rich feature hierarchies for accurate object detection and semantic segmentation. In Proceedings of the IEEE conference on computer vision and pattern recognition, s. 580-587
-\bibitem[Github (2017)]{github2017} GitHub. (2017). Benchmarks for popular convolutional neural network models on CPU and different GPUs, with and without cuDNN. Dostępne pod adresem: \url{https://github.com/jcjohnson/cnn-benchmarks} (dostęp 14 marca 2017)
-\bibitem[Goldberg (1974)]{goldberg1974} Goldberg, R. P. (1974). Survey of virtual machine research. IEEE Comput Mag 7(6):34–45
-\bibitem[Goldberg i Levy (2014)]{goldberg2014} Goldberg, Y. i Levy, O. (2014). word2vec explained: Deriving mikolov et al.'s negative-sampling word-embedding method. arXiv preprint arXiv:1402.3722
-\bibitem[Goodfellow et al. (2016)]{goodfellow2016} Goodfellow, I., Bengio, Y. i Courville, A. (2016). Deep Learning. MIT Press
-\bibitem[Graves i Schmidhuber (2005)]{graves2005} Graves, A. i Schmidhuber, J. (2005). Framewise phoneme classification with bidirectional LSTM and other neural network architectures. Neural Networks, 18(5), 602-610
-\bibitem[Gysel (2016)]{gysel2016} Gysel P. M. (2016). Ristretto: Hardware-Oriented Approximation of Convolutional Neural Networks. arXiv preprint arXiv:1605.06402
-\bibitem[Hacker Noon (2017)]{hackernoon2017} Hacker Noon. (2017). GPUs and Kubernetes for Deep Learning. Dostępne pod adresem: \url{https://hackernoon.com/gpus-kubernetes-for-deep-learning-part-1-3-d8eebe0dd6fe#.jn1xjvpd2} (dostęp 14 marca 2017)
-%\bibitem[Han et al. (2015)]{han2015} Han, S., Mao, H. i Dally, W. J. (2015). Deep compression: Compressing deep neural networks with pruning, trained quantization and huffman coding. arXiv preprint arXiv:1510.00149
-\bibitem[Han et al. (2016)]{han2016} Han, S., Liu, X., Mao, H., Pu, J., Pedram, A., Horowitz, M. A. i Dally, W. J. (2016) EIE: Efficient Inference Engine on Compressed Deep Neural Network. arXiv preprint arXiv:1602.01528, 2016a
-\bibitem[Hanson (1990)]{hanson1990} Hanson, S. J. (1990). A stochastic version of the delta rule. Physica D: Nonlinear Phenomena, 42(1-3), 265-272
-\bibitem[Hastie i Tibshirani (1990)]{hastie1990} Hastie, T. J. i Tibshirani, R. J. (1990). Generalized additive models (tom 43). CRC press
-\bibitem[Hebb (1949)]{hebb1949} Hebb, D.O. (1949). The Organization of Behavior. New York: Wiley and Sons
-\bibitem[Hecht-Nielsen (1988)]{hecht1988} Hecht-Nielsen, R. (1988). Theory of the backpropagation neural network. Neural Networks, 1, s. 445
-\bibitem[Hinton i Sejnowski (1986)]{hinton1986} Hinton, G. E. i Sejnowski, T. J. (1986). Learning and relearning in Boltzmann Machines. Parallel Distributed Processing, Rumelhart et al, Eds
-\bibitem[Hinton i Van Camp (1993)]{hinton1993} Hinton, G. E. i Van Camp, D. (1993, August). Keeping the neural networks simple by minimizing the description length of the weights. Proceedings of the sixth annual conference on Computational learning theory (s. 5-13). ACM
-\bibitem[Hinton (2006a)]{hinton2006a} Hinton, G. (2006a). Reducing the Dimensionality of Data with Neural Networks. Science, 313(5786), s. 504-507
-\bibitem[Hinton et al. (2006b)]{hinton2006b} Hinton, G., Osindero, S. i Teh, Y. (2006b). A Fast Learning Algorithm for Deep Belief Nets. Neural Computation, 18(7), s. 1527-1554
-\bibitem[Hinton et al. (2012)]{hinton2012} Hinton, G., Deng, L., Yu, D., Dahl, G., Mohamed, A., Jaitly, N., Senior, A., Vanhoucke, V., Nguyen, P., Sainath, T. i Kingsbury, B. (2012). Deep Neural Networks for Acoustic Modeling in Speech Recognition: The Shared Views of Four Research Groups. IEEE Signal Processing Magazine, 29(6), s. 82-97
-\bibitem[Hochreiter (1991)]{hochreiter1991} Hochreiter, S. (1991). Untersuchungen zu dynamischen neuronalen Netzen. Diploma thesis, Institut für Informatik, Lehrstuhl Prof. Brauer, Technische Universität München. Advisor: J. Schmidhuber
-\bibitem[Hochreiter i Schmidhuber (1997)]{hochreiter1997} Hochreiter, S. i Schmidhuber, J. (1997). Long short-term memory. Neural computation, 9(8), s. 1735-1780
-\bibitem[Igel i Husken (2003)]{igel2003} Igel, C. i Hüsken, M. (2003). Empirical evaluation of the improved Rprop learning algorithms. Neurocomputing, 50, s. 105-123
-\bibitem[Ivakhnenko i Lapa (1965)]{ivakhnenko1965} Ivakhnenko, A. G. i Lapa, V. G. (1965). Cybernetic Predicting Devices. CCM Information Corporation
-\bibitem[Ivakhnenko i Lapa (1967)]{ivakhnenko1967} Ivakhnenko, A. G., Lapa, V. G., and McDonough, R. N. (1967). Cybernetics and forecasting techniques. American Elsevier, NY
-\bibitem[Ivakhnenko i Lapa (1968)]{ivakhnenko1968} Ivakhnenko, A. G. (1968). The group method of data handling-a rival of the method of stochastic approximation. Soviet Automatic Control, 13(3), 43-55
-\bibitem[Jacobs (1989)]{jacobs1989} Jacobs, R. A. (1988). Increased rates of convergence through learning rate adaptation. Neural networks, 1(4), 295-307
-\bibitem[Jain i Seung (2009)]{jain2009} Jain, V. i Seung, S. (2009). Natural image denoising with convolutional networks. Koller, D., Schuurmans, D., Bengio, Y., and Bottou, L., editors, Advances in Neural Information Processing Systems (NIPS) 21, s. 769–776. Curran Associates, Inc.
-\bibitem[Jermain et al. (2015)]{jermain2015} Jermain, C. L., Rowlands, G. E., Buhrman, R. A., i Ralph, D. C. (2015). GPU-accelerated micromagnetic simulations using cloud computing. arXiv preprint arXiv:1505.01207
-\bibitem[Jia et al. (2014)]{jia2014} Jia, Y., Shelhamer, E., Donahue, J., Karayev, S., Long, J., Girshick, R., \ldots i Darrell, T. (2014). Caffe: Convolutional architecture for fast feature embedding. Proceedings of the 22nd ACM international conference on Multimedia (s. 675-678). ACM
-\bibitem[Kingma i Ba (2014)]{kingma2014} Kingma, D. i Ba, J. (2014). Adam: A method for stochastic optimization. arXiv preprint arXiv:1412.6980
-\bibitem[Kleinrock (2005)]{kleinrock2005} Kleinrock, L., A Vision for the Internet. ST Journal for Research, tom 2, nr 1, s. 4–5
-\bibitem[Krizhevsky i Hinton (2009)]{krizhevsky2009} Krizhevsky, A. i Hinton, G. (2009). Learning multiple layers of features from tiny images
-\bibitem[Krizhevsky et al. (2012)]{krizhevsky2012} Krizhevsky, A., Sutskever, I. i Hinton, G. (2012). Imagenet classification with deep convolutional neural networks. In Advances in neural information processing systemsk, s. 1097-1105
-\bibitem[LeCun et al. (1989)]{lecun1989a} LeCun, Y., Denker, J. S., Solla, S. A., Howard, R. E., Jackel, L. D. (1989, November). Optimal brain damage. NIPs (tom 2, s. 598-605).
-\bibitem[LeCun et al. (1989)]{lecun1989b} LeCun, Y., Boser, B., Denker, J. S., Henderson, D., Howard, R. E., Hubbard, W. i Jackel, L. D. (1989). Backpropagation applied to handwritten zip code recognition. Neural computation, 1(4), 541-551
-\bibitem[LeCun et al. (1998)]{lecun1998} LeCun, Y., Bottou, L. , Bengio, Y. i Haffner, P. (1998). Gradient-based learning applied to document recognition. Proceedings of the IEEE, 86(11):2278-2324
-\bibitem[LeCun, Bengio i Hinton (2015)]{lecun2015} LeCun, Y., Bengio, Y. i Hinton, G. (2015). Deep learning. Nature, 521(7553), s.436-444
-\bibitem[Leong et al. (2017)]{leong2017} Leong, L., Petri, G., Gill, B. i Dorosh, M. (2017). Magic Quadrant for Cloud Infrastructure as a Service. Gartner.com. Dostępne pod adresem: \url{https://www.gartner.com/doc/reprints?id=1-2G2O5FC&ct=150519} (dostęp 11 marca 2017)
-\bibitem[Linnainmaa (1970)]{linnainmaa1970} Linnainmaa, S. (1970). The representation of the cumulative rounding error of an algorithm as a
-Taylor expansion of the local rounding errors. Praca magisterska, Uniwersytet w Helsinkach
-\bibitem[Litvinenko (2014)]{litvinenko2014} Litvinenko, N. (2014). Using of GPUs for cluster analysis of large data by K-means method arXiv preprint arXiv:1402.3788
-\bibitem[Maas et al. (2011)]{maas2011} Maas, A. L., Daly, R. E., Pham, P. T., Huang, D., Ng, A. Y. i Potts, C. (2011). Learning word vectors for sentiment analysis. In Proceedings of the 49th Annual Meeting of the Association for Computational Linguistics: Human Language Technologies-Volume 1 (s. 142-150). Association for Computational Linguistics
-\bibitem[Mackay (1992)]{mackay1992} MacKay, D. J. (1992). A practical Bayesian framework for backpropagation networks. Neural computation, 4(3), 448-472
-\bibitem[McCulloch i Pitts (1943)]{mcculloch1943} McCulloch, W. S. i Pitts, W. (1943). A logical calculus of the ideas immanent in nervous activity. The bulletin of mathematical biophysics, 5(4), s. 115-133
-\bibitem[Medium (2017a)]{medium2017a} Medium (2017). TensorFlow 1.0 is here. Let’s do some Deep Learning on the Amazon Cloud! – Sigmoidal. Dostępne pod adresem: \url{https://medium.com/sigmoidal/tensorflow-1-0-is-here-lets-do-some-deep-learning-on-the-amazon-cloud-9234eab31fa5#.vyxzk4bwk} (dostęp 14 marca 2017)
-\bibitem[Medium (2017b)]{medium2017b} Medium (2017). Keras with GPU on Amazon EC2 – a step-by-step instruction. Dostępne pod adresem: \url{https://medium.com/@mateuszsieniawski/keras-with-gpu-on-amazon-ec2-a-step-by-step-instruction-4f90364e49ac#.i2rxriv4g} (dostęp 14 marca 2017)
-\bibitem[Mell i Grance (2011)]{mell2011} Mell, P. i Grance T. (2011). The NIST definition of cloud computing
-\bibitem[Menon et al. (2005)]{menon2005} Menon, A., Santos, J., Turner, Y., Janakiraman, G. i Zwaenepoel, W. (2005). Diagnosing performance overheads in the xen virtual machine environment. Proceedings of the 1st ACM/USENIX international conference on Virtual execution environments - VEE '05
-\bibitem[Minsky i Papert (1969)]{minsky1969} Minsky, M. i Papert, S. (1969). Perceptrons. Cambridge, MA: MIT Press
-\bibitem[Misra et al. (2016)]{misra2016} Misra, I., Lawrence Zitnick, C., Mitchell, M. i Girshick, R. (2016). Seeing through the Human Reporting Bias: Visual Classifiers from Noisy Human-Centric Labels. In Proceedings of the IEEE Conference on Computer Vision and Pattern Recognition (s. 2930-2939)
-\bibitem[Mnih et al. (2013)]{mnih2013} Mnih, V., Kavukcuoglu, K., Silver, D., Graves, A., Antonoglou, I., Wierstra, D. i Riedmiller, M. (2013). Playing atari with deep reinforcement learning. arXiv preprint arXiv:1312.5602
-\bibitem[Moody (1991)]{moody1991} Moody, J. E. (1991, December). The effective number of parameters: An analysis of generalization and regularization in nonlinear learning systems. In NIPS (tom 4, s. 847-854)
-\bibitem[Moody i Utans (1994)]{moody1994} Moody, J., i Utans, J. (1994). Architecture selection strategies for neural networks: Application to corporate bond rating prediction. In Neural networks in the capital markets (pp. 277-300). John Wiley \& Sons.
-\bibitem[Mustafa et al. (2015)]{mustafa2015} Mustafa, S., Nazir, B., Hayat, A., Khan, A. i Madani, S. (2015). Resource management in cloud computing: Taxonomy, prospects, and challenges. Computers and Electrical Engineering, 47, s. 186-203
-\bibitem[Nowlan i Hinton (1992)]{nowlan1992} Nowlan, S. J. i Hinton, G. E. (1992). Simplifying neural networks by soft weight-sharing. Neural computation, 4(4), 473-493
-\bibitem[OECD (2014)]{oecd2014} OECD (2014). Cloud Computing: The Concept, Impacts and the Role of Government Policy. OECD Digital Economy Papers, No. 240, OECD Publishing, Paris
-\bibitem[Oh i Jung (2004)]{oh2004} Oh, K. S. i Jung, K. (2004). GPU implementation of neural networks. Pattern Recognition, 37(6), 1311-1314
-\bibitem[Ranzato et al. (2006)]{ranzato2006} Ranzato, M., Poultney, C., Chopra, S. i LeCun, Y. (2006). Efficient learning of sparse representations with an energy-based model. In et al., J. P., editor, Advances in Neural Information Processing Systems (NIPS 2006). MIT Press
-\bibitem[Ranzato et al. (2007)]{ranzato2007} Ranzato, M. A., Huang, F., Boureau, Y. i LeCun, Y. (2007). Unsupervised learning of invariant feature hierarchies with applications to object recognition. Proc. Computer Vision and Pattern Recognition Conference (CVPR’07), s. 1–8. IEEE Press
-\bibitem[Riedmiller i Braun (1993)]{riedmiller1993} Riedmiller, M. i Braun, H. (1993). A direct adaptive method for faster backpropagation learning: The RPROP algorithm. In Neural Networks, 1993., IEEE International Conference on (s. 586-591). IEEE
-\bibitem[Rosenblatt (1957)]{rosenblatt1957} Rosenblatt, F. (1957). The Perceptron--a perceiving and recognizing automaton. Report 85-460-1, Cornell Aeronautical Laboratory
-\bibitem[Rumelhart et al. (1986)]{rumelhart1986} Rumelhart, D. E., Hinton, G. E. i Williams, R. J. (1986). Learning representations by back-propagating errors. Nature, 323, 533-536
-\bibitem[Schuster (1997)]{schuster1997} Schuster, M. i Paliwal, K. K. (1997). Bidirectional recurrent neural networks. IEEE Transactions on Signal Processing, 45(11), s. 2673-2681
-\bibitem[Schmidhuber i Hochreiter (1997)]{schmidhuber1997} Schmidhuber, J. i Hochreiter, S. (1997). Long short-term memory. Neural Comput, 9(8), s. 1735-1780
-\bibitem[Schmidhuber (2015)]{schmidhuber2015} Schmidhuber, J. (2015). Deep learning in neural networks: An overview. Neural networks, 61, 85-117
-\bibitem[Shetty (2016)]{shetty2016} Shetty, S. (2016).  Application of Convolutional Neural Network for Image Classification on Pascal VOC Challenge 2012 dataset. arXiv preprint arXiv:1607.03785
-\bibitem[Shi et al. (2016)]{shi2016} Shi, S., Wang, Q., Xu, P. i Chu, X. (2016). Benchmarking State-of-the-Art Deep Learning Software Tools. arXiv preprint arXiv:1608.07249
-\bibitem[Shroff (2010)]{shroff2010} Shroff, G. (2010). Enterprise cloud computing. 1st ed. Cambridge: Cambridge University Press
-\bibitem[Smith et al. (2009)]{smith2009} Smith D. M. et al. (2009). Hype Cycle for Cloud Computing (ID: G00168780). Baza danych Gartner
-\bibitem[Smolensky (1986)]{smolensky1986} Smolensky, P. (1986). Parallel distributed processing: Explorations in the microstructure of cognition, tom 1. Information Processing in Dynamical Systems: Foundations of Harmony Theory. MIT Press, Cambridge, MA, USA, 15, 18
-\bibitem[Srivastava et al. (2014)]{srivastava2014} Srivastava, N., Hinton, G. E., Krizhevsky, A., Sutskever, I. i Salakhutdinov, R. (2014). Dropout: a simple way to prevent neural networks from overfitting. Journal of Machine Learning Research, 15(1), s. 1929-1958
-\bibitem[Strom (2015)]{strom2015} Strom, N. (2015). Scalable distributed DNN training using commodity GPU cloud computing. INTERSPEECH (tom 7, s. 10)
-\bibitem[Szegedy (2014)]{szegedy2014} Szegedy, C. et al. (2014). Going deeper with convolutions. arXiv preprint arXiv:1409.4842
-\bibitem[Tieleman i Hinton (2012)]{tieleman2012} Tieleman, T. i Hinton, G. (2012). Lecture 6.5-rmsprop: Divide the gradient by a running average of its recent magnitude. COURSERA: Neural networks for machine learning, 4(2)
-\bibitem[Touretzky i Hinton (1985)]{touretzky1985} Touretzky, D. S. i Hinton, G. E. (1985, August). Symbols among the neurons: Details of a connectionist inference architecture. In IJCAI (tom 85, s. 238-243)
-\bibitem[Vanhoucke et al. (2011)]{vanhoucke2011} Vanhoucke, V., Senior, A. i Mao, M. Z. (2011). Improving the speed of neural networks on CPUs. In Proc. Deep Learning and Unsupervised Feature Learning NIPS Workshop (tom 1, s. 4)
-\bibitem[Wan (1993)]{wan1993} Wan, E.A., 1993. Time series prediction by using a connectionist network with internal delay lines. Santa Fe Institute Studies in the sciences of complexity-proceedings volume (tom 15, s. 195-195). Addison-Wesley publishing co.
-\bibitem[Ward i Baker (2013)]{ward2013} Ward, J.S. i Barker, A. (2013). A Cloud Computing Survey: Developments and Future Trends in Infrastructure as a Service Computing
-\bibitem[Wenge et al. (1992)]{weng1992} Weng, J., Ahuja, N. i Huang, T. S. (1992, June). Cresceptron: a self-organizing neural network which grows adaptively. In Neural Networks, 1992. IJCNN., International Joint Conference on (Vol. 1, pp. 576-581). IEEE
-\bibitem[Widrow i Hoff (1960)]{widrow1960} Widrow, B. i Hoff, M. E. (1960, August). Adaptive switching circuits. In IRE WESCON convention record (tom 4, nr 1, s. 96-104)
-\bibitem[Yang et al. (2009)]{yang2009} Yang, M., Ji, S., Xu, W., Wang, J., Lv, F., Yu, K., Gong, Y., Dikmen, M., Lin, D. J. i Huang, T. S. (2009). Detecting human actions in surveillance videos. In TREC Video Retrieval Evaluation Workshop
-\bibitem[Yu et al. (2014)]{yu2014} Yu, D., Eversole, A., Seltzer, M., Yao, K., Huang, Z., Guenter, B., \ldots i Droppo, J. (2014). An introduction to computational networks and the computational network toolkit. Microsoft Technical Report MSR-TR-2014–112
-\bibitem[Zeiler (2012)]{zeiler2012} Zeiler, M. D. (2012). ADADELTA: an adaptive learning rate method. arXiv preprint arXiv:1212.5701
-\bibitem[Zhang et al. (2010)]{zhang2010} Zhang, Q., Cheng, L. i Boutaba, R. (2010). Cloud computing: state-of-the-art and research challenges. Journal of Internet Services and Applications, 1(1), s. 7-18
-
-\end{thebibliography}
-\clearpage
-
-\listoffigures
-
-\clearpage
-
-\listoftables
-
 \clearpage
 
 \end{document}
