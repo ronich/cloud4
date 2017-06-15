@@ -1,9 +1,3 @@
-
-# coding: utf-8
-
-# In[1]:
-
-
 import json
 import os, re
 from pprint import pprint
@@ -11,10 +5,6 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 from math import floor
-
-
-# In[2]:
-
 
 plt.rc('font', family='serif')
 
@@ -24,18 +14,10 @@ plt.rc('axes', labelsize='x-large')
 plt.rc('axes', titlesize='x-large')
 plt.rc('legend', fontsize='x-large')
 
-
-# In[3]:
-
-
 files = []
 for file in os.listdir('data'):
     if re.match('^20170610.*jsons', file):
         files.append(file)
-
-
-# In[4]:
-
 
 def parseJsons(file):
     with open('data/{}'.format(file)) as f:
@@ -49,46 +31,22 @@ def parseJsons(file):
         df['loss'] = df['loss'].astype(float)
     return df
 
-
-# In[5]:
-
-
 for i, file in enumerate(files):
     if i == 0:
         df_all = parseJsons(file)
     else:
         df_all = df_all.append(parseJsons(file))
 
-
-# In[6]:
-
-
 _dprint = df_all.groupby(['dataset', 'architecture','instance_type'])['time','loss'].aggregate({'time' : [np.mean, np.std], 'loss' : ['min']})
 _dprint['Czas (s)'] = '$'+_dprint['time']['mean'].round(2).astype(str)+'+/-'+_dprint['time']['std'].round(2).astype(str)+'$'
 _dprint.columns = _dprint.columns.get_level_values(0)
 
-
-# In[7]:
-
-
 print(_dprint[['Czas (s)']].to_latex())
-
-
-# In[8]:
-
 
 df_all = df_all.reset_index()
 df_all['data_arch'] = df_all['dataset'] + '_' + df_all['architecture']
 
-
-# In[9]:
-
-
 df_grp = df_all.sort_values(by='data_arch').groupby('data_arch')
-
-
-# In[39]:
-
 
 fig, axes = plt.subplots(nrows=3, ncols=2, figsize=[14, 18], sharey=False)
 fig.subplots_adjust(hspace=0.35,wspace=0.1)
@@ -108,16 +66,8 @@ for i, k in enumerate(sorted(list(df_grp.groups.keys()))):
 
 fig.suptitle('')
 
-
-# In[40]:
-
-
 fig.savefig('fig:experiment_results.png')
 #plt.show()
-
-
-# In[10]:
-
 
 _dprint = df_all.groupby(['dataset', 'architecture','instance_type'])['loss','val_loss'].aggregate({'acc' : ['max'], 'val_acc' : ['max'], 'loss' : ['min'], 'val_loss' : ['min']})
 _dprint['Funkcja straty (zbiór treningowy)'] = '$'+_dprint['loss'].round(4).astype(str)+'$'
@@ -126,42 +76,19 @@ _dprint['Trafność (zbiór treningowy)'] = '$'+_dprint['acc'].round(4).astype(s
 _dprint['Trafność (zbiór walidacyjny)'] = '$'+_dprint['val_acc'].round(4).astype(str)+'$'
 _dprint.columns = _dprint.columns.get_level_values(0)
 
-
-# In[11]:
-
-
 print(_dprint.ix[:,4:9].to_latex())
 
-
-# In[15]:
-
-
 get_ipython().magic('matplotlib inline')
-
-
-# In[16]:
-
 
 tmp = df_all
 tmp['timecum'] = df_all.sort_values(by='epoch').groupby(['data_arch','instance_type']).cumsum()['time']
 df_grp = tmp.groupby('data_arch')
-#tmp = df_all[(df_all['data_arch'] == 'mnist_custom')]
-#tmp['timecum'] = tmp.sort_values(by='epoch').groupby('instance_type').cumsum()['time']
-
-
-# In[17]:
-
 
 lsd = {'c4.2xlarge':'solid', 'p2.xlarge':'dashed'}
-
-
-# In[35]:
-
 
 fig, axes = plt.subplots(nrows=3, ncols=2, figsize=[14, 18], sharey=False)
 fig.subplots_adjust(hspace=0.35,wspace=0.25)
 
-# Loop through each group and plot boxplot to appropriate axis
 for i, k in enumerate(sorted(list(df_grp.groups.keys()))):
     group = df_grp.get_group(k)
     labels=[]
@@ -169,7 +96,7 @@ for i, k in enumerate(sorted(list(df_grp.groups.keys()))):
         ax = grp.plot(ax=axes[floor(i/2)][i%2], kind='line', x='timecum', y='loss', c='black', ls=lsd.get(key))
         labels.append(key)
         lines, _ = ax.get_legend_handles_labels()
-        ax.legend(lines, labels, loc=1)        
+        ax.legend(lines, labels, loc=1)
         if i == 0:
             start, end = ax.get_xlim()
             ax.xaxis.set_ticks(range(0, int(end)+1, 10000))
@@ -180,14 +107,9 @@ for i, k in enumerate(sorted(list(df_grp.groups.keys()))):
 fig.suptitle('')
 fig.savefig('fig:experiment_loss.png')
 
-
-# In[34]:
-
-
 fig, axes = plt.subplots(nrows=3, ncols=2, figsize=[14, 18], sharey=False)
 fig.subplots_adjust(hspace=0.35, wspace=0.25)
 
-# Loop through each group and plot boxplot to appropriate axis
 for i, k in enumerate(sorted(list(df_grp.groups.keys()))):
     group = df_grp.get_group(k)
     labels=[]
@@ -206,14 +128,9 @@ for i, k in enumerate(sorted(list(df_grp.groups.keys()))):
 fig.suptitle('')
 fig.savefig('fig:experiment_acc.png')
 
-
-# In[36]:
-
-
 fig, axes = plt.subplots(nrows=3, ncols=2, figsize=[14, 18], sharey=False)
 fig.subplots_adjust(hspace=0.35,wspace=0.25)
 
-# Loop through each group and plot boxplot to appropriate axis
 for i, k in enumerate(sorted(list(df_grp.groups.keys()))):
     group = df_grp.get_group(k)
     for key, grp in group.groupby(['instance_type']):
@@ -231,14 +148,9 @@ for i, k in enumerate(sorted(list(df_grp.groups.keys()))):
 fig.suptitle('')
 fig.savefig('fig:experiment_loss_val.png')
 
-
-# In[37]:
-
-
 fig, axes = plt.subplots(nrows=3, ncols=2, figsize=[14, 18], sharey=False)
 fig.subplots_adjust(hspace=0.35,wspace=0.25)
 
-# Loop through each group and plot boxplot to appropriate axis
 for i, k in enumerate(sorted(list(df_grp.groups.keys()))):
     group = df_grp.get_group(k)
     for key, grp in group.groupby(['instance_type']):
@@ -255,10 +167,3 @@ for i, k in enumerate(sorted(list(df_grp.groups.keys()))):
 
 fig.suptitle('')
 fig.savefig('fig:experiment_acc_val.png')
-
-
-# In[ ]:
-
-
-
-
