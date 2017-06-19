@@ -21,6 +21,7 @@
 \usepackage{titlesec}
 \usepackage{array}
 \usepackage{listings}
+\usepackage{caption}
 \lstset{
   basicstyle=\ttfamily\footnotesize,
   columns=fullflexible,
@@ -44,6 +45,7 @@
 \renewcommand{\ALG@name}{Algorytm}
 \renewcommand\appendixtocname{Załączniki}
 \renewcommand\appendixpagename{Załączniki}
+\newcommand{\source}[1]{\caption*{\hfill Źródło: {#1}} }
 \makeatother
 \titlelabel{\thetitle.\quad}
 \makeatletter
@@ -122,7 +124,6 @@ Celem niniejszej pracy jest zaproponowanie metody wyznaczania optymalnego koszto
 
 Odkrycia naukowe ostatnich lat w dziedzinach uczenia maszynowego i sztucznej inteligencji wpłynęły pozytywnie na ich popularność i liczbę potencjalnych zastosowań \citep{lecun2015}. Szczególna uwaga poświęcana jest sieciom neuronowym, które, choć pozwalają na rozwiązywanie dotychczas problematycznych zagadnień \citep{lecun2015}, są algorytmami wymagającymi znacznej ilości danych i mocy obliczeniowej, por. \citet{krizhevsky2012} i \citet{srivastava2014}. Ośrodki naukowe we współpracy z największymi firmami technologicznymi, jak Google czy Microsoft wykorzystują owe modele \citep{goodfellow2016} do rozwiązywania szeregu problemów takich jak klasyfikacja obrazów (\citet{krizhevsky2012}; \citet{shetty2016}; \citet{szegedy2014}; \citet{chen2016}) i przetwarzanie języka naturalnego \citep{hinton2012}. Kluczowa zaleta głębokich sieci neuronowych polega na możliwości budowania modelu z wykorzystaniem nieprzetworzonych danych. W przypadku klasycznych algorytmów \textit{machine learningowych}, konieczna jest inżynieria cech i ręczna ich ekstrakcja, podczas gdy wielowarstwowe sieci neuronowe są metodą, która w sposób automatyczny wykrywa występujące w zbiorach danych schematy, zależności, por. \citet{girschick2014}, \citet{gysel2016} i \citet{mnih2013}. Przykładowo, w przypadku klasyfikacji obrazów, pierwsza warstwa sieci neuronowej odpowiada za detekcję ogólnych jego cech, takich jak umiejscowienie krawędzi w kluczowych miejscach. Kolejna odpowiada za analizowanie ich położenia wzgledem siebie i wykrywanie pewnych motywów. Co do zasady, pierwsze warstwy odpowiadają za ogólne cechy przetwarzanych danych, podczas gdy każda kolejna ma za zadanie przechodzić na wyższy poziom szczegółowości.
 
-
 Na popularności zyskało wykorzystywanie procesorów graficznych (\textit{Graphics Processing Unit, GPU}) oferowanych przez NVIDIA do poprawy wydajności procesu generacji tego typu struktur (\citet{jermain2015}; \citet{litvinenko2014}; \citet{strom2015}; \citet{vanhoucke2011}). Ponadto, giganci technologiczni inwestują w poszukiwanie potencjalnych sposobów na dalsze usprawnienie tego procesu, takich jak wykorzystanie bezpośrednio programowalnych macierzy bramek (\textit{Field-Programmable Gate Array}) czy rozwiązania opracowanego przez Wave Computing - \textit{Dataflow Processing Unit (DPU)}, por. \citet{gysel2016}; \citet{chen2016}; \citet{han2016}.
 
 Zarówno przeprowadzanie symulacji w chmurze, wykorzystywanie procesorów graficznych w celu poprawy wydajności generacji głębokich sieci neuronowych, jak i porównania poszczególnych jednostek były przedmiotem badań, por. \citet{calheiros2010}, \citet{github2017}, \citet{medium2017b}, \citet{hackernoon2017}. Nie przeprowadzono jednak analizy oszczędności czasowych wynikających ze stosowania \textit{GPU} w chmurze i brak jest odpowiedzi na pytanie, czy rekompensują one ich wyższą cenę w porównaniu do klasycznych jednostek.
@@ -148,21 +149,23 @@ Na podstawie prezentowanego badania zostanie wybrany zbiór decyzji niezdominowa
 
 Do najpopularniejszych przykładów użycia metod \textit{machine learningowych} zaliczyć można dostosowywanie wyników wyszukiwań internetowych, filtrowanie i personalizacja powiadomień w mediach społecznościowych, rekomendacje produktów i reklama internetowa. Sztuczne sieci neuronowe okazały się jednak szczególnie użyteczne w rozpoznawaniu dźwięku, identyfikowaniu obiektów na obrazach i tłumaczeniu tekstu (\citet{schmidhuber2015} i \citet{goodfellow2016}).
 
-Standardowa architektura sztucznej sieci neuronowej składa się z wielu elementarnych, połączonych jednostek - neuronów, które przyjmując pewien sygnał wejściowy, zwracają przetworzony sygnał wyjściowy. Neurony pierwszej, wejściowej warstwy przyjmują sygnał z danych uczących, podczas gdy neurony kolejnych warstw aktywowane są poprzez sygnały pochodzące z warstw je poprzedzających. Neurony ostatniej, wyjściowej warstwy, zwracają rezultat obliczeń, który następnie może prowadzić do wywołania pewnej akcji. Uczenie sieci neuronowej sprowadza się do znalezienia architektury i wchodzącej w jej skład wag, które sprawią, że będzie ona zachowywała się w sposób pożądany, na przykład poprzez możliwość wykrywania pewnych cech sygnału wejściowego. W zależności od stopnia skomplikowania problemu, przyjętej architektury, hiperparametrów, odnalezienie optymalnego rozwiązania może wymagać długich, skomplikowanych obliczeń wykonywanych na przestrzeni wielu warstw sieci, gdzie każda z nich przekształca i agreguje otrzymywany sygnał wejściowy. W tym rozdziale opisane zostaną modele głębokich sieci neuronowych (\textit{deep neural networks}), ze szczególnym uwzględnieniem architektur wykorzystywanych do rozpoznawania obrazu - historii ich powstania, sposobu działania, wiązanymi z nimi oczekiwaniami i obecnie stosowanymi praktykami.
+Sieć neuronowa definiowana jest przez \citet{tadeusiewicz1993} w następujący sposób: ,,Sieć neuronowa jest bardzo uproszczonym modelem mózgu. Składa się ona z dużej liczby (od kilkuset do kilkudziesięciu tysięcy) elementów przetwarzających informację. Elementy te nazywane są neuronami, chociaż w stosunku do rzeczywistych komórek nerwowych ich funkcje są bardzo uproszczone, by nie powiedzieć - sprymityzowane. Neurony są powiązane w sieć za pomocą połączeń o parametrach (tak zwanych wagach) modyfikowanych w trakcie tak zwanego procesu uczenia. Topologia połączeń oraz ich parametry stanowią program działania sieci, zaś sygnały pojawiające się na jej wyjściach w odpowiedzi na określone sygnały wejściowe są rozwiązaniem stawianych jej zadań''.
+W zależności od stopnia skomplikowania problemu, przyjętej architektury, hiperparametrów, odnalezienie optymalnego rozwiązania może wymagać długich, skomplikowanych obliczeń wykonywanych na przestrzeni wielu warstw sieci, gdzie każda z nich przekształca i agreguje otrzymywany sygnał wejściowy (liczba elementów w obecnie stosowanych sieciach może znacznie przekraczać tę podaną w przytoczonej definicji). W tym rozdziale opisane zostaną modele głębokich sieci neuronowych (\textit{deep neural networks}), ze szczególnym uwzględnieniem architektur wykorzystywanych do rozpoznawania obrazu - historii ich powstania, sposobu działania, wiązanymi z nimi oczekiwaniami i obecnie stosowanymi praktykami.
 
 \begin{figure}[h]
   \centering
-\includegraphics[scale=0.5]{../obrazy/fig:NN.png}
-\caption{Standardowa architektura sieci neuronowej - składa się z warstwy wejściowej (\textit{input layer}), warstw ukrytych (\textit{hidden layers}) oraz warstwy wyjściowej  (\textit{output layer}).
-\label{fig:NN}}
+\includegraphics[scale=0.4]{../obrazy/fig:NN.png}
+\caption{Standardowa architektura sieci neuronowej - składa się z warstwy wejściowej (\textit{input layer}), warstw ukrytych (\textit{hidden layers}) oraz warstwy wyjściowej  (\textit{output layer}).\label{fig:NN}}
+\source{Opracowanie własne.}
 \end{figure}
 
 Wraz z nadejściem elektroniki i komputerów, badacze rozpoczęli podejmować próby replikacji ludzkich procesów myślowych na systemy logiczne. Choć pierwsze kroki w tej dziedzinie zostały podjęte przez \citet{mcculloch1943} oraz \citet{hebb1949}, istotny z punktu widzenia uczenia maszynowego przełom w sztucznych sieciach neuronowych został dokonany w pracy \citet{rosenblatt1957}, gdzie po raz pierwszy wprowadzono koncept perceptronu - algorytmu, który miał pozwolić na poprawne rozpoznawanie obrazów. Perceptron jest jednym z najbardziej podstawowych przykładów sieci neuronowych, jego schemat został przedstawiony na rysunku \ref{fig:perceptron}.
 
 \begin{figure}[h]
   \centering
-\includegraphics[scale=0.6]{../obrazy/fig:perceptron.png}
-\caption{Perceptron przedstawiony na przykładzie składa się z dwóch warstw – warstwy wejściowej z trzema wartościami wejściowymi (\(x_1, x_2, x_3 \)) oraz warstwy wyjściowej. \label{fig:perceptron}}
+\includegraphics[scale=0.4]{../obrazy/fig:perceptron.png}
+\caption{Perceptron przedstawiony na przykładzie składa się z dwóch warstw – warstwy wejściowej z trzema wartościami wejściowymi (\(x_1, x_2, x_3 \)) oraz warstwy wyjściowej.\label{fig:perceptron}}
+\source{Opracowanie własne na podstawie \citet{rosenblatt1957}.}
 \end{figure}
 
 Przyjmuje on wektor \(\mathbf{x}\) binarnych wartości wejściowych \(x_1, \ldots, x_n \). Każda z tych wartości wejściowych jest przyjmowana z wagą \(w_1, \ldots, w_n \), będącą liczbą rzeczywistą. Owe parametry można w intuicyjny sposób przedstawić jako wpływ (mający wartość i kierunek) każdego z sygnałów wejściowych na sygnał wyjściowy. Ostatecznie ważona suma wartości wejściowych porównywana jest z wartoscią progową (\textit{threshold}), będącą kolejnym parametrem perceptronu. W przypadku, gdy ważona suma jest większa od wartości progowej, funkcja aktywacji zwraca wartość wyjściową 1, w przeciwnym wypadku zwraca 0. Równanie \ref{eq:perc_activation} zawiera formalną reprezentację funkcji aktywacji.
@@ -195,8 +198,9 @@ Algorytm uczenia perceptronu w $T$ iteracjach dla $N$ obserwacji uczących i $M$
 
 \begin{figure}[h]
   \centering
-\includegraphics[scale=0.5]{../obrazy/fig:ADALINE.png}
+\includegraphics[scale=0.4]{../obrazy/fig:ADALINE.png}
 \caption{Architektura ADALINE (\textit{Adaptive Linear Neuron}), która bazowała na projekcie sieci zaprezentowanym przez \citet{mcculloch1943}. Istotna różnica polega na dobraniu algorytmu optymalizacji wag. \label{fig:ADALINE}}
+\source{Opracowanie własne na podstawie \citet{widrow1960}.}
 \end{figure}
 
 Jednym z pierwszych przykładów architektury, którą można uznać za wielowarstwową sieć neuronową jest zaprojektowany w pracach \citet{ivakhnenko1965}, \citet{ivakhnenko1967} oraz \citet{ivakhnenko1968} system będący reprezentantem rodziny metod GMDH (\textit{Group Method of Data Handling}). Jego charakterystycznymi cechami było wykorzystanie wielomianów Kolmogorova-Gabora jako funkcji aktywacji i użycie zbioru treningowego do uczenia i rozbudowywania kolejnych warstw sieci, by następnie przycinać je z wykorzystaniem zbioru walidacyjnego.
@@ -210,19 +214,22 @@ W tym okresie przedstawiono również inny koncept stosowany dotychczas - jednos
 \begin{figure}[h]
   \centering
 \includegraphics[scale=0.7]{../obrazy/fig:neocognitron.png}
-\caption{Architektura modelu Neocognitron. W jej skład wchodzi warstwa wejściowa \(U_0\), po której następują trzy pary warstw ukrytych \(U_{Si} \) i \(U_{Ci} \) - odpowiednio niższego i wyższego rzędu. \label{fig:neocognitron}}
+\caption{Architektura modelu Neocognitron. W jej skład wchodzi warstwa wejściowa \(U_0\), po której następują trzy pary warstw ukrytych \(U_{Si} \) i \(U_{Ci} \) - odpowiednio niższego i wyższego rzędu.\label{fig:neocognitron}}
+\source{\citet{fukushima1980}.}
 \end{figure}
 
 \begin{figure}[h]
   \centering
 \includegraphics[scale=0.5]{../obrazy/fig:convolution.png}
-\caption{Ilustracja połączeń dla przykładowych jednostek konwolucyjnych, zaproponowanych przez Fukushima. \label{fig:convolution}}
+\caption{Ilustracja połączeń dla przykładowych jednostek konwolucyjnych, zaproponowanych przez Fukushimę.\label{fig:convolution}}
+\source{\citet{fukushima1980}.}
 \end{figure}
 
 \begin{figure}[h]
   \centering
 \includegraphics[scale=0.5]{../obrazy/fig:distortion.png}
-\caption{Przykłady wartości wejściowych (b - g) będących pewną modyfikacją pierwotnego obrazu (a), dla których Neocognitron zwraca ten sam rezultat (h). \label{fig:distortion}}
+\caption{Przykłady wartości wejściowych (b - g) będących pewną modyfikacją pierwotnego obrazu (a), dla których Neocognitron zwraca ten sam rezultat (h).\label{fig:distortion}}
+\source{\citet{fukushima1980}.}
 \end{figure}
 
 Oprócz przełomu na polu nauk poznawczych, nastąpił również rozwój metod optymalizacyjnych. Praca \citet{rumelhart1986} dowiodła empirycznie skuteczność algorytmu propagacji wstecznej (\textit{backpropagation}) w przyspieszaniu procesu uczenia sieci neuronowych, co przyczyniło się do wzrostu popularności owej metody i pozwoliło na wykorzystywanie sieci neuronowych do szerszego zakresu problemów. Ta procedura optymalizacji, przedstawiona po raz pierwszy w pracy \citet{linnainmaa1970}, polegała na iteracyjnym korygowaniu wartości wag w sieciach neuronowych w celu minimalizacji wybranego kryterium błędu (Algorytm \ref{alg:backpropagation}), por. również \citet{hecht1988}. W pracy \citet{rumelhart1986} neurony warstw ukrytych, których stan lub zadanie nie zostało zawczasu ustalone, mogły reprezentować istotne cechy sygnału wejściowego. Możliwość wykrywania cech sygnału wejściowego bez ich wskazywania w sposób jawny, miała w znaczny sposób odróżniać przedstawiony system od sposobów uczenia skonstruowanych w erze cybernetyki. Potwierdzeniem tej tezy był fakt wygrania międzynarodowego konkursu predykcyjnego poprzez wykorzystanie modelu sieci neuronowych uczonego z użyciem algorytmu propagacji wstecznej \citep{wan1993}. W publikacji \citet{rumelhart1986} zaproponowano również pewną modyfikację do metody SGD - metodę pędu (\textit{momentum method}), która, inspirowana zjawiskiem fizycznym, miała zapobiec zbyt długiemu oscylowaniu wokół ekstremów funkcji celu w optymalizacji gradientowej.
@@ -265,6 +272,7 @@ W 1989 roku stworzono sieć neuronową w oparciu o przedstawiony wcześniej mode
   \centering
 \includegraphics[scale=0.6]{../obrazy/fig:lecunmnist.png}
 \caption{Model wykorzystany przez \citet{lecun1989b} do problemu identyfikacji kodów pocztowych, który jest jednym z pierwszych przykładów wykorzystania konwolucyjnych sieci neuronowych na szeroką skalę. \label{fig:lecunmnist}}
+\source{\citet{lecun1989b}.}
 \end{figure}
 
 Istotne spostrzeżenie dotyczące sieci neuronowych zostało przedstawione w pracy \citet{hochreiter1991}. Wyjaśnił, dlaczego głębokie sieci neuronowe są trudne do uczenia z wykorzystaniem propagacji wstecznej (na co wcześniej wskazywały wyniki eksperymentów). Znaleziona przez niego przyczyna określona została później problemem znikającego i eksplodującego gradientu (\textit{vanishing gradients, exploding gradients}). W przypadku standardowych funkcji aktywacji, propagowany wstecz błąd w tempie wykładniczo zależnym od liczby warstw maleje bądź rośnie. Z biegiem czasu przedstawiono liczne podejścia do radzenia sobie z tym problemem, takie jak wstępne uczenie bez nadzoru (i w efekcie kompresja sygnału wejściowego), wykorzystanie procesorów graficznych, optymalizację bez wykorzystania Hesjanów lub całkowite uniknięcie stosowania metod optymalizacji opartych na gradiencie.
@@ -273,8 +281,9 @@ Prace nad Neocognitronem \citep{fukushima1980}, jak również wcześniejsze prac
 
 \begin{figure}[h]
   \centering
-\includegraphics[scale=0.2]{../obrazy/fig:pooling.png}
+\includegraphics[scale=0.3]{../obrazy/fig:pooling.png}
 \caption{Macierze wejściowa partycjonowana jest na skończoną liczbę mniejszych macierzy. \textit{Average pooling} przekształca każdą z tych macierzy w liczbę będącą średnią jej wartościa, podczas gdy \textit{max pooling} przekształca je w liczbę będącą maksymalną jej wartością. \label{fig:pooling}}
+\source{Opracowanie własne.}
 \end{figure}
 
 Ruch koneksjonizmu utrzymywał zainteresowanie środowisk naukowych i biznesowych tylko do połowy lat 90. Nieproporcjonalne oczekiwania co do możliwości sztucznych sieci neuronowych oraz pojawienie się innych, bardziej obiecujących metod (jak maszyny wektorów nośnych) sprawiły, że inwestorzy wycofali swoje wsparcie. Na przełomie wieków istotne publikacje zostały przedstawione na polu rekurencyjnych sieci neuronowych, por. \citet{schmidhuber1997}, \citet{schuster1997} i \citet{graves2005}.
@@ -332,6 +341,7 @@ Schemat modeli usług świadczonych w chmurze wraz z porównaniem do tradycyjnyc
   \centering
 \includegraphics[width=\textwidth, keepaspectratio]{../obrazy/fig:cloudarch.png}
 \caption{Stopień ingerencji w oferowane zasoby jest największy w przypadku platformy IaaS, podczas gdy rozwiązania SaaS pozwala użytkownikowi na minimalną inwestycję czasową w zarządzanie infrastrukturą \label{fig:cloudarch}}
+\source{Opracowanie własne na podstawie ,,Cloud Computing - les différents modèles de service'' (PhFabre, Wikimedia Commons).}
 \end{figure}
 
 Należy jednak mieć na uwadze, że rozgraniczenie pomiędzy modelem \textit{IaaS} i \textit{PaaS} nie jest aż tak wyraźne jak w przypadku modelu \textit{SaaS}. W niektórych publikacjach \citep{armburst2010} są one traktowane jako grupa rozwiązań, które podzielają więcej podobieństw niż różnic.
@@ -358,8 +368,9 @@ Wirtualizacja po raz pierwszy została wykorzystana na wielką skalę przez IBM 
 
 \begin{figure}[h]
   \centering
-\includegraphics[scale=0.8]{../obrazy/fig:vm.png}
+\includegraphics[scale=0.4]{../obrazy/fig:vm.png}
 \caption{Wirtualizacja pozwala na uruchomienie licznych maszyn wirtualnych na jednej maszynie fizycznej z wykorzystaniem hipernadzorcy (w tym wypadku \textit{VMware}) \label{fig:vm}}
+\source{Opracowanie własne na podstawie ,,OS-level vs Hardware-level virtualization'' (RicoRico, Wikimedia Commons).}
 \end{figure}
 
 Technologia wirtualizacji musi jednak zmierzyć się z pewnymi wyzwaniami. Architektura x86 nie była pierwotnie tworzona jako platforma dedykowana tym rozwiązaniom. Mechanizmy, które pozwalają na tworzenie maszyn wirtualnych na tego typu architekturze wymagają zmodyfikowanego systemu operacyjnego lub używają dodatkowego zestawu instrukcji, dostarczonego przez nowoczesne procesory. Z tego powodu wykorzystywanie wirtualizacji wiąże się z pewnym spadkiem wydajności. Choć według \citet{menon2005} został on w ostatnich latach zminimalizowany, wirtualne maszyny wciąż dostarczają tylko ułamek wydajności równoważnej fizycznej maszyny. Niektóre rodzaje hipernadzorców pozwalają na dostarczenie niemal natywnej wydajności procesora, jednak sedno problemu leży w wydajności procesów wejścia/wyjścia (\textit{input/output (I/O)}), którego spowolnienie może osiągać nawet 88\% w porównaniu do maszyny fizycznej. Ponadto, należy skupić się także na minimalizowaniu strat w przypadku uruchamianie wielu maszyn wirtualnych na jednym rdzeniu procesora. Ponieważ w danym momencie na jednym procesorze może być aktywna tylko jedna maszyna wirtualna, pozostałe z nich pozostają bezczynne i nie mogą odpowiadać na aktywność \textit{I/O}.
@@ -373,8 +384,9 @@ Sukces \textit{cloud computingu} ściśle związany jest z korzyściami ekonomic
 
 \begin{figure}[h]
   \centering
-\includegraphics[scale=0.8]{../obrazy/fig:overp.png}
+\includegraphics[scale=0.9]{../obrazy/fig:overp.png}
 \caption{Tradycyjna architektura wymusza rzadkie zmiany, które skutkują częstym nadmiarem zasobów obliczeniowych. Może on być nawet pogłębiony przez nieoczekiwany spadek zapotrzebowania tuż po zakupieniu dodatkowej mocy obliczeniowej, co generuje dodatkowe koszty. \label{fig:overp}}
+\source{Opracowanie własne na podstawie blog.maartenballiauw.be (dostęp 19 czerwca 2017).}
 \end{figure}
 
 Korzystając z gotowych rozwiązań oferowanych przez dostawców usług \textit{cloud computingowych} klienci mogą również liczyć na zdecydowanie wyższy poziom bezpieczeństwa niż dotychczas, ponieważ ich dane chronione są przez jedno, wysoce wyspecjalizowane w tym zakresie przedsiębiorstwo.
@@ -400,8 +412,9 @@ Według najnowszego raportu ,,Magic Quadrant'' firmy Gartner \citep{leong2017}, 
 
 \begin{figure}[h]
   \centering
-\includegraphics[scale=0.8]{../obrazy/fig:mquad.png}
+\includegraphics[scale=0.6]{../obrazy/fig:mquad.png}
 \caption{\textit{Magic Quadrant} dla przedsiębiorstw oferujących usługi \textit{cloud computingowe} potwierdza status lidera AWS. Należy jednak rozpatrywać Microsoft oraz Google jako równorzędnych konkuretnów.\label{fig:mquad}}
+\source{Opracowanie własne na podstawie Gartner (Magic Quadrant for Cloud Infrastructure as a Service, Worldwide)}
 \end{figure}
 
 Amazon, pierwszy dostawca usług przetwarzania w chmurze, przechodził stopniową transformację od portalu oferującego książki do online'owego potentata, wykorzystując jednocześnie wysoce innowacyjne rozwiązania do osiągnięcia tego celu. Ta otwartość na innowacje była niejako wymuszona stopniem skomplikowania oferowanego serwisu. Wyświetlenie jednej strony zawierającej informacje o przedmiocie, rekomendacje oraz oceny wymagało licznych, skomplikowanych aplikacji. Ponadto, detaliczny charakter sprzedaży wymagał ciągłego monitorowania zapotrzebowania na zasoby obliczeniowe, ale również obserwowania popytu i wsparcia  procesów operacyjnych systemami informatycznymi (zarówno swoich, jak i partnerów biznesowych). Amazon wykorzystywał technologię wirtualizacji podobnie, jak wiele innych przedsiębiorstw obecnie, by automatycznie i dynamicznie przydzielać zasoby do aplikacji, które tego potrzebowały w danej chwili. Wysoki stopień automatyzacji, który osiągneli w tym zakresie pozwolił im na uruchomienie ich dwóch największych serwisów -  Amazon EC2 (Elastic Compute Cloud) oraz Amazon S3 (Simple Storage System). Amazon EC2 pozwala użytkownikom chmury uruchamiać serwery i zarządzać nimi w jednym z wielu umiejscowionych na różnych kontynentach centrów danych, podczas gdy Amazon S3 jest usługą służącą do przechowywania danych w chmurze. Usługi te miały początkowo zostać udostępnione wewnętrznie i dla partnerów biznesowych, jednak w ramach eksperymentu otwarto je również dla całego świata, gdzie spotkały się z ogromną popularnością, por. \citet{shroff2010}. Ostatecznie doprowadziło do decyzji o uruchomieniu biznesu \textit{cloud computingowego} w 2006 roku. Od tego czasu AWS znacznie rozszerzyło gamę oferowanych usług i dostarcza swoje usługi z wykorzystaniem centrów danych znajdujących się w Ameryce Północnej, Europie, Azji oraz Ameryce Południowej. Do ich silnych stron zaliczana jest duża liczba klientów, najszerszy wachlarz oferowanych usług oraz największe możliwości obliczeniowe, co doprowadziło do ich partnerstwa technologicznego z licznymi przedsiębiorstwami, które dostosowały swoje produkty do uruchamiania na platformie AWS. Z drugiej strony, wymaga to od początkującego użytkownika dużego nakładu czasu, by zaznajomić się z modelem działania i oferowanymi usługami tak, by mógł dostosować je do swoich potrzeb technologicznych.
@@ -423,7 +436,6 @@ Ponadto, obecnie do wyboru jest także szeroki wachlarz oprogramowania służace
 Ponadto, obecnie do wyboru jest także szeroki wachlarz oprogramowania służacego do konstruowania sieci neuronowych, również z wykorzystaniem GPU. Zaliczają się do nich takie narzędzia jak Caffe (Uniwersytet w Berkeley, \citet{jia2014}), CNTK (Microsoft Research, \citet{yu2014}), MXNet (Distributed Machine Learning Community, \citet{chen2015}), Tensorflow (Google, \citet{abadi2016}), Torch \citep{collobert2011}, Theano (Uniwersytet w Montrealu, \citet{alrfou2016}) oraz Keras (ONEIROS, \citet{chollet2015}). Jednym z głównych zadań problemu uczenia głebokich sieci neuronowych jest znalezienie optymalnego zestawu wag w każdej z warstw sieci, co jest zadaniem, które może zostać sparalelizowane. Każde z wymienionych narzędzi wspiera przetwarzanie równoległe, zarówno z użyciem wielordzeniowych jednostek centralnych, jak i procesorów graficznych.
 Obliczenia na GPU wykonywane są z pomocą bibliotek dostarczonych przez NVIDIA - CUDA oraz cuDNN \citep{chetlur2014}.
 W pracy \citet{shi2016} dokonano porównania większości prezentowanych systemów oprogramowania ze sobą i przedstawiono ich silne i słabe strony w popularnych problemach \textit{deep learningowych}.
-
 \noindent
 \begin{table}
   \begin{tabular}
@@ -456,7 +468,6 @@ W pracy \citet{shi2016} dokonano porównania większości prezentowanych system�
 Istnieje uzasadniona potrzeba pomiaru, na jak dużą oszczędność czasową może liczyć osoba decydująca się na wspomaganie obliczeń naukowych procesorami graficznymi oferowanymi przez platformy \textit{cloud computingowe} i czy wiąże się to z dodatkowymi kosztami. Ekperyment ma na celu empiryczny pomiar czasu potrzebnego na proces generacji różnych architektur głębokich sieci neuronowych, na różnych zbiorach danych i związanego z tym kosztu, wybranie zbioru decyzji niezdominowanych (optymalnych w sensie Pareto), a także dostarczenie narzędzia pozwalającego na przeprowadzanie własnych eksperymentów w tym zakresie.
 Spośród przedstawionych w tabeli~\ref{tab:gpu_units} konfiguracji wybrano jednostkę p2.xlarge oferowaną przez Amazon Web Services do porównania z podobnymi jednostkami bez procesorów graficznych ze względu na status lidera rynku i dojrzałość rozwiązań oferowanych przez tego dostawcę. Została porównana z typem instancji, który jest optymalizowany pod kątem obliczeń, z wysokiej jakości jednostką centralną i najniższym stosunkiem ceny do wydajności - c4.2xlarge. Ich specyfikacje techniczne zostały przedstawione w tabeli \ref{tab:aws_units}.
 W eksperymencie wykorzystana została także biblioteka Keras, w oparciu o backend Tensorflow. Powodem tej decyzji jest fakt, że została zbudowana w celu ułatwienia przeprowadzania tego typu eksperymentów i oferuje wysoki poziom abstrakcji przy konfigurowaniu architektur bez względu na wykorzystaną u jej podstaw bibliotekę naukową (obecnie możliwe jest wykorzystanie Tensorflow, Theano oraz Deeplearning4j). Należy jednak zaznaczyć, że wszystkie wymienione narzędzia oferują elastyczne API i możliwość edytowania plików konfiguracyjnych dla optymalizowania ich wydajności. Celem przeprowadzanego eksperymentu nie jest porówywanie ich między sobą, nie ustalono zatem jednoznacznie wyższości jednej z bibliotek nad pozostałymi i może istnieć taka konfiguracja, która pozwoli na dalszą optymalizację metody rozwiązania problemu konstruowania sieci neuronowej. Wersje wykorzystanego oprogramowania zostały przedstawione w tabeli~\ref{tab:software}.
-
 \noindent
 \begin{table}
   \begin{tabular}
@@ -495,16 +506,15 @@ W eksperymencie wykorzystana została także biblioteka Keras, w oparciu o backe
 \end{table}
 
 Eksperyment przeprowadzony został z użyciem zbiorów danych będących częstym wyborem w zadaniach porównywania siły predykcyjnej modeli, wydajności sprzętu i oprogramowania - MNIST, IMDB (Large Movie Review Dataset) oraz CIFAR-10. MNIST \citep{lecun1998} jest zbiorem $70~000$ czarno-białych obrazów o rozmiarze 28x28 pikseli, przedstawiających ręcznie pisane cyfry. Pochodzi z większego zbioru danych udostępnionego przez amerykański National Institue of Standards and Technology. Jest częstym wyborem do \textit{benchmarkingu} ze względu na to, że pozwala uniknąć poświęcania znacznej ilości czasu na wstępne przetwarzanie, będąc jednocześnie zbiorem niesyntetycznych danych. Przykładowe obrazy z tego zbioru zaprezentowane zostały na rysunku \ref{fig:mnist_data}.
-
 \begin{figure}[h]
   \centering
 \includegraphics[scale=0.5]{../obrazy/fig:mnist_data.png}
 \caption{W zbiorze danych MNIST znajdują się obrazy ręcznie pisanych cyfr pochodzących z połączenia dwóch zbiorów danych NIST: Special Database 1 oraz Special Database 3. Special Database 1 zawiera cyfry pisane przez uczniów szkół średnich, podczas gdy Special Database 3 przez United States Census Bureau.\label{fig:mnist_data}}
+\source{Opracowanie własne na podstawie \citet{lecun1998}.}
 \end{figure}
 
 Large Movie Review Dataset został udostępniony publicznie przez \citet{maas2011}, przy okazji ewaluacji modelu służącego do przeprowadzania analizy sentymentu. Zawiera on przyporządkowanie $50~000$ anonimowych, nieformalnych recenzji filmów na popularnej stronie IMDB do jednej z dwóch rozłącznych grup - pozytywnych i negatywnych.
 Przykładowe obserwacje przedstawione zostały w tabeli \ref{tab:imdb_data}. Wstępne przetwarzanie obserwacji sprowadza się do przyjęcia reprezentacji zdania jako wektora indeksów słów, przy czym indeks równy 1 otrzymuje słowo najczęściej występujące w zbiorze danych, 2 -- drugie najczęściej występujące i tak dalej. Pozwala to w łatwy sposób pomijać słowa występujące bardzo rzadko, ale także wyrazy częste, których pojawienie się nie niesie za sobą wystarczającej informacji.
-
 \noindent
 \begin{table}
   \begin{tabular}
@@ -522,43 +532,44 @@ Przykładowe obserwacje przedstawione zostały w tabeli \ref{tab:imdb_data}. Wst
 \end{table}
 
 Trzeci z wykorzystanych zbiorów danych, CIFAR-10 składa się z $60~000$ kolorowych obrazów o rozmiarze 32x32 piksele, równomiernie przyporządkowanych do 10 rozłącznych klas. Jego szczegółowy opis, jak również metodologia zbierania danych została zawarta w pracy \citet{krizhevsky2009}. Wybrane obrazy wchodzące w skład tego zbioru danych przedstawiono na rysunku \ref{fig:cifar_data}.
-
 \begin{figure}[h]
   \centering
 \includegraphics[scale=0.9]{../obrazy/fig:cifar_data.png}
 \caption{Każdy z obrazów wchodzących w skład zbioru danych CIFAR-10 został przyporządkowany do jednej z $10$ kategorii (zostały one przedstawione w kolejnych wierszach: airplane, automobile, bird, cat, deer, dog, frog, horse, ship, truck).\label{fig:cifar_data}}
+\source{Opracowanie własne na podstawie \citet{krizhevsky2009}.}
 \end{figure}
 
 Dla każdego z wybranych zbiorów danych pomiar przeprowadzany jest dla dwóch różnych modeli sieci neuronowych. Zdecydowano się na przeprowadzanie pomiaru z wykorzystaniem sieci konwolucyjnych ze względu na ich szerokie zastosowanie w rozpoznawaniu ukrytych cech danych wejściowych, jak i zadaniach klasyfikacji. W przypadku zbioru danych MNIST wykorzystano architekturę dostępną w ramach biblioteki Keras, jak również stworzoną na jej bazie, bardziej skomplikowaną, sieć konwolucyjną (rysunek \ref{fig:mnist_cnn}). Obie z nich, oprócz jednostek konwolucyjnych, wykorzystują \textit{rectifier} jako funkcję aktywacji w warstwach ukrytych i \textit{softmax} w warstwie wyjściowej, \textit{max pooling}, \textit{dropout} oraz \textit{fully connected layers}. Jako funkcję straty zdefiniowano \textit{cross entropy}. Domyślny model wykorzystuje ponadto ADADELTA jako metodę optymalizacyjną opartą na spadku gradientowym. Metoda ta okazała się skuteczniejsza od klasycznego algorytmu \textit{stochastic gradient descent}
 na zbiorze danych MNIST \citep{zeiler2012}. Niestandardowy model korzysta z RMSprop jako algorytmu optymalizacyjnego, por. \citet{tieleman2012}. Uczenie w przypadku domyślnego modelu odbywa się poprzez wykonanie $10$ iteracji przez zbiór danych (\textit{epoch}), gdzie jedna partia (\textit{mini-batch}) składa się ze $128$ obserwacji. Te wartości wynoszą odpowiednio $36$ i $64$ w przypadku drugiego modelu.
-
 \begin{figure}[h]
   \centering
 \includegraphics[scale=0.35]{../obrazy/fig:mnist_cnn.png}
 \caption{Modele sieci konwolucyjnych zbudowane dla zbioru MNIST. Architektura dostępna w ramach biblioteki Keras zaprezentowana została po lewej stronie, po prawej architektura niestandardowa.\label{fig:mnist_cnn}}
+\source{Opracowanie własne.}
 \end{figure}
 
 Dla zbioru IMDB wykorzystano dwie architektury dostępne w ramach biblioteki Keras - jednokierunkową (\textit{feedforward}) oraz rekurencyjną (\textit{recurrent}) sieć konwolucyjną (rysunek \ref{fig:imdb_cnn}). Pierwszy model ogranicza słownik do $5~000$ słów, podczas gdy drugi do $20~000$. Jako maksymalną długość recenzji przyjęto odpowiednio $400$ i $100$ słów (przy czym dla zdań krótszych niż zadana długość wykorzystywany jest \textit{padding}). W obu modelach pierwszą warstwą jest warstwa typu \textit{embedding}, która otrzymuje sekwencje pozytywnych liczb całkowitych (w tym wypadku indeksów wyrazów) i zwraca ich reprezentację macierzową o zadanej długości. Bazuje ona na technikach \textit{word embedding} oraz algorytmach Word2Vec, które przyjmując wyrazy (indeksy wyrazów) znajdujące się w dyskretnej przestrzeni (słowniku), zwracają ich reprezentację w przestrzeni ciągłej (jako wektor liczb rzeczywistych), por. \citep{goldberg2014}. Intuicja stojąca za tymi technikami każe sądzić, że podobne semantycznie słowa znajdą się blisko siebie w tak stworzonej, n-wymiarowej przestrzeni.
 W obu sieciach również wykorzystywane są \textit{max pooling}, \textit{dropout} oraz \textit{fully connected layers}. Rekurencyjna architektura wykorzystuje ponadto warstwę jednostek LSTM (\textit{Long-Short Term Memory Units}, por. \citet{hochreiter1997}. Ich wprowadzenie było odpowiedzią na problem znikającego lub eksplodującego gradientu \citep{hochreiter1991}. W modelu LSTM przedstawiono nową strukturę, nazwaną mianem komórki pamięci \textit{memory cell} (rysunek \ref{fig:lstm_memcell}). Składa się z czterech głównych komponentów: bramki wejściowej, neuronu z rekurencyjnym połączeniem, bramki pamięci (\textit{forget cell}) oraz bramki wyjściowej.
 Połączenie rekurencyjne ma wagę $1$ i ma na celu zapewnienie, że \textit{ceteris paribus}, stan komórki pozostanie niezmieniony przy przejściu z czasu $t$ do czasu $t+1$. Bramki mają na celu kontrolowanie interakcji neuronu z otoczeniem. Bramka wejściowa może pozwolić na zmianę jego stanu przez sygnał wejściowy lub blokować taką próbę. Z drugiej strony, bramka wyjściowa może zezwalać lub zabraniać dokonywaniu zmian w innych neuronach przez \textit{memory cell}. Wreszcie, \textit{forget cell} kontroluje połączenie rekurencyjne, decydując czy jednostka ,,pamięta'', czy ,,zapomina'' swój poprzedni stan. Architektura tego typu jednostki przedstawiona została na rysunku \ref{fig:lstm_memcell}. Algorytmem optymalizacyjnym w obu modelach jest Adam, metoda oparta na momentach gradientu niskiego rzędu, wymagająca niewielkiej ilości pamięci operacyjnej, por. \citet{kingma2014}.
-
 \begin{figure}[h]
   \centering
-\includegraphics[scale=0.75]{../obrazy/fig:lstm_memcell.png}
+\includegraphics[scale=0.4]{../obrazy/fig:lstm_memcell.png}
 \caption{Jednostka \textit{Long-Short Term Memory}. Oprócz klasycznej architektury neuronu z połączeniem rekurencyjnym, elementami wchodzącymi w jej skład są trzy bramki: wejściowa (\textit{input gate}), pamięci (\textit{forget gate}) i wyjściowa (\textit{output gate}).\label{fig:lstm_memcell}}
+\source{Opracowanie własne.}
 \end{figure}
 \begin{figure}[h]
   \centering
 \includegraphics[scale=0.35]{../obrazy/fig:imdb_cnn.png}
 \caption{Architektury zbudowane dla zbioru Large Movie Review Dataset. Po lewej stronie przedstawiono model sieci jednokierunkowej, po prawej zilustrowano model sieci rekurencyjnej.\label{fig:imdb_cnn}}
+\source{Opracowanie własne.}
 \end{figure}
 
 Dla zbioru CIFAR-10 eksperyment również przeprowadzany jest z wykorzystaniem dwóch rodzajów sieci konwolucyjnych. Pierwsza z nich udostępniona została w bibliotece Keras, podczas gdy druga jest jej rozszerzeniem. W obu zastosowano warstwy konwolucyjne, \textit{fully connected layers}, ale także \textit{rectified linear units} i \textit{dropout}. Domyślny model wykorzystuje ponadto warstwy \textit{max poolingowe} i RMSprop jako algorytm optymalizacyjny. \textit{Mini-batch} składa się z $32$ obserwacji, podczasy gdy liczba iteracji przez zbiór danych wynosi $200$. W przypadku niestandardowej architektury wykorzystano technikę \textit{average pooling}, a algorytmem optymalizującym jest ADADELTA. Liczba obserwacji przypadających na jedną partię uczącą wynosi $64$, a liczba iteracji $300$. Architektury tak stworzonych modeli przedstawiono na rysunku \ref{fig:cifar_cnn}.
-
 \begin{figure}[h]
   \centering
 \includegraphics[scale=0.35]{../obrazy/fig:cifar_cnn.png}
 \caption{Podobnie jak w przypadku zbioru danych MNIST, na rysunku przedstawiono architekturę domyślną (lewa strona) oraz rozbudowaną (prawa strona).\label{fig:cifar_cnn}}
+\source{Opracowanie własne.}
 \end{figure}
 
 \clearpage
@@ -600,6 +611,7 @@ Tabela \ref{tab:experiment_results} przedstawia czasy potrzebne na wykonanie jed
   \centering
 \includegraphics[scale=0.5]{../obrazy/fig:experiment_results.png}
 \caption{Wykresy pudełkowe czasów potrzebnych na jedną iterację przez zbiór danych.\label{fig:experiment_results}}
+\source{Opracowanie własne.}
 \end{figure}
 
 Ceny wykorzystywanych instancji na rynku spot i on-demand zostały zaprezentowane w tabeli \ref{tab:instance_prices}. W przypadku cen on-demand instancje p2.xlarge są o $126\%$ droższe w porównaniu do c4.2xlarge. Jest to stosunek cen, który, biorąc pod uwagę różnicę w czasie potrzebnym na zbudowaniu modelu, sugeruje wybór jednostki wyposażonej w GPU. Pozwoli to na oszczędność czasu potrzebnego na obliczenia, ale także prowadzi do optymalizacji kosztowej.
@@ -664,21 +676,25 @@ Analizując miary służące oceny estymowanych modeli można zauważyć, że o 
   \centering
 \includegraphics[scale=0.5]{../obrazy/fig:experiment_loss.png}
 \caption{Wykresy wartości funkcji celu dla zbioru treningowego.\label{fig:experiment_loss}}
+\source{Opracowanie własne.}
 \end{figure}
 \begin{figure}[h]
   \centering
 \includegraphics[scale=0.5]{../obrazy/fig:experiment_loss_val.png}
 \caption{Wykresy wartości funkcji celu dla zbioru walidacyjnego.\label{fig:experiment_loss_val}}
+\source{Opracowanie własne.}
 \end{figure}
 \begin{figure}[h]
   \centering
 \includegraphics[scale=0.5]{../obrazy/fig:experiment_acc.png}
 \caption{Wykresy trafności dla zbioru treningowego.\label{fig:experiment_acc}}
+\source{Opracowanie własne.}
 \end{figure}
 \begin{figure}[h]
   \centering
 \includegraphics[scale=0.5]{../obrazy/fig:experiment_acc_val.png}
 \caption{Wykresy trafności dla zbioru walidacyjnego.\label{fig:experiment_acc_val}}
+\source{Opracowanie własne.}
 \end{figure}
 
 \clearpage
@@ -800,6 +816,7 @@ Taylor expansion of the local rounding errors. Praca magisterska, Uniwersytet w 
 \bibitem[Srivastava et al. (2014)]{srivastava2014} Srivastava, N., Hinton, G. E., Krizhevsky, A., Sutskever, I. i Salakhutdinov, R. (2014). Dropout: a simple way to prevent neural networks from overfitting. Journal of Machine Learning Research, 15(1), s. 1929-1958
 \bibitem[Strom (2015)]{strom2015} Strom, N. (2015). Scalable distributed DNN training using commodity GPU cloud computing. INTERSPEECH (tom 7, s. 10)
 \bibitem[Szegedy (2014)]{szegedy2014} Szegedy, C. et al. (2014). Going deeper with convolutions. arXiv preprint arXiv:1409.4842
+\bibitem[Tadeusiewicz (1993)]{tadeusiewicz1993} Tadeusiewicz, R. (1993). Sieci neuronowe. Akademicka Oficyna Wydawnicza RM, s. 13
 \bibitem[Tieleman i Hinton (2012)]{tieleman2012} Tieleman, T. i Hinton, G. (2012). Lecture 6.5-rmsprop: Divide the gradient by a running average of its recent magnitude. COURSERA: Neural networks for machine learning, 4(2)
 \bibitem[Touretzky i Hinton (1985)]{touretzky1985} Touretzky, D. S. i Hinton, G. E. (1985, August). Symbols among the neurons: Details of a connectionist inference architecture. In IJCAI (tom 85, s. 238-243)
 \bibitem[Vanhoucke et al. (2011)]{vanhoucke2011} Vanhoucke, V., Senior, A. i Mao, M. Z. (2011). Improving the speed of neural networks on CPUs. In Proc. Deep Learning and Unsupervised Feature Learning NIPS Workshop (tom 1, s. 4)
