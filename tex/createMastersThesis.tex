@@ -23,7 +23,7 @@
 \usepackage{listings}
 \usepackage{caption}
 \lstset{
-  basicstyle=\ttfamily\footnotesize,
+  basicstyle=\ttfamily\tiny,
   columns=fullflexible,
   frame=single,
   breaklines=true,
@@ -43,8 +43,8 @@
 }
 \makeatletter
 \renewcommand{\ALG@name}{Algorytm}
-\renewcommand\appendixtocname{Załączniki}
-\renewcommand\appendixpagename{Załączniki}
+\renewcommand\appendixtocname{Załączniki - kody źródłowe}
+\renewcommand\appendixpagename{Załączniki - kody źródłowe}
 \newcommand{\source}[1]{\caption*{\hfill Źródło: {#1}} }
 \makeatother
 \titlelabel{\thetitle.\quad}
@@ -637,8 +637,17 @@ Należy zatem pozytywnie zweryfikować postawione hipotezy badawcze -- stosowani
   \caption{Ceny instancji na rynku on-demand oraz spot w czasie przeprowadzania eksperymentu.}\label{tab:instance_prices}
 \end{table}
 
-W tabeli \ref{tab:experiment_metrics} oraz na wykresach \ref{fig:experiment_loss}, \ref{fig:experiment_loss_val},
-\ref{fig:experiment_acc}, \ref{fig:experiment_acc_val} przedstawiono metryki jakości estymowanych modeli - funkcję straty i trafność. Ostatecznie z wykorzystaniem obu typów instancji osiągnięto podobne wyniki, jednakże z wyjątkiem sieci rekurencyjnej wartość funkcji straty czy trafności znacznie szybciej asymptotycznie zbiega do wartości granicznej w przypadku serwerów wyposażonych w procesory graficzne (por. także w tabeli \ref{tab:experiment_results}).
+W tabelach
+(\ref{tab:experiment_metrics},
+\ref{tab:experiment_times_cifar},
+\ref{tab:experiment_times_imdb},
+\ref{tab:experiment_times_mnist})
+oraz na wykresach
+(\ref{fig:experiment_loss_timecum}, \ref{fig:experiment_loss_price_ond},
+\ref{fig:experiment_loss_val_timecum}, \ref{fig:experiment_loss_val_price_ond},
+\ref{fig:experiment_acc_timecum}, \ref{fig:experiment_acc_price_ond},
+\ref{fig:experiment_acc_val_timecum}, \ref{fig:experiment_acc_val_price_ond})
+przedstawiono metryki jakości estymowanych modeli - funkcję straty i trafność oraz potrzebny do ich osiągnięcia czas i koszt. Ostatecznie z wykorzystaniem obu typów instancji osiągnięto podobne wyniki, jednakże z wyjątkiem sieci rekurencyjnej wartość funkcji straty czy trafności znacznie szybciej asymptotycznie zbiega do wartości granicznej w przypadku serwerów wyposażonych w procesory graficzne (por. także w tabeli \ref{tab:experiment_results}). Koszt potrzebny na osiągnięcie wyznaczonych poziomów trafności modelu również jest wielokrotnie niższy dla instancji GPU (około pięcio-, a nawet siedmiokrotnie, por. między innymi w tabeli \ref{tab:experiment_times_cifar}) w porównaniu do instancji c4.2xlarge.
 
 Analizując miary służące oceny estymowanych modeli można zauważyć, że o ile modyfikacja domyślnej architektury prowadziła do uzyskania lepszego modelu dla zbioru danych CIFAR-10 (trafność na zbiorze walidacyjnym architektury \textit{custom} wyniosła około $0,87$, a dla architektury \textit{kerasdef} około $0,79$), o tyle dla zbioru MNIST nie poskutkowała znaczną różnicą w wynikach. Ponadto, w przypadku obu architektur stworzonych dla zbioru danych IMDB, jak również w przypadku architektury domyślnej dla zbioru danych CIFAR-10 miało miejsce przeuczenie sieci neuronowej. Nie jest ona w stanie wystarczająco dobrze uogólniać odkryte zależności na obserwacje nie pochodzące ze zbioru treningowego, co skutkuje wzrostem funkcji straty (spadkiem trafności) na zbiorze walidacyjnym. Występuje on po 2. iteracji w przypadku architektur zbudowanych na potrzeby zbioru danych IMDB i po około 120. iteracji modelu domyślnego dla CIFAR-10.
 %Wynika to z faktu, że liczba iteracji przez zbiór danych była jednak ustalana na potrzeby pomiaru czasu przypadającego na jeden \textit{epoch}, nie na potrzeby uzyskania najlepszego modelu.
@@ -672,28 +681,167 @@ Analizując miary służące oceny estymowanych modeli można zauważyć, że o 
   \end{tabular}
   \caption{Wartości funkcji celu i trafności dla zbioru treningowego i walidacyjnego w konstruowanych architekturach sieci.\label{tab:experiment_metrics}}
 \end{table}
+\noindent
+\begin{table}
+  \begin{tabular}
+    {C{0.1\linewidth}
+    C{0.12\linewidth}
+    C{0.1\linewidth}
+    C{0.08\linewidth}
+    R{0.1\linewidth}
+    R{0.1\linewidth}
+    R{0.12\linewidth}
+    R{0.12\linewidth}
+    }
+  \toprule
+  \multicolumn{1}{C{0.1\linewidth}}{Zbiór danych} & \multicolumn{1}{C{0.12\linewidth}}{Architektura} & \multicolumn{1}{C{0.1\linewidth}}{Typ instancji} & \multicolumn{1}{C{0.08\linewidth}}{Kwant.} & \multicolumn{1}{C{0.1\linewidth}}{Trafność (zbiór trening.)} & \multicolumn{1}{C{0.1\linewidth}}{Czas (s)} & \multicolumn{1}{C{0.12\linewidth}}{Cena on-demand (\$)} & \multicolumn{1}{C{0.12\linewidth}}{Cena spot (średnia, \$)} \\
+  \midrule
+  cifar & custom & c4.2xlarge & $0.10$ &  $0.8288$ &  $133.44$ &     $0.4573$ &      $0.1255$ \\
+        &        &            & $0.25$ &  $0.8923$ &  $133.21$ &     $1.1061$ &      $0.3035$ \\
+        &        &            & $0.50$ &  $0.9211$ &  $132.83$ &     $2.4315$ &      $0.6671$ \\
+        &        &            & $0.75$ &  $0.9271$ &  $132.85$ &     $3.5771$ &      $0.9815$ \\
+        &        &            & $0.90$ &  $0.9284$ &  $132.81$ &     $3.4304$ &      $0.9412$ \\
+        &        & p2.xlarge & $0.10$ &  $0.8317$ &   $20.27$ &     $0.1569$ &      $0.0427$ \\
+        &        &            & $0.25$ &  $0.8938$ &   $20.06$ &     $0.3837$ &      $0.1045$ \\
+        &        &            & $0.50$ &  $0.9218$ &   $20.28$ &     $0.8066$ &      $0.2196$ \\
+        &        &            & $0.75$ &  $0.9270$ &   $20.09$ &     $1.3955$ &      $0.3799$ \\
+        &        &            & $0.90$ &  $0.9280$ &   $20.09$ &     $1.0029$ &      $0.2730$ \\
+        & kerasdef & c4.2xlarge & $0.10$ &  $0.7061$ &  $116.30$ &     $0.1800$ &      $0.0494$ \\
+        &        &            & $0.25$ &  $0.7445$ &  $116.07$ &     $0.2956$ &      $0.0811$ \\
+        &        &            & $0.50$ &  $0.7781$ &  $116.42$ &     $1.8107$ &      $0.4968$ \\
+        &        &            & $0.75$ &  $0.7881$ &  $116.25$ &     $1.5150$ &      $0.4157$ \\
+        &        &            & $0.90$ &  $0.7903$ &  $116.01$ &     $1.2323$ &      $0.3381$ \\
+        &        & p2.xlarge & $0.10$ &  $0.7290$ &   $21.63$ &     $1.0610$ &      $0.2888$ \\
+        &        &            & $0.25$ &  $0.7609$ &   $21.67$ &     $0.9473$ &      $0.2579$ \\
+        &        &            & $0.50$ &  $0.7875$ &   $21.64$ &     $0.2817$ &      $0.0767$ \\
+        &        &            & $0.75$ &  $0.7951$ &   $21.66$ &     $0.3466$ &      $0.0944$ \\
+        &        &            & $0.90$ &  $0.7969$ &   $21.64$ &     $0.3791$ &      $0.1032$ \\
+  \bottomrule
+  \end{tabular}
+  \caption{Czas oraz koszt potrzebny na osiągnięcie ustalonych poziomów trafności na zbiorze treningowym dla zbioru danych CIFAR-10.\label{tab:experiment_times_cifar}}
+\end{table}
+\begin{table}
+  \begin{tabular}
+    {C{0.1\linewidth}
+    C{0.12\linewidth}
+    C{0.1\linewidth}
+    C{0.08\linewidth}
+    R{0.1\linewidth}
+    R{0.1\linewidth}
+    R{0.12\linewidth}
+    R{0.12\linewidth}
+    }
+  \toprule
+  \multicolumn{1}{C{0.1\linewidth}}{Zbiór danych} & \multicolumn{1}{C{0.12\linewidth}}{Architektura} & \multicolumn{1}{C{0.1\linewidth}}{Typ instancji} & \multicolumn{1}{C{0.08\linewidth}}{Kwant.} & \multicolumn{1}{C{0.1\linewidth}}{Trafność (zbiór trening.)} & \multicolumn{1}{C{0.1\linewidth}}{Czas (s)} & \multicolumn{1}{C{0.12\linewidth}}{Cena on-demand (\$)} & \multicolumn{1}{C{0.12\linewidth}}{Cena spot (średnia, \$)} \\
+  \midrule
+  imdb &        & c4.2xlarge & $0.10$ &  $0.9000$ &  $124.67$ &     $0.0276$ &      $0.0076$ \\
+        &        &            & $0.25$ &  $0.9318$ &  $124.69$ &     $0.0414$ &      $0.0114$ \\
+        &        &            & $0.50$ &  $0.9744$ &  $124.74$ &     $0.0690$ &      $0.0189$ \\
+        &        &            & $0.75$ &  $0.9842$ &  $124.66$ &     $0.0965$ &      $0.0265$ \\
+        &        &            & $0.90$ &  $0.9878$ &  $124.71$ &     $0.1241$ &      $0.0340$ \\
+        &        & p2.xlarge & $0.10$ &  $0.9025$ &   $10.09$ &     $0.0054$ &      $0.0015$ \\
+        &        &            & $0.25$ &  $0.9341$ &   $10.08$ &     $0.0079$ &      $0.0022$ \\
+        &        &            & $0.50$ &  $0.9702$ &   $10.09$ &     $0.0130$ &      $0.0035$ \\
+        &        &            & $0.75$ &  $0.9835$ &   $10.09$ &     $0.0205$ &      $0.0056$ \\
+        &        &            & $0.90$ &  $0.9876$ &   $10.09$ &     $0.0231$ &      $0.0063$ \\
+        & lstmkerasdef & c4.2xlarge & $0.10$ &  $0.9254$ &   $45.83$ &     $0.0103$ &      $0.0028$ \\
+        &        &            & $0.25$ &  $0.9671$ &   $45.81$ &     $0.0153$ &      $0.0042$ \\
+        &        &            & $0.50$ &  $0.9920$ &   $45.89$ &     $0.0255$ &      $0.0070$ \\
+        &        &            & $0.75$ &  $0.9942$ &   $45.77$ &     $0.0356$ &      $0.0098$ \\
+        &        &            & $0.90$ &  $0.9957$ &   $45.76$ &     $0.0457$ &      $0.0125$ \\
+        &        & p2.xlarge & $0.10$ &  $0.9245$ &   $39.90$ &     $0.0208$ &      $0.0057$ \\
+        &        &            & $0.25$ &  $0.9651$ &   $39.59$ &     $0.0307$ &      $0.0084$ \\
+        &        &            & $0.50$ &  $0.9908$ &   $39.47$ &     $0.0505$ &      $0.0138$ \\
+        &        &            & $0.75$ &  $0.9956$ &   $39.35$ &     $0.0802$ &      $0.0218$ \\
+        &        &            & $0.90$ &  $0.9964$ &   $39.45$ &     $0.0900$ &      $0.0245$ \\
+  \bottomrule
+  \end{tabular}
+  \caption{Czas oraz koszt potrzebny na osiągnięcie ustalonych poziomów trafności na zbiorze treningowym dla zbioru danych IMDB.\label{tab:experiment_times_imdb}}
+\end{table}
+\begin{table}
+  \begin{tabular}
+    {C{0.1\linewidth}
+    C{0.12\linewidth}
+    C{0.1\linewidth}
+    C{0.08\linewidth}
+    R{0.1\linewidth}
+    R{0.1\linewidth}
+    R{0.12\linewidth}
+    R{0.12\linewidth}
+    }
+  \toprule
+  \multicolumn{1}{C{0.1\linewidth}}{Zbiór danych} & \multicolumn{1}{C{0.12\linewidth}}{Architektura} & \multicolumn{1}{C{0.1\linewidth}}{Typ instancji} & \multicolumn{1}{C{0.08\linewidth}}{Kwant.} & \multicolumn{1}{C{0.1\linewidth}}{Trafność (zbiór trening.)} & \multicolumn{1}{C{0.1\linewidth}}{Czas (s)} & \multicolumn{1}{C{0.12\linewidth}}{Cena on-demand (\$)} & \multicolumn{1}{C{0.12\linewidth}}{Cena spot (średnia, \$)} \\
+  \midrule
+  mnist & custom & c4.2xlarge & $0.10$ &  $0.8716$ &   $93.91$ &     $0.0518$ &      $0.0142$ \\
+        &        &            & $0.25$ &  $0.9248$ &   $94.14$ &     $0.1039$ &      $0.0285$ \\
+        &        &            & $0.50$ &  $0.9538$ &   $94.55$ &     $0.1979$ &      $0.0543$ \\
+        &        &            & $0.75$ &  $0.9627$ &   $94.46$ &     $0.2709$ &      $0.0743$ \\
+        &        &            & $0.90$ &  $0.9668$ &   $94.56$ &     $0.3439$ &      $0.0944$ \\
+        &        & p2.xlarge & $0.10$ &  $0.8770$ &   $12.76$ &     $0.0163$ &      $0.0044$ \\
+        &        &            & $0.25$ &  $0.9269$ &   $12.80$ &     $0.0322$ &      $0.0088$ \\
+        &        &            & $0.50$ &  $0.9557$ &   $12.82$ &     $0.0610$ &      $0.0166$ \\
+        &        &            & $0.75$ &  $0.9633$ &   $12.84$ &     $0.0865$ &      $0.0236$ \\
+        &        &            & $0.90$ &  $0.9674$ &   $12.77$ &     $0.1089$ &      $0.0296$ \\
+        & kerasdef & c4.2xlarge & $0.10$ &  $0.9649$ &   $80.74$ &     $0.0189$ &      $0.0052$ \\
+        &        &            & $0.25$ &  $0.9780$ &   $80.74$ &     $0.0367$ &      $0.0101$ \\
+        &        &            & $0.50$ &  $0.9842$ &   $80.71$ &     $0.0635$ &      $0.0174$ \\
+        &        &            & $0.75$ &  $0.9874$ &   $80.72$ &     $0.0813$ &      $0.0223$ \\
+        &        &            & $0.90$ &  $0.9882$ &   $80.71$ &     $0.0992$ &      $0.0272$ \\
+        &        & p2.xlarge & $0.10$ &  $0.9662$ &   $10.53$ &     $0.0238$ &      $0.0065$ \\
+        &        &            & $0.25$ &  $0.9782$ &   $10.54$ &     $0.0291$ &      $0.0079$ \\
+        &        &            & $0.50$ &  $0.9843$ &   $10.53$ &     $0.0370$ &      $0.0101$ \\
+        &        &            & $0.75$ &  $0.9872$ &   $10.53$ &     $0.0423$ &      $0.0115$ \\
+        &        &            & $0.90$ &  $0.9881$ &   $10.54$ &     $0.0475$ &      $0.0129$ \\
+  \bottomrule
+  \end{tabular}
+  \caption{Czas oraz koszt potrzebny na osiągnięcie ustalonych poziomów trafności na zbiorze treningowym dla zbioru danych MNIST.\label{tab:experiment_times_mnist}}
+\end{table}
 \begin{figure}[h]
   \centering
-\includegraphics[scale=0.5]{../obrazy/fig:experiment_loss.png}
-\caption{Wykresy wartości funkcji celu dla zbioru treningowego.\label{fig:experiment_loss}}
+\includegraphics[scale=0.5]{../obrazy/fig:experiment_loss_timecum.png}
+\caption{Wykresy wartości funkcji celu dla zbioru treningowego w zależności od czasu obliczeń.\label{fig:experiment_loss_timecum}}
 \source{Opracowanie własne.}
 \end{figure}
 \begin{figure}[h]
   \centering
-\includegraphics[scale=0.5]{../obrazy/fig:experiment_loss_val.png}
-\caption{Wykresy wartości funkcji celu dla zbioru walidacyjnego.\label{fig:experiment_loss_val}}
+\includegraphics[scale=0.5]{../obrazy/fig:experiment_loss_price_ond.png}
+\caption{Wykresy wartości funkcji celu dla zbioru treningowego w zależności od ceny instancji na rynku on-demand.\label{fig:experiment_loss_price_ond}}
 \source{Opracowanie własne.}
 \end{figure}
 \begin{figure}[h]
   \centering
-\includegraphics[scale=0.5]{../obrazy/fig:experiment_acc.png}
-\caption{Wykresy trafności dla zbioru treningowego.\label{fig:experiment_acc}}
+\includegraphics[scale=0.5]{../obrazy/fig:experiment_loss_val_timecum.png}
+\caption{Wykresy wartości funkcji celu dla zbioru walidacyjnego w zależności od czasu obliczeń.\label{fig:experiment_loss_val_timecum}}
 \source{Opracowanie własne.}
 \end{figure}
 \begin{figure}[h]
   \centering
-\includegraphics[scale=0.5]{../obrazy/fig:experiment_acc_val.png}
-\caption{Wykresy trafności dla zbioru walidacyjnego.\label{fig:experiment_acc_val}}
+\includegraphics[scale=0.5]{../obrazy/fig:experiment_loss_val_price_ond.png}
+\caption{Wykresy wartości funkcji celu dla zbioru walidacyjnego w zależności od ceny instancji na rynku on-demand.\label{fig:experiment_loss_val_price_ond}}
+\source{Opracowanie własne.}
+\end{figure}
+\begin{figure}[h]
+  \centering
+\includegraphics[scale=0.5]{../obrazy/fig:experiment_acc_timecum.png}
+\caption{Wykresy trafności dla zbioru treningowego w zależności od czasu obliczeń.\label{fig:experiment_acc_timecum}}
+\source{Opracowanie własne.}
+\end{figure}
+\begin{figure}[h]
+  \centering
+\includegraphics[scale=0.5]{../obrazy/fig:experiment_acc_price_ond.png}
+\caption{Wykresy trafności dla zbioru treningowego w zależności od ceny instancji na rynku on-demand.\label{fig:experiment_acc_price_ond}}
+\source{Opracowanie własne.}
+\end{figure}
+\begin{figure}[h]
+  \centering
+\includegraphics[scale=0.5]{../obrazy/fig:experiment_acc_val_timecum.png}
+\caption{Wykresy trafności dla zbioru walidacyjnego w zależności od czasu obliczeń.\label{fig:experiment_acc_val_timecum}}
+\source{Opracowanie własne.}
+\end{figure}
+\begin{figure}[h]
+  \centering
+\includegraphics[scale=0.5]{../obrazy/fig:experiment_acc_val_price_ond.png}
+\caption{Wykresy trafności dla zbioru walidacyjnego w zależności od ceny instancji na rynku on-demand.\label{fig:experiment_acc_val_price_ond}}
 \source{Opracowanie własne.}
 \end{figure}
 
@@ -1783,94 +1931,157 @@ get_ipython().magic('matplotlib inline')
 
 tmp = df_all
 tmp['timecum'] = df_all.sort_values(by='epoch').groupby(['data_arch','instance_type']).cumsum()['time']
+tmp.loc[tmp['instance_type'] == 'c4.2xlarge', 'price_ond'] = tmp['timecum']*0.3980/3600
+tmp.loc[tmp['instance_type'] == 'p2.xlarge', 'price_ond'] = tmp['timecum']*0.9000/3600
+tmp.loc[tmp['instance_type'] == 'c4.2xlarge', 'price_spot'] = tmp['timecum']*0.1092/3600
+tmp.loc[tmp['instance_type'] == 'p2.xlarge', 'price_spot'] = tmp['timecum']*0.2450/3600
 df_grp = tmp.groupby('data_arch')
 
 lsd = {'c4.2xlarge':'solid', 'p2.xlarge':'dashed'}
 
-fig, axes = plt.subplots(nrows=3, ncols=2, figsize=[14, 18], sharey=False)
-fig.subplots_adjust(hspace=0.35,wspace=0.25)
+for x in ['timecum','price_ond','price_spot']:
+    fig, axes = plt.subplots(nrows=3, ncols=2, figsize=[14, 18], sharey=False)
+    fig.subplots_adjust(hspace=0.35,wspace=0.25)
+    for i, k in enumerate(sorted(list(df_grp.groups.keys()))):
+        group = df_grp.get_group(k)
+        labels=[]
+        for key, grp in group.groupby(['instance_type']):
+            ax = grp.plot(ax=axes[floor(i/2)][i%2], kind='line', x=x, y='loss', c='black', ls=lsd.get(key))
+            labels.append(key)
+            lines, _ = ax.get_legend_handles_labels()
+            ax.legend(lines, labels, loc=1)
+            if i == 0:
+                start, end = ax.get_xlim()
+                ax.xaxis.set_ticks(range(0, int(end)+1, 10000))
+        axes[floor(i/2)][i%2].set_title('Zbior danych: {}\nArchitektura: {}'.format(k.split('_')[0], k.split('_')[1]))
+        if x == 'timecum':
+            axes[floor(i/2)][i%2].set_xlabel('Czas obliczen (s)')
+        elif x == 'price_ond':
+            axes[floor(i/2)][i%2].set_xlabel('Cena obliczen on-demand ($)')
+        elif x == 'price_spot':
+            axes[floor(i/2)][i%2].set_xlabel('Cena obliczen spot ($)')
+        axes[floor(i/2)][i%2].set_ylabel('Wartosc funkcji celu')
 
-for i, k in enumerate(sorted(list(df_grp.groups.keys()))):
-    group = df_grp.get_group(k)
-    labels=[]
-    for key, grp in group.groupby(['instance_type']):
-        ax = grp.plot(ax=axes[floor(i/2)][i%2], kind='line', x='timecum', y='loss', c='black', ls=lsd.get(key))
-        labels.append(key)
+    fig.suptitle('')
+    fig.savefig('fig:experiment_loss_{}.png'.format(x))
+
+for x in ['timecum','price_ond','price_spot']:
+    fig, axes = plt.subplots(nrows=3, ncols=2, figsize=[14, 18], sharey=False)
+    fig.subplots_adjust(hspace=0.35, wspace=0.25)
+
+    for i, k in enumerate(sorted(list(df_grp.groups.keys()))):
+        group = df_grp.get_group(k)
+        labels=[]
+        for key, grp in group.groupby(['instance_type']):
+            ax = grp.plot(ax=axes[floor(i/2)][i%2], kind='line', x=x, y='acc', c='black', ls=lsd.get(key))
+            labels.append(key)
+            lines, _ = ax.get_legend_handles_labels()
+            ax.legend(lines, labels, loc=4)
+            if i == 0:
+                start, end = ax.get_xlim()
+                ax.xaxis.set_ticks(range(0, int(end)+1, 10000))
+        axes[floor(i/2)][i%2].set_title('Zbior danych: {}\nArchitektura: {}'.format(k.split('_')[0], k.split('_')[1]))
+        if x == 'timecum':
+            axes[floor(i/2)][i%2].set_xlabel('Czas obliczen (s)')
+        elif x == 'price_ond':
+            axes[floor(i/2)][i%2].set_xlabel('Cena obliczen on-demand ($)')
+        elif x == 'price_spot':
+            axes[floor(i/2)][i%2].set_xlabel('Cena obliczen spot ($)')
+        axes[floor(i/2)][i%2].set_ylabel('Wartosc funkcji celu')
+        axes[floor(i/2)][i%2].set_ylabel('Trafnosc')
+
+    fig.suptitle('')
+    fig.savefig('fig:experiment_acc_{}.png'.format(x))
+
+for x in ['timecum','price_ond','price_spot']:
+    fig, axes = plt.subplots(nrows=3, ncols=2, figsize=[14, 18], sharey=False)
+    fig.subplots_adjust(hspace=0.35,wspace=0.25)
+
+    for i, k in enumerate(sorted(list(df_grp.groups.keys()))):
+        group = df_grp.get_group(k)
+        for key, grp in group.groupby(['instance_type']):
+            ax = grp.plot(ax=axes[floor(i/2)][i%2], kind='line', x=x, y='val_loss', c='black', ls=lsd.get(key))
+            labels.append(key)
+            if i == 0:
+                start, end = ax.get_xlim()
+                ax.xaxis.set_ticks(range(0, int(end)+1, 10000))
         lines, _ = ax.get_legend_handles_labels()
-        ax.legend(lines, labels, loc=1)
-        if i == 0:
-            start, end = ax.get_xlim()
-            ax.xaxis.set_ticks(range(0, int(end)+1, 10000))
-    axes[floor(i/2)][i%2].set_title('Zbior danych: {}\nArchitektura: {}'.format(k.split('_')[0], k.split('_')[1]))
-    axes[floor(i/2)][i%2].set_xlabel('Czas obliczen (s)')
-    axes[floor(i/2)][i%2].set_ylabel('Wartosc funkcji celu')
+        ax.legend(lines, labels, loc='best')
+        axes[floor(i/2)][i%2].set_title('Zbior danych: {}\nArchitektura: {}'.format(k.split('_')[0], k.split('_')[1]))
+        if x == 'timecum':
+            axes[floor(i/2)][i%2].set_xlabel('Czas obliczen (s)')
+        elif x == 'price_ond':
+            axes[floor(i/2)][i%2].set_xlabel('Cena obliczen on-demand ($)')
+        elif x == 'price_spot':
+            axes[floor(i/2)][i%2].set_xlabel('Cena obliczen spot ($)')
+        axes[floor(i/2)][i%2].set_ylabel('Wartosc funkcji celu')
 
-fig.suptitle('')
-fig.savefig('fig:experiment_loss.png')
+    fig.suptitle('')
+    fig.savefig('fig:experiment_loss_val_{}.png'.format(x))
 
-fig, axes = plt.subplots(nrows=3, ncols=2, figsize=[14, 18], sharey=False)
-fig.subplots_adjust(hspace=0.35, wspace=0.25)
+for x in ['timecum','price_ond','price_spot']:
+    fig, axes = plt.subplots(nrows=3, ncols=2, figsize=[14, 18], sharey=False)
+    fig.subplots_adjust(hspace=0.35,wspace=0.25)
 
-for i, k in enumerate(sorted(list(df_grp.groups.keys()))):
-    group = df_grp.get_group(k)
-    labels=[]
-    for key, grp in group.groupby(['instance_type']):
-        ax = grp.plot(ax=axes[floor(i/2)][i%2], kind='line', x='timecum', y='acc', c='black', ls=lsd.get(key))
-        labels.append(key)
+    for i, k in enumerate(sorted(list(df_grp.groups.keys()))):
+        group = df_grp.get_group(k)
+        for key, grp in group.groupby(['instance_type']):
+            ax = grp.plot(ax=axes[floor(i/2)][i%2], kind='line', x=x, y='val_acc', c='black', ls=lsd.get(key))
+            labels.append(key)
+            if i == 0:
+                start, end = ax.get_xlim()
+                ax.xaxis.set_ticks(range(0, int(end)+1, 10000))
         lines, _ = ax.get_legend_handles_labels()
-        ax.legend(lines, labels, loc=4)
-        if i == 0:
-            start, end = ax.get_xlim()
-            ax.xaxis.set_ticks(range(0, int(end)+1, 10000))
-    axes[floor(i/2)][i%2].set_title('Zbior danych: {}\nArchitektura: {}'.format(k.split('_')[0], k.split('_')[1]))
-    axes[floor(i/2)][i%2].set_xlabel('Czas obliczen (s)')
-    axes[floor(i/2)][i%2].set_ylabel('Trafnosc')
+        ax.legend(lines, labels, loc='best')
+        axes[floor(i/2)][i%2].set_title('Zbior danych: {}\nArchitektura: {}'.format(k.split('_')[0], k.split('_')[1]))
+        if x == 'timecum':
+            axes[floor(i/2)][i%2].set_xlabel('Czas obliczen (s)')
+        elif x == 'price_ond':
+            axes[floor(i/2)][i%2].set_xlabel('Cena obliczen on-demand ($)')
+        elif x == 'price_spot':
+            axes[floor(i/2)][i%2].set_xlabel('Cena obliczen spot ($)')
+        axes[floor(i/2)][i%2].set_ylabel('Trafnosc')
 
-fig.suptitle('')
-fig.savefig('fig:experiment_acc.png')
+    fig.suptitle('')
+    fig.savefig('fig:experiment_acc_val_{}.png'.format(x))
 
-fig, axes = plt.subplots(nrows=3, ncols=2, figsize=[14, 18], sharey=False)
-fig.subplots_adjust(hspace=0.35,wspace=0.25)
-
-for i, k in enumerate(sorted(list(df_grp.groups.keys()))):
-    group = df_grp.get_group(k)
-    for key, grp in group.groupby(['instance_type']):
-        ax = grp.plot(ax=axes[floor(i/2)][i%2], kind='line', x='timecum', y='val_loss', c='black', ls=lsd.get(key))
-        labels.append(key)
-        if i == 0:
-            start, end = ax.get_xlim()
-            ax.xaxis.set_ticks(range(0, int(end)+1, 10000))
-    lines, _ = ax.get_legend_handles_labels()
-    ax.legend(lines, labels, loc='best')
-    axes[floor(i/2)][i%2].set_title('Zbior danych: {}\nArchitektura: {}'.format(k.split('_')[0], k.split('_')[1]))
-    axes[floor(i/2)][i%2].set_xlabel('Czas obliczen (s)')
-    axes[floor(i/2)][i%2].set_ylabel('Wartosc funkcji celu')
-
-fig.suptitle('')
-fig.savefig('fig:experiment_loss_val.png')
-
-fig, axes = plt.subplots(nrows=3, ncols=2, figsize=[14, 18], sharey=False)
-fig.subplots_adjust(hspace=0.35,wspace=0.25)
-
-for i, k in enumerate(sorted(list(df_grp.groups.keys()))):
-    group = df_grp.get_group(k)
-    for key, grp in group.groupby(['instance_type']):
-        ax = grp.plot(ax=axes[floor(i/2)][i%2], kind='line', x='timecum', y='val_acc', c='black', ls=lsd.get(key))
-        labels.append(key)
-        if i == 0:
-            start, end = ax.get_xlim()
-            ax.xaxis.set_ticks(range(0, int(end)+1, 10000))
-    lines, _ = ax.get_legend_handles_labels()
-    ax.legend(lines, labels, loc='best')
-    axes[floor(i/2)][i%2].set_title('Zbior danych: {}\nArchitektura: {}'.format(k.split('_')[0], k.split('_')[1]))
-    axes[floor(i/2)][i%2].set_xlabel('Czas obliczen (s)')
-    axes[floor(i/2)][i%2].set_ylabel('Trafnosc')
-
-fig.suptitle('')
-fig.savefig('fig:experiment_acc_val.png')
-
+tabkeys = tmp.groupby(['dataset', 'architecture','instance_type']).quantile([0.1, 0.25, 0.5, 0.75, 0.9], interpolation='nearest')['acc'].reset_index()
+tabkeys = pd.merge(tabkeys, tmp, how='left', on=['dataset', 'architecture', 'instance_type', 'acc']).groupby(['dataset', 'architecture', 'instance_type', 'acc', 'level_3']).min()['index'].reset_index()
+tabr = pd.merge(tabkeys, tmp, how='inner', on=['dataset', 'architecture', 'instance_type', 'index'], suffixes=('_x',''))
+tab = tabr[['dataset', 'architecture', 'instance_type', 'level_3', 'acc', 'time', 'price_ond', 'price_spot']]
+valr = {'acc':4,'time':2,'price_ond':4, 'price_spot':4}
+print(tab.set_index(['dataset', 'architecture', 'instance_type', 'level_3']).round(valr).to_latex())
 \end{lstlisting}
 \end{appendices}
+\clearpage
+
+\begin{center}
+
+  {\Large Streszczenie}
+
+  \vspace{1cm}
+  {\large Temat pracy magisterskiej:}
+
+  {\Large Optymalizacja kosztowa procesu konstruowania głębokich sieci neuronowych (deep neural networks) z wykorzystaniem chmury obliczeniowej}
+
+  Słowa kluczowe:
+  głębokie sieci neuronowe, sieci konwolucyjne, deep learning, chmura obliczeniowa, cloud computing, GPU, procesory graficzne, analiza wielokryterialna
+
+  \end{center}
+  \noindent
+  Praca przedstawia analizę wielokryterialną metod generowania struktur głębokich sieci neuronowych z użyciem chmury obliczeniowej. Oprócz klasycznych jednostek, wykorzystano w tym celu serwery wyposażone w procesory graficzne, które prowadzić mają do poprawy wydajności procesu uczenia sieci. Celem jest znalezienie optymalnego kosztowo rozwiązania dla wybranych typów maszyn dostępnych w ramach modelu \textit{pay-as-you-go} oraz dostarczenie narzędzia, które pozwoli na przeprowadzanie tego typu porównań dla dowolnych zbiorów danych i architektur sieci. Eksperyment został przeprowadzony z wykorzystaniem biblioteki Keras służącej do konstruowania skomplikowanych architektur sieci neuronowych, opartej na backendzie Tensorflow. Ponadto, wybrano trzy popularnie stosowane w zadaniach benchmarkingowych zbiory danych - CIFAR-10, IMDB oraz MNIST - i dla każdego z nich zbudowano dwie architektury sieci. Kryteriami oceny są czas, koszt oraz ilość pracy potrzebna na estymację modelu sieci neuronowej o przyjętym poziomie trafności lub funkcji straty.
+
+  Praca zawiera część teoretyczną oraz eksperymentalną. Część teoretyczna składa się z następujących elementów:
+  \begin{itemize}
+  \item opis rynku cloud computingowego,
+  \item przegląd historii oraz obecnie stosowanych praktyk w dziedzinie sztucznych sieci neuronowych.
+  \end{itemize}
+
+  Na część eksperymentalną składa się opis przeprowadzania eksperymentu, przedstawienie hipotez badawczych oraz analiza otrzymanych wyników i ocena maszyn posiadających procesory graficzne względem serwerów nie wyposażonych w GPU.
+
+  Przeprowadzony eksperyment dowiódł, że stosowanie serwerów z GPU w chmurze prowadzi do zmniejszenia zarówno czasu, jak i kosztu potrzebnego na wygenerowanie architektury sieci neuronowej.
+
+
 \clearpage
 
 \end{document}
