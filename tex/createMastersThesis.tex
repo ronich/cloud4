@@ -71,8 +71,6 @@
 
 \noindent Kierunek: Analiza danych - big data
 
-\noindent Specjalność: \dots
-
 \vspace{1cm}
 
 {
@@ -805,7 +803,7 @@ Analizując miary służące oceny estymowanych modeli można zauważyć, że o 
 \begin{figure}[h]
   \centering
 \includegraphics[scale=0.5]{../obrazy/fig:experiment_loss_price_ond.png}
-\caption{Wykresy wartości funkcji celu dla zbioru treningowego w zależności od ceny instancji na rynku on-demand.\label{fig:experiment_loss_price_ond}}
+\caption{Wykresy wartości funkcji celu dla zbioru treningowego w zależności od kosztu instancji na rynku on-demand.\label{fig:experiment_loss_price_ond}}
 \source{Opracowanie własne.}
 \end{figure}
 \begin{figure}[h]
@@ -817,7 +815,7 @@ Analizując miary służące oceny estymowanych modeli można zauważyć, że o 
 \begin{figure}[h]
   \centering
 \includegraphics[scale=0.5]{../obrazy/fig:experiment_loss_val_price_ond.png}
-\caption{Wykresy wartości funkcji celu dla zbioru walidacyjnego w zależności od ceny instancji na rynku on-demand.\label{fig:experiment_loss_val_price_ond}}
+\caption{Wykresy wartości funkcji celu dla zbioru walidacyjnego w zależności od kosztu instancji na rynku on-demand.\label{fig:experiment_loss_val_price_ond}}
 \source{Opracowanie własne.}
 \end{figure}
 \begin{figure}[h]
@@ -829,7 +827,7 @@ Analizując miary służące oceny estymowanych modeli można zauważyć, że o 
 \begin{figure}[h]
   \centering
 \includegraphics[scale=0.5]{../obrazy/fig:experiment_acc_price_ond.png}
-\caption{Wykresy trafności dla zbioru treningowego w zależności od ceny instancji na rynku on-demand.\label{fig:experiment_acc_price_ond}}
+\caption{Wykresy trafności dla zbioru treningowego w zależności od kosztu instancji na rynku on-demand.\label{fig:experiment_acc_price_ond}}
 \source{Opracowanie własne.}
 \end{figure}
 \begin{figure}[h]
@@ -841,7 +839,7 @@ Analizując miary służące oceny estymowanych modeli można zauważyć, że o 
 \begin{figure}[h]
   \centering
 \includegraphics[scale=0.5]{../obrazy/fig:experiment_acc_val_price_ond.png}
-\caption{Wykresy trafności dla zbioru walidacyjnego w zależności od ceny instancji na rynku on-demand.\label{fig:experiment_acc_val_price_ond}}
+\caption{Wykresy trafności dla zbioru walidacyjnego w zależności od kosztu instancji na rynku on-demand.\label{fig:experiment_acc_val_price_ond}}
 \source{Opracowanie własne.}
 \end{figure}
 
@@ -1957,9 +1955,9 @@ for x in ['timecum','price_ond','price_spot']:
         if x == 'timecum':
             axes[floor(i/2)][i%2].set_xlabel('Czas obliczen (s)')
         elif x == 'price_ond':
-            axes[floor(i/2)][i%2].set_xlabel('Cena obliczen on-demand ($)')
+            axes[floor(i/2)][i%2].set_xlabel('Koszt obliczen on-demand ($)')
         elif x == 'price_spot':
-            axes[floor(i/2)][i%2].set_xlabel('Cena obliczen spot ($)')
+            axes[floor(i/2)][i%2].set_xlabel('Koszt obliczen spot ($)')
         axes[floor(i/2)][i%2].set_ylabel('Wartosc funkcji celu')
 
     fig.suptitle('')
@@ -1984,9 +1982,9 @@ for x in ['timecum','price_ond','price_spot']:
         if x == 'timecum':
             axes[floor(i/2)][i%2].set_xlabel('Czas obliczen (s)')
         elif x == 'price_ond':
-            axes[floor(i/2)][i%2].set_xlabel('Cena obliczen on-demand ($)')
+            axes[floor(i/2)][i%2].set_xlabel('Koszt obliczen on-demand ($)')
         elif x == 'price_spot':
-            axes[floor(i/2)][i%2].set_xlabel('Cena obliczen spot ($)')
+            axes[floor(i/2)][i%2].set_xlabel('Koszt obliczen spot ($)')
         axes[floor(i/2)][i%2].set_ylabel('Wartosc funkcji celu')
         axes[floor(i/2)][i%2].set_ylabel('Trafnosc')
 
@@ -2011,9 +2009,9 @@ for x in ['timecum','price_ond','price_spot']:
         if x == 'timecum':
             axes[floor(i/2)][i%2].set_xlabel('Czas obliczen (s)')
         elif x == 'price_ond':
-            axes[floor(i/2)][i%2].set_xlabel('Cena obliczen on-demand ($)')
+            axes[floor(i/2)][i%2].set_xlabel('Koszt obliczen on-demand ($)')
         elif x == 'price_spot':
-            axes[floor(i/2)][i%2].set_xlabel('Cena obliczen spot ($)')
+            axes[floor(i/2)][i%2].set_xlabel('Koszt obliczen spot ($)')
         axes[floor(i/2)][i%2].set_ylabel('Wartosc funkcji celu')
 
     fig.suptitle('')
@@ -2037,9 +2035,9 @@ for x in ['timecum','price_ond','price_spot']:
         if x == 'timecum':
             axes[floor(i/2)][i%2].set_xlabel('Czas obliczen (s)')
         elif x == 'price_ond':
-            axes[floor(i/2)][i%2].set_xlabel('Cena obliczen on-demand ($)')
+            axes[floor(i/2)][i%2].set_xlabel('Koszt obliczen on-demand ($)')
         elif x == 'price_spot':
-            axes[floor(i/2)][i%2].set_xlabel('Cena obliczen spot ($)')
+            axes[floor(i/2)][i%2].set_xlabel('Koszt obliczen spot ($)')
         axes[floor(i/2)][i%2].set_ylabel('Trafnosc')
 
     fig.suptitle('')
